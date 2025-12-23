@@ -32,6 +32,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setLoading(false);
       }
+    }).catch((error) => {
+      console.error('Auth session error:', error);
+      setLoading(false);
     });
 
     // Listen for changes on auth state (sign in, sign out, etc.)
