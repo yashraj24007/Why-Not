@@ -13,6 +13,10 @@ import PlacementDashboard from './pages/PlacementDashboard';
 import PostOpportunityPage from './pages/PostOpportunityPage';
 import ManageOpportunitiesPage from './pages/ManageOpportunitiesPage';
 import ApplicationsManagementPage from './pages/ApplicationsManagementPage';
+import StudentAnalyticsPage from './pages/StudentAnalyticsPage';
+import MentorDashboard from './pages/MentorDashboard';
+import EmployerDashboard from './pages/EmployerDashboard';
+import CandidateSearchPage from './pages/CandidateSearchPage';
 import NotFoundPage from './pages/NotFoundPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -146,23 +150,63 @@ const App: React.FC = () => {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/placement/analytics" 
+            element={
+              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
+                <StudentAnalyticsPage />
+              </ProtectedRoute>
+            } 
+          />
           
           {/* Faculty Mentor Routes */}
+          <Route 
+            path="/mentor/dashboard" 
+            element={
+              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.FACULTY_MENTOR}>
+                <MentorDashboard />
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="/mentor/*" 
             element={
               <ProtectedRoute userRole={user?.role} requiredRole={UserRole.FACULTY_MENTOR}>
-                <div className="pt-24 px-6">Faculty Mentor Dashboard (Protected)</div>
+                <MentorDashboard />
               </ProtectedRoute>
             } 
           />
           
           {/* Employer Routes */}
           <Route 
+            path="/employer/dashboard" 
+            element={
+              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.EMPLOYER}>
+                <EmployerDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/employer/post" 
+            element={
+              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.EMPLOYER}>
+                <PostOpportunityPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/employer/candidates" 
+            element={
+              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.EMPLOYER}>
+                <CandidateSearchPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/employer/*" 
             element={
               <ProtectedRoute userRole={user?.role} requiredRole={UserRole.EMPLOYER}>
-                <div className="pt-24 px-6">Employer Dashboard (Protected)</div>
+                <EmployerDashboard />
               </ProtectedRoute>
             } 
           />
@@ -198,5 +242,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
 export default App;
