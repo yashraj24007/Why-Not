@@ -19,6 +19,7 @@ import EmployerDashboard from './pages/EmployerDashboard';
 import CandidateSearchPage from './pages/CandidateSearchPage';
 import NotFoundPage from './pages/NotFoundPage';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -33,9 +34,15 @@ const App: React.FC = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
   
-  // Determine if we show the sidebar (only on dashboard)
-  const isDashboard = location.pathname.includes('/dashboard');
+  // Determine page types
   const isLanding = location.pathname === '/';
+  const isAuthPage = ['/login', '/signup'].includes(location.pathname);
+  const isAuthenticated = !!user;
+  
+  // Show navigation based on auth state and page type
+  const showSidebar = isAuthenticated && !isLanding && !isAuthPage;
+  const showHeader = !isAuthenticated && !isLanding;
+  const showFooter = !isLanding;
 
   // Show loading state while checking authentication
   if (loading) {
@@ -53,7 +60,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-slate-100 font-sans selection:bg-neon-purple selection:text-white">
+    <div className="min-h-screen flex bg-black text-slate-100 font-sans selection:bg-neon-purple selection:text-white">
       {/* Dynamic Background for App pages (excluding Landing) */}
       {!isLanding && (
           <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black -z-50" />
@@ -66,20 +73,33 @@ const App: React.FC = () => {
         </Suspense>
       )}
       
-      {/* Header Navigation */}
-      <Header 
-        userRole={user?.role}
-        userName={user?.name}
-        userAvatar={user?.avatar}
-        notifications={user?.notifications}
-      />
+      {/* Sidebar for authenticated users */}
+      {showSidebar && (
+        <Sidebar 
+          userRole={user?.role}
+          userName={user?.name}
+          userAvatar={user?.avatar}
+        />
+      )}
 
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+      {/* Main content wrapper */}
+      <div className={`flex-1 flex flex-col ${showSidebar ? 'ml-20' : ''}`}>
+        {/* Header for non-authenticated users (excluding landing) */}
+        {showHeader && (
+          <Header 
+            userRole={user?.role}
+            userName={user?.name}
+            userAvatar={user?.avatar}
+            notifications={user?.notifications}
+          />
+        )}
+
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
           
           {/* Protected Routes */}
           <Route 
@@ -227,8 +247,9 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute userRole={user?.role} requiredRole={UserRole.TRAINING_SUPERVISOR}>
                 <div className="pt-24 px-6">Training Supervisor Dashboard (Protected)</div>
-              </ProtectedRoute>
-            } 
+        {/* Footer */}
+        {showFooter && <Footer />}
+      </div
           />
           
           {/* Settings Route - accessible to all authenticated users */}

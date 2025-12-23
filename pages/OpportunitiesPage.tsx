@@ -67,7 +67,7 @@ const OpportunitiesPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="pt-24 px-6 max-w-7xl mx-auto min-h-screen">
+      <div className="pt-8 px-6 max-w-7xl mx-auto min-h-screen">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar Filters */}
           <div className="w-full md:w-64 space-y-6">

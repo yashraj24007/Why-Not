@@ -81,7 +81,7 @@ const PostOpportunityPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="pt-24 px-6 max-w-4xl mx-auto min-h-screen pb-12">
+      <div className="pt-8 px-6 max-w-4xl mx-auto min-h-screen pb-12">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"

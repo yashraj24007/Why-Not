@@ -92,7 +92,7 @@ const StudentDashboard: React.FC = () => {
   if (loading) {
     return (
       <PageTransition>
-        <div className="pt-24 px-6 max-w-7xl mx-auto min-h-screen">
+        <div className="pt-8 px-6 max-w-7xl mx-auto min-h-screen">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1 space-y-6">
               <StatCardSkeleton />
@@ -130,7 +130,7 @@ const StudentDashboard: React.FC = () => {
           initial={{ opacity: 0 }} 
           animate={{ opacity: 1 }} 
           exit={{ opacity: 0 }}
-          className="pt-24 px-6 max-w-7xl mx-auto min-h-screen"
+          className="pt-8 px-6 max-w-7xl mx-auto min-h-screen"
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         

@@ -51,7 +51,7 @@ const ApplicationsPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="pt-24 px-6 max-w-7xl mx-auto min-h-screen">
+      <div className="pt-8 px-6 max-w-7xl mx-auto min-h-screen">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">My Applications</h1>
           <p className="text-slate-400">Track the status of your internship and placement applications.</p>

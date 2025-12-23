@@ -115,7 +115,7 @@ const PlacementDashboard: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="pt-24 px-6 max-w-7xl mx-auto min-h-screen">
+      <div className="pt-8 px-6 max-w-7xl mx-auto min-h-screen">
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold mb-2">Placement Officer Dashboard</h1>
