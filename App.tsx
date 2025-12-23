@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import StudentDashboard from './pages/StudentDashboard';
@@ -25,6 +25,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { AnimatePresence } from 'framer-motion';
 import { UserRole } from './types';
 import { useAuth } from './contexts/AuthContext';
+
+// Lazy load ThreeScene for better performance
+const ThreeScene = lazy(() => import('./components/ThreeScene'));
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -54,6 +57,13 @@ const App: React.FC = () => {
       {/* Dynamic Background for App pages (excluding Landing) */}
       {!isLanding && (
           <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black -z-50" />
+      )}
+      
+      {/* Lazy-loaded ThreeScene for better performance */}
+      {isLanding && (
+        <Suspense fallback={null}>
+          <ThreeScene />
+        </Suspense>
       )}
       
       {/* Header Navigation */}

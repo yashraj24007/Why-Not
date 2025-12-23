@@ -5,6 +5,8 @@ import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ApplyModal from '../components/ApplyModal';
 import PageTransition from '../components/PageTransition';
+import { useDebounce } from '../hooks/useDebounce';
+import { LoadingGrid } from '../components/LoadingSkeleton';
 
 const OpportunitiesPage: React.FC = () => {
   const { user } = useAuth();
@@ -19,15 +21,18 @@ const OpportunitiesPage: React.FC = () => {
   const [selectedOpp, setSelectedOpp] = useState<any | null>(null);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
+  // Debounce search input to avoid excessive API calls
+  const debouncedSearch = useDebounce(filters.search, 300);
+
   useEffect(() => {
     fetchOpportunities();
-  }, [filters]); // Re-fetch when filters change (debounce search ideally)
+  }, [debouncedSearch, filters.type, filters.location, filters.minStipend]);
 
   const fetchOpportunities = async () => {
     setLoading(true);
     try {
       const data = await api.getOpportunities({
-        search: filters.search,
+        search: debouncedSearch,
         type: filters.type as any,
         location: filters.location,
         minStipend: filters.minStipend
@@ -124,10 +129,7 @@ const OpportunitiesPage: React.FC = () => {
             {/* Opportunities List */}
             <div className="space-y-4">
               {loading ? (
-                <div className="flex flex-col items-center justify-center py-20">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neon-blue mb-4"></div>
-                  <p className="text-slate-400">Loading opportunities...</p>
-                </div>
+                <LoadingGrid count={6} type="card" />
               ) : opportunities.length === 0 ? (
                 <div className="text-center py-20 glass-panel rounded-xl">
                   <Briefcase className="w-16 h-16 text-slate-600 mx-auto mb-4" />

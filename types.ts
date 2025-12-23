@@ -26,6 +26,7 @@ export interface AuthUser {
   skills?: Skill[];
   preferences?: any;
   resume?: string;
+  resume_url?: string;
 }
 
 export enum UserRole {

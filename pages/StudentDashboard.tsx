@@ -6,6 +6,7 @@ import { ApplicationStatus } from '../types';
 import PageTransition from '../components/PageTransition';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../services/api';
+import { LoadingGrid, StatCardSkeleton } from '../components/LoadingSkeleton';
 
 const ReadinessRing = ({ score }: { score: number }) => {
   const radius = 50;
@@ -83,6 +84,24 @@ const StudentDashboard: React.FC = () => {
     
     setReadinessScore(Math.round(score));
   };
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="pt-24 px-6 max-w-7xl mx-auto min-h-screen">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-1 space-y-6">
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </div>
+            <div className="lg:col-span-2">
+              <LoadingGrid count={4} type="card" />
+            </div>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
 
   const handleAppClick = (app: any) => {
     if (app.status === ApplicationStatus.REJECTED) {

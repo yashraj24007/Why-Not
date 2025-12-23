@@ -4,6 +4,8 @@ import { Search, Filter, Users, Mail, Briefcase } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import PageTransition from '../components/PageTransition';
+import { useDebounce } from '../hooks/useDebounce';
+import { LoadingGrid } from '../components/LoadingSkeleton';
 
 const CandidateSearchPage: React.FC = () => {
   const { user } = useAuth();
@@ -18,13 +20,16 @@ const CandidateSearchPage: React.FC = () => {
     skills: [] as string[]
   });
 
+  // Debounce search to improve performance
+  const debouncedSearch = useDebounce(searchTerm, 300);
+
   useEffect(() => {
     fetchStudents();
   }, []);
 
   useEffect(() => {
     applyFilters();
-  }, [searchTerm, filters, students]);
+  }, [debouncedSearch, filters, students]);
 
   const fetchStudents = async () => {
     try {
@@ -49,11 +54,11 @@ const CandidateSearchPage: React.FC = () => {
   const applyFilters = () => {
     let filtered = [...students];
 
-    // Search by name or email
-    if (searchTerm) {
+    // Search by name or email - now using debounced search
+    if (debouncedSearch) {
       filtered = filtered.filter(s =>
-        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.email.toLowerCase().includes(searchTerm.toLowerCase())
+        s.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        s.email.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
     }
 
@@ -79,9 +84,17 @@ const CandidateSearchPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neon-blue"></div>
-      </div>
+      <PageTransition>
+        <div className="min-h-screen pt-24 px-6 pb-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold mb-2 gradient-text">Browse Candidates</h1>
+              <p className="text-slate-400">Find talented students for your organization</p>
+            </div>
+            <LoadingGrid count={9} type="card" />
+          </div>
+        </div>
+      </PageTransition>
     );
   }
 
