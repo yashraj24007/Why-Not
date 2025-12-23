@@ -55,8 +55,12 @@ const OpportunitiesPage: React.FC = () => {
     const requiredSkills = opp.required_skills || [];
     if (requiredSkills.length === 0) return 100;
     
-    const userSkillNames = user.skills.map((s: any) => s.name.toLowerCase());
-    const matchCount = requiredSkills.filter((s: any) => userSkillNames.includes(s.name.toLowerCase())).length;
+    const userSkillNames = user.skills
+      .filter((s: any) => s && s.name)
+      .map((s: any) => s.name.toLowerCase());
+    const matchCount = requiredSkills
+      .filter((s: any) => s && s.name && userSkillNames.includes(s.name.toLowerCase()))
+      .length;
     
     return Math.round((matchCount / requiredSkills.length) * 100);
   };

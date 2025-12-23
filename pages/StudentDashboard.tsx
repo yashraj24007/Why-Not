@@ -51,6 +51,7 @@ const StudentDashboard: React.FC = () => {
   const [selectedApp, setSelectedApp] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [readinessScore, setReadinessScore] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
@@ -60,12 +61,15 @@ const StudentDashboard: React.FC = () => {
 
   const loadData = async () => {
     if (!user) return;
+    setLoading(true);
     try {
       const apps = await api.getMyApplications(user.id);
       setApplications(apps || []);
       calculateReadiness(user, apps || []);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
