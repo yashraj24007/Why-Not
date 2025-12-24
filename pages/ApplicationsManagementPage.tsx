@@ -76,11 +76,11 @@ const ApplicationsManagementPage: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     const colors: any = {
-      APPLIED: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+      PENDING: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
       SHORTLISTED: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
       INTERVIEW_SCHEDULED: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
       REJECTED: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-      OFFERED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+      ACCEPTED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
     };
     return colors[status] || 'bg-slate-500/10 text-slate-400 border-slate-500/20';
   };
@@ -113,13 +113,13 @@ const ApplicationsManagementPage: React.FC = () => {
 
           {/* Status Filter */}
           <div className="flex gap-2">
-            {['ALL', 'APPLIED', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'OFFERED', 'REJECTED'].map((status) => (
+            {['ALL', 'PENDING', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'ACCEPTED', 'REJECTED'].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
                 className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-all ${
                   statusFilter === status
-                    ? 'bg-neon-blue text-black font-medium'
+                    ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-medium'
                     : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800'
                 }`}
               >
@@ -178,17 +178,17 @@ const ApplicationsManagementPage: React.FC = () => {
                   </span>
                   
                   <div className="flex gap-2">
-                    {app.status === 'APPLIED' && (
+                    {app.status === 'PENDING' && (
                       <>
                         <button
                           onClick={() => handleStatusChange(app.id, 'SHORTLISTED')}
-                          className="px-4 py-2 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-sm transition-colors"
+                          className="px-4 py-2 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 text-sm font-semibold transition-colors border border-purple-500/20"
                         >
                           Shortlist
                         </button>
                         <button
                           onClick={() => handleStatusChange(app.id, 'REJECTED')}
-                          className="px-4 py-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-sm transition-colors"
+                          className="px-4 py-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-sm font-semibold transition-colors border border-rose-500/20"
                         >
                           Reject
                         </button>
@@ -198,13 +198,13 @@ const ApplicationsManagementPage: React.FC = () => {
                       <>
                         <button
                           onClick={() => handleStatusChange(app.id, 'INTERVIEW_SCHEDULED')}
-                          className="px-4 py-2 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 text-sm transition-colors"
+                          className="px-4 py-2 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 text-sm font-semibold transition-colors border border-amber-500/20"
                         >
                           Schedule Interview
                         </button>
                         <button
                           onClick={() => handleStatusChange(app.id, 'REJECTED')}
-                          className="px-4 py-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-sm transition-colors"
+                          className="px-4 py-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-sm font-semibold transition-colors border border-rose-500/20"
                         >
                           Reject
                         </button>
@@ -213,14 +213,14 @@ const ApplicationsManagementPage: React.FC = () => {
                     {app.status === 'INTERVIEW_SCHEDULED' && (
                       <>
                         <button
-                          onClick={() => handleStatusChange(app.id, 'OFFERED')}
-                          className="px-4 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-sm transition-colors"
+                          onClick={() => handleStatusChange(app.id, 'ACCEPTED')}
+                          className="px-4 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-sm font-semibold transition-colors border border-emerald-500/20"
                         >
-                          Make Offer
+                          Accept
                         </button>
                         <button
                           onClick={() => handleStatusChange(app.id, 'REJECTED')}
-                          className="px-4 py-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-sm transition-colors"
+                          className="px-4 py-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-sm font-semibold transition-colors border border-rose-500/20"
                         >
                           Reject
                         </button>

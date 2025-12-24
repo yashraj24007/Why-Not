@@ -415,9 +415,10 @@ const StudentDashboard: React.FC = () => {
                           <p className="text-slate-400 text-sm">{app.job?.company || 'Company'}</p>
                         </div>
                         <span className={`px-4 py-2 rounded-full text-xs font-semibold ${
-                          app.status === 'APPLIED' ? 'bg-cyan-500/20 text-cyan-400' :
+                          app.status === 'PENDING' ? 'bg-cyan-500/20 text-cyan-400' :
                           app.status === 'SHORTLISTED' ? 'bg-green-500/20 text-green-400' :
                           app.status === 'INTERVIEW_SCHEDULED' ? 'bg-purple-500/20 text-purple-400' :
+                          app.status === 'ACCEPTED' ? 'bg-emerald-500/20 text-emerald-400' :
                           app.status === 'REJECTED' ? 'bg-red-500/20 text-red-400' :
                           'bg-slate-500/20 text-slate-400'
                         }`}>

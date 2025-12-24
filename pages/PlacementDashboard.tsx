@@ -58,7 +58,7 @@ const PlacementDashboard: React.FC = () => {
         totalOpportunities: opportunities?.length || 0,
         activeOpportunities: opportunities?.filter(o => o.status === 'ACTIVE').length || 0,
         totalApplications: applications?.length || 0,
-        pendingApplications: applications?.filter(a => a.status === 'APPLIED').length || 0,
+        pendingApplications: applications?.filter(a => a.status === 'PENDING').length || 0,
         totalStudents: studentCount || 0,
         placedStudents: placedCount || 0
       });
@@ -104,11 +104,11 @@ const PlacementDashboard: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const styles: any = {
-      APPLIED: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+      PENDING: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
       SHORTLISTED: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
       INTERVIEW_SCHEDULED: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
       REJECTED: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-      OFFERED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+      ACCEPTED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
     };
     return styles[status] || 'bg-slate-500/10 text-slate-400 border-slate-500/20';
   };
