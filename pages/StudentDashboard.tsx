@@ -1,324 +1,420 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { 
-  Briefcase, TrendingUp, FileText, Award, ArrowRight, Calendar, MapPin, DollarSign,
-  Target, Clock, Zap, BookOpen, Users, CheckCircle, Flame, TrendingDown, Brain,
-  Bell, Star, Activity, Sparkles, BarChart2, TrendingDown as TrendDown
+  Briefcase, FileText, Calendar, Brain, TrendingUp, Sparkles,
+  Target, Award, Zap, BarChart2, Flame, Activity, CheckCircle,
+  Clock, MapPin, Star, ArrowRight, Eye, ThumbsUp, Users, BookOpen
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { api } from '../services/api';
-import { Link } from 'react-router-dom';
+import { supabase } from '../services/supabaseClient';
+import { Application, JobOpportunity } from '../types';
 import RejectionAnalysisHub from '../components/RejectionAnalysisHub';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
-  const [applications, setApplications] = useState<any[]>([]);
-  const [opportunities, setOpportunities] = useState<any[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [opportunities, setOpportunities] = useState<JobOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loginStreak, setLoginStreak] = useState(7);
+  const [profileCompletion, setProfileCompletion] = useState(0);
   const [showAnalysisHub, setShowAnalysisHub] = useState(false);
-  const [analysisMode, setAnalysisMode] = useState<'single' | 'bulk'>('single');
-  const [selectedApplication, setSelectedApplication] = useState<any>(null);
-  const [activeView, setActiveView] = useState<'overview' | 'analytics'>('overview');
-
-  // Mock data for innovative features
-  const loginStreak = 7; // Days
-  const profileCompletion = user?.cgpa && user?.skills?.length > 0 ? 85 : 45;
-  
-  // Dynamic color based on completion percentage
-  const getCompletionColor = () => {
-    if (profileCompletion < 30) return {
-      gradient: 'from-red-500 via-red-400 to-orange-500',
-      glow: 'shadow-red-500/50',
-      text: 'text-red-400',
-      border: 'border-red-500/20'
-    };
-    if (profileCompletion < 60) return {
-      gradient: 'from-orange-500 via-yellow-400 to-orange-500',
-      glow: 'shadow-orange-500/50',
-      text: 'text-orange-400',
-      border: 'border-orange-500/20'
-    };
-    if (profileCompletion < 80) return {
-      gradient: 'from-yellow-500 via-cyan-400 to-yellow-500',
-      glow: 'shadow-yellow-500/50',
-      text: 'text-yellow-400',
-      border: 'border-yellow-500/20'
-    };
-    return {
-      gradient: 'from-green-500 via-emerald-400 to-green-500',
-      glow: 'shadow-green-500/50',
-      text: 'text-green-400',
-      border: 'border-green-500/20'
-    };
-  };
-  
-  const completionColors = getCompletionColor();
-  const upcomingInterviews = [
-    { company: 'TechCorp', date: 'Dec 26, 2025', time: '10:00 AM', type: 'Technical Round' },
-    { company: 'StartupXYZ', date: 'Dec 27, 2025', time: '2:00 PM', type: 'HR Round' },
-  ];
-  const recommendations = [
-    { title: 'Complete your skills section', priority: 'high', action: '/profile' },
-    { title: 'Add your resume', priority: 'medium', action: '/profile-setup' },
-    { title: 'Practice coding challenges', priority: 'low', action: '/resources' },
-  ];
-  const recentActivity = [
-    { action: 'Applied to Frontend Developer', company: 'Google', time: '2 hours ago', icon: FileText },
-    { action: 'Profile viewed by', company: 'Microsoft', time: '5 hours ago', icon: Users },
-    { action: 'Interview scheduled with', company: 'Amazon', time: '1 day ago', icon: Calendar },
-  ];
+  const [selectedApplication, setSelectedApplication] = useState<Application | undefined>();
+  const [analysisMode, setAnalysisMode] = useState<'single' | 'bulk'>('bulk');
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-      
-      try {
-        setLoading(true);
-        const [appsData, oppsData] = await Promise.all([
-          api.getMyApplications(user.id).catch(() => []),
-          api.getOpportunities().catch(() => [])
-        ]);
-        
-        setApplications(appsData || []);
-        setOpportunities((oppsData || []).slice(0, 3)); // Show top 3
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    if (user?.id) {
+      fetchData();
+      calculateProfileCompletion();
+    }
   }, [user]);
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      const [appsResult, oppsResult] = await Promise.all([
+        supabase
+          .from('applications')
+          .select('*, opportunity:opportunities(*)')
+          .eq('student_id', user?.id)
+          .order('created_at', { ascending: false })
+          .limit(10),
+        supabase
+          .from('opportunities')
+          .select('*')
+          .eq('is_published', true)
+          .order('created_at', { ascending: false })
+          .limit(6)
+      ]);
+
+      if (appsResult.data) setApplications(appsResult.data);
+      if (oppsResult.data) setOpportunities(oppsResult.data);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateProfileCompletion = () => {
+    if (!user) return 0;
+    
+    let completedFields = 0;
+    const totalFields = 10;
+    
+    if (user.name) completedFields++;
+    if (user.email) completedFields++;
+    if (user.phone) completedFields++;
+    if (user.major) completedFields++;
+    if (user.year) completedFields++;
+    if (user.semester) completedFields++;
+    if (user.cgpa) completedFields++;
+    if (user.department) completedFields++;
+    if (user.skills && user.skills.length > 0) completedFields++;
+    if (user.resume_url) completedFields++;
+    
+    const completion = Math.round((completedFields / totalFields) * 100);
+    setProfileCompletion(completion);
+  };
+
   const stats = [
-    { label: 'Active Applications', value: applications.filter(a => ['APPLIED', 'SHORTLISTED', 'INTERVIEW_SCHEDULED'].includes(a.status)).length, icon: FileText, color: 'from-teal-500 to-cyan-500' },
-    { label: 'Opportunities', value: opportunities.length, icon: Briefcase, color: 'from-purple-500 to-pink-500' },
-    { label: 'Profile Score', value: user?.cgpa ? `${user.cgpa}/10` : 'N/A', icon: TrendingUp, color: 'from-green-500 to-emerald-500' },
-    { label: 'Achievements', value: user?.skills?.length || 0, icon: Award, color: 'from-orange-500 to-red-500' },
+    { label: 'Applications', value: applications.length, icon: FileText, color: 'from-cyan-500 to-blue-500', change: '+3 this week' },
+    { label: 'Interviews', value: applications.filter(a => a.status === 'INTERVIEW_SCHEDULED').length, icon: Users, color: 'from-purple-500 to-pink-500', change: '2 upcoming' },
+    { label: 'Offers', value: applications.filter(a => a.status === 'ACCEPTED').length, icon: Award, color: 'from-green-500 to-emerald-500', change: 'Congrats!' },
+    { label: 'Profile Views', value: 156, icon: Eye, color: 'from-orange-500 to-red-500', change: '+12 today' },
+  ];
+
+  const recentActivity = [
+    { action: 'Application viewed by', company: 'Google', time: '2 hours ago', icon: Eye },
+    { action: 'Interview scheduled with', company: 'Microsoft', time: '5 hours ago', icon: Calendar },
+    { action: 'Applied to', company: 'Amazon', time: '1 day ago', icon: FileText },
+    { action: 'Resume downloaded by', company: 'Meta', time: '2 days ago', icon: ThumbsUp },
+  ];
+
+  const upcomingInterviews = [
+    { company: 'Microsoft', date: 'Dec 28', time: '10:00 AM', type: 'Technical' },
+    { company: 'Google', date: 'Dec 30', time: '2:00 PM', type: 'HR Round' },
   ];
 
   return (
-    <div className="min-h-screen pt-28 px-6 pb-12">
-      <div className="max-w-7xl mx-auto">
-        {/* Welcome Section with Streak */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black relative overflow-hidden pt-20">
+      {/* Animated Background Orbs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, 100, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 right-0 w-[800px] h-[800px] bg-cyan-500/30 rounded-full blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-purple-500/30 rounded-full blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.1, 0.2, 0.1],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-500/20 rounded-full blur-[150px]"
+        />
+      </div>
+
+      <div className="relative z-10 max-w-[1800px] mx-auto p-4 md:p-8">
+        {/* Hero Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
+          className="mb-8"
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
-                Welcome back, <span className="gradient-text">{user?.name?.split(' ')[0]}</span>
-              </h1>
-              <p className="text-slate-400 text-lg">Here's what's happening with your career journey</p>
-            </div>
-            
-            {/* Streak Counter */}
-            <motion.div 
-              className="mt-4 md:mt-0 glass-panel rounded-2xl p-4 flex items-center gap-3"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                <Flame className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{loginStreak} Days</p>
-                <p className="text-xs text-slate-400">Login Streak 🔥</p>
-              </div>
-            </motion.div>
-          </div>
+          <div className="grid md:grid-cols-12 gap-6 items-end">
+            {/* Welcome Card - spans 8 columns */}
+            <div className="md:col-span-8">
+              <div className="relative group">
+                {/* Glow effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                
+                <div className="relative glass-panel rounded-3xl p-8 border border-white/10 group-hover:border-white/20 transition-all">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <motion.div 
+                        className="flex items-center gap-3 mb-3"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <motion.div
+                          animate={{
+                            rotate: [0, 10, -10, 10, 0],
+                            scale: [1, 1.1, 1, 1.1, 1],
+                          }}
+                          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                        >
+                          <Sparkles className="w-8 h-8 text-cyan-400" />
+                        </motion.div>
+                        <div>
+                          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            Welcome back, {user?.name?.split(' ')[0] || 'Student'}!
+                          </h1>
+                          <p className="text-slate-400 text-lg mt-1">Ready to take the next step in your career?</p>
+                        </div>
+                      </motion.div>
+                      
+                      {/* Profile completion inline */}
+                      <div className="mt-6 max-w-2xl">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-white font-semibold flex items-center gap-2">
+                            <Target className="w-4 h-4 text-cyan-400" />
+                            Profile Strength
+                          </span>
+                          <span className="text-lg font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                            {profileCompletion}%
+                          </span>
+                        </div>
+                        <div className="relative h-3 bg-slate-800/80 rounded-full overflow-hidden border border-slate-700/50">
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${profileCompletion}%` }}
+                            transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                          />
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent"
+                            animate={{ x: ['-100%', '100%'] }}
+                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                          />
+                        </div>
+                        {profileCompletion < 100 && (
+                          <Link to="/profile" className="inline-flex items-center gap-1 mt-2 text-sm text-cyan-400 hover:text-purple-400 transition-colors">
+                            <span>Complete your profile to increase visibility</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        )}
+                      </div>
+                    </div>
 
-          {/* Profile Completion Bar */}
-          <motion.div 
-            className={`glass-panel rounded-xl p-5 border ${completionColors.border}`}
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Target className={`w-5 h-5 ${completionColors.text}`} />
-                <span className="text-sm text-white font-semibold">Profile Completion</span>
+                    {/* Streak Badge */}
+                    <motion.div
+                      whileHover={{ scale: 1.05, rotate: 5 }}
+                      className="hidden md:block"
+                    >
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl blur-xl opacity-60" />
+                        <div className="relative glass-panel rounded-2xl p-6 border border-orange-500/20">
+                          <div className="text-center">
+                            <Flame className="w-12 h-12 text-orange-400 mx-auto mb-2" />
+                            <p className="text-3xl font-black text-white">{loginStreak}</p>
+                            <p className="text-xs text-orange-400 font-semibold">Day Streak</p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
               </div>
-              <span className={`text-lg font-bold ${completionColors.text}`}>{profileCompletion}%</span>
             </div>
-            <div className="w-full bg-slate-800/80 rounded-full h-3 overflow-hidden border border-slate-700/50 shadow-inner">
-              <motion.div 
-                className={`h-full bg-gradient-to-r ${completionColors.gradient} rounded-full shadow-lg ${completionColors.glow}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${profileCompletion}%` }}
-                transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                style={{
-                  boxShadow: `0 0 15px ${profileCompletion < 30 ? 'rgba(239, 68, 68, 0.6)' : profileCompletion < 60 ? 'rgba(249, 115, 22, 0.6)' : profileCompletion < 80 ? 'rgba(234, 179, 8, 0.6)' : 'rgba(34, 197, 94, 0.6)'}, inset 0 1px 0 rgba(255, 255, 255, 0.2)`
-                }}
-              />
+
+            {/* AI Quick Action - spans 4 columns */}
+            <div className="md:col-span-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                whileHover={{ scale: 1.02 }}
+                className="relative h-full"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl" />
+                <button
+                  onClick={() => setShowAnalysisHub(true)}
+                  className="relative w-full h-full glass-panel rounded-2xl p-6 border-2 border-purple-500/30 hover:border-purple-500/50 transition-all group"
+                >
+                  <div className="flex flex-col items-center justify-center h-full text-center gap-3">
+                    <motion.div
+                      animate={{
+                        rotate: [0, 5, -5, 0],
+                        scale: [1, 1.1, 1, 1.1, 1],
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center"
+                    >
+                      <Brain className="w-8 h-8 text-white" />
+                    </motion.div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-1">AI Rejection Coach</h3>
+                      <p className="text-sm text-slate-400">Turn rejections into opportunities</p>
+                    </div>
+                    {applications.filter(a => a.status === 'REJECTED').length > 0 && (
+                      <span className="px-4 py-2 bg-red-500/20 text-red-400 rounded-full text-sm font-semibold">
+                        {applications.filter(a => a.status === 'REJECTED').length} rejections to analyze
+                      </span>
+                    )}
+                  </div>
+                </button>
+              </motion.div>
             </div>
-            {profileCompletion < 100 && (
-              <p className="text-xs text-slate-400 mt-3 flex items-center gap-1">
-                <span className={`inline-block w-1 h-1 rounded-full ${completionColors.text} animate-pulse`}></span>
-                {profileCompletion < 30 ? 'Start completing your profile to unlock opportunities!' :
-                 profileCompletion < 60 ? 'Good progress! Keep adding details to your profile.' :
-                 profileCompletion < 80 ? 'Almost there! Complete your profile for maximum visibility.' :
-                 'Excellent! Just a few more details to go.'}
-              </p>
-            )}
-          </motion.div>
+          </div>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="glass-panel rounded-2xl p-6 hover:scale-105 transition-transform cursor-pointer"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3 shadow-lg`}>
-                  <stat.icon className="w-full h-full text-white" />
-                </div>
-              </div>
-              <p className="text-slate-400 text-sm mb-1">{stat.label}</p>
-              <p className="text-3xl font-bold text-white">{stat.value}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* AI Rejection Analysis Hero Section - PROMINENT */}
-        {applications.filter(a => a.status === 'REJECTED').length > 0 && (
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-12 gap-6">
+          {/* Stats Row - Dynamic sizes for visual interest */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="mb-12 relative overflow-hidden rounded-3xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="col-span-12 md:col-span-3"
           >
-            {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-black to-neon-blue/20" />
-            <div className="absolute top-0 right-0 w-96 h-96 bg-neon-purple/30 blur-[120px] rounded-full" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-neon-blue/30 blur-[120px] rounded-full" />
-            
-            <div className="relative glass-panel border-2 border-neon-purple/30 p-8 md:p-12">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-neon-purple to-neon-blue flex items-center justify-center animate-pulse">
-                      <Sparkles className="w-7 h-7 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-3xl font-bold gradient-text">AI Rejection Coach</h2>
-                      <p className="text-sm text-neon-blue font-mono">Powered by Gemini 2.0</p>
-                    </div>
+            <div className="relative group h-full">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-cyan-500/30 transition-all h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center">
+                    <FileText className="w-7 h-7 text-white" />
                   </div>
-                  
-                  <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-                    Turn your <span className="text-red-400 font-semibold">{applications.filter(a => a.status === 'REJECTED').length} rejection{applications.filter(a => a.status === 'REJECTED').length > 1 ? 's' : ''}</span> into 
-                    actionable insights. Get AI-powered analysis, identify patterns, and discover exactly what to improve.
-                  </p>
-
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      onClick={() => {
-                        setAnalysisMode('bulk');
-                        setShowAnalysisHub(true);
-                      }}
-                      className="px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-blue rounded-xl text-white font-semibold hover:shadow-xl hover:shadow-neon-purple/50 transition-all flex items-center gap-2 group"
-                    >
-                      <BarChart2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                      Analyze All Rejections
-                    </button>
-                    <Link
-                      to="/applications"
-                      className="px-6 py-3 glass-panel rounded-xl text-white font-semibold hover:bg-white/10 transition-all flex items-center gap-2"
-                    >
-                      <FileText className="w-5 h-5" />
-                      View Applications
-                    </Link>
-                  </div>
+                  <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-xs font-semibold">
+                    +3 this week
+                  </span>
                 </div>
-
-                <div className="space-y-4">
-                  <div className="glass-panel p-4 rounded-xl border border-neon-purple/20 hover:border-neon-purple/50 transition-all">
-                    <div className="flex items-center gap-3 mb-2">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                      <span className="text-white font-semibold">Pattern Detection</span>
-                    </div>
-                    <p className="text-sm text-slate-400">Identify common missing skills across rejections</p>
-                  </div>
-                  
-                  <div className="glass-panel p-4 rounded-xl border border-neon-blue/20 hover:border-neon-blue/50 transition-all">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Target className="w-5 h-5 text-neon-blue" />
-                      <span className="text-white font-semibold">Priority Improvements</span>
-                    </div>
-                    <p className="text-sm text-slate-400">Get ranked list of skills to focus on</p>
-                  </div>
-                  
-                  <div className="glass-panel p-4 rounded-xl border border-purple-400/20 hover:border-purple-400/50 transition-all">
-                    <div className="flex items-center gap-3 mb-2">
-                      <TrendDown className="w-5 h-5 text-purple-400" />
-                      <span className="text-white font-semibold">Progress Tracking</span>
-                    </div>
-                    <p className="text-sm text-slate-400">See your improvement over time</p>
-                  </div>
-                </div>
+                <p className="text-slate-400 text-sm mb-1">Applications</p>
+                <p className="text-4xl font-black text-white">{applications.length}</p>
               </div>
             </div>
           </motion.div>
-        )}
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Recent Applications */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="glass-panel rounded-2xl p-6"
-            >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="col-span-12 md:col-span-3"
+          >
+            <div className="relative group h-full">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-purple-500/30 transition-all h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                    <Users className="w-7 h-7 text-white" />
+                  </div>
+                  <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">
+                    2 upcoming
+                  </span>
+                </div>
+                <p className="text-slate-400 text-sm mb-1">Interviews</p>
+                <p className="text-4xl font-black text-white">{applications.filter(a => a.status === 'INTERVIEW_SCHEDULED').length}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="col-span-12 md:col-span-3"
+          >
+            <div className="relative group h-full">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-green-500/30 transition-all h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                    <Award className="w-7 h-7 text-white" />
+                  </div>
+                  {applications.filter(a => a.status === 'ACCEPTED').length > 0 && (
+                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">
+                      Congrats!
+                    </span>
+                  )}
+                </div>
+                <p className="text-slate-400 text-sm mb-1">Offers</p>
+                <p className="text-4xl font-black text-white">{applications.filter(a => a.status === 'ACCEPTED').length}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="col-span-12 md:col-span-3"
+          >
+            <div className="relative group h-full">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-orange-500/30 transition-all h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                    <Eye className="w-7 h-7 text-white" />
+                  </div>
+                  <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs font-semibold">
+                    +12 today
+                  </span>
+                </div>
+                <p className="text-slate-400 text-sm mb-1">Profile Views</p>
+                <p className="text-4xl font-black text-white">156</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Recent Applications - Large Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="col-span-12 md:col-span-7"
+          >
+            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white">Recent Applications</h2>
-                <Link to="/applications" className="text-neon-blue hover:text-neon-purple transition-colors flex items-center gap-1">
-                  View All <ArrowRight size={16} />
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <FileText className="w-6 h-6 text-cyan-400" />
+                  Recent Applications
+                </h2>
+                <Link to="/applications" className="flex items-center gap-1 text-cyan-400 hover:text-purple-400 transition-colors text-sm font-semibold">
+                  View All <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
 
               {loading ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className="h-20 bg-slate-800/50 rounded-lg animate-pulse" />
+                    <div key={i} className="h-20 bg-slate-800/50 rounded-xl animate-pulse" />
                   ))}
                 </div>
               ) : applications.length === 0 ? (
                 <div className="text-center py-12">
-                  <FileText className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                  <p className="text-slate-400">No applications yet</p>
-                  <Link to="/opportunities" className="text-neon-blue hover:text-neon-purple mt-2 inline-block">
+                  <FileText className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                  <p className="text-slate-400 mb-4">No applications yet</p>
+                  <Link to="/opportunities" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all">
+                    <Briefcase className="w-5 h-5" />
                     Browse Opportunities
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {applications.slice(0, 5).map((app, index) => (
+                <div className="space-y-3 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pr-2">
+                  {applications.slice(0, 6).map((app, index) => (
                     <motion.div
                       key={app.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                      className="bg-slate-900/50 rounded-lg p-4 hover:bg-slate-800/50 transition-all cursor-pointer"
+                      transition={{ delay: index * 0.05 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-cyan-500/30 transition-all cursor-pointer group"
                     >
-                      <div className="flex items-start justify-between">
+                      <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <h3 className="text-white font-semibold mb-1">{app.opportunity?.title || 'Position'}</h3>
-                          <p className="text-slate-400 text-sm">{app.opportunity?.company_name || 'Company'}</p>
+                          <h3 className="text-white font-semibold mb-1 group-hover:text-cyan-400 transition-colors">
+                            {app.job?.role || 'Position'}
+                          </h3>
+                          <p className="text-slate-400 text-sm">{app.job?.company || 'Company'}</p>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        <span className={`px-4 py-2 rounded-full text-xs font-semibold ${
                           app.status === 'APPLIED' ? 'bg-cyan-500/20 text-cyan-400' :
                           app.status === 'SHORTLISTED' ? 'bg-green-500/20 text-green-400' :
                           app.status === 'INTERVIEW_SCHEDULED' ? 'bg-purple-500/20 text-purple-400' :
@@ -332,97 +428,53 @@ const StudentDashboard: React.FC = () => {
                   ))}
                 </div>
               )}
-            </motion.div>
+            </div>
+          </motion.div>
 
-            {/* Activity Timeline */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="glass-panel rounded-2xl p-6"
-            >
+          {/* Activity Feed - Medium Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="col-span-12 md:col-span-5"
+          >
+            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
               <div className="flex items-center gap-2 mb-6">
-                <Activity className="w-5 h-5 text-neon-purple" />
+                <Activity className="w-5 h-5 text-purple-400" />
                 <h2 className="text-xl font-bold text-white">Recent Activity</h2>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pr-2">
                 {recentActivity.map((activity, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="flex items-start gap-3 pb-4 border-b border-slate-800 last:border-0"
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-start gap-3 p-3 rounded-xl bg-slate-900/30 hover:bg-slate-800/50 transition-all border border-slate-800 hover:border-purple-500/30"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-neon-purple/10 flex items-center justify-center flex-shrink-0">
-                      <activity.icon className="w-4 h-4 text-neon-purple" />
+                    <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                      <activity.icon className="w-5 h-5 text-purple-400" />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="text-sm text-white">
-                        {activity.action} <span className="text-neon-purple font-semibold">{activity.company}</span>
+                        {activity.action} <span className="text-purple-400 font-semibold">{activity.company}</span>
                       </p>
                       <p className="text-xs text-slate-500 mt-1">{activity.time}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* AI Recommendations */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="glass-panel rounded-2xl p-6"
-            >
-              <div className="flex items-center gap-2 mb-6">
-                <Brain className="w-5 h-5 text-neon-blue" />
-                <h2 className="text-xl font-bold text-white">AI Recommendations</h2>
-              </div>
-              <div className="space-y-3">
-                {recommendations.map((rec, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className={`p-3 rounded-lg border ${
-                      rec.priority === 'high' ? 'bg-red-500/10 border-red-500/30' :
-                      rec.priority === 'medium' ? 'bg-yellow-500/10 border-yellow-500/30' :
-                      'bg-cyan-500/10 border-cyan-500/30'
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <div className={`w-2 h-2 rounded-full mt-1.5 ${
-                        rec.priority === 'high' ? 'bg-red-500' :
-                        rec.priority === 'medium' ? 'bg-yellow-500' :
-                        'bg-cyan-500'
-                      }`} />
-                      <div className="flex-1">
-                        <p className="text-sm text-white mb-2">{rec.title}</p>
-                        <Link 
-                          to={rec.action}
-                          className="text-xs text-neon-blue hover:text-neon-purple transition-colors flex items-center gap-1"
-                        >
-                          Take Action <ArrowRight size={12} />
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Upcoming Interviews */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="glass-panel rounded-2xl p-6"
-            >
+          {/* Upcoming Interviews - Tall Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="col-span-12 md:col-span-5"
+          >
+            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
               <div className="flex items-center gap-2 mb-6">
                 <Calendar className="w-5 h-5 text-green-400" />
                 <h2 className="text-xl font-bold text-white">Upcoming Interviews</h2>
@@ -431,83 +483,101 @@ const StudentDashboard: React.FC = () => {
                 {upcomingInterviews.map((interview, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg p-4"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="relative overflow-hidden rounded-xl"
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-white font-semibold text-sm">{interview.company}</h3>
-                      <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
-                        {interview.type}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-slate-400">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={12} />
-                        <span>{interview.date}</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20" />
+                    <div className="relative p-4 border border-green-500/20 hover:border-green-500/40 transition-all">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-white font-semibold text-lg">{interview.company}</h3>
+                        <span className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full font-semibold">
+                          {interview.type}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Clock size={12} />
-                        <span>{interview.time}</span>
+                      <div className="flex items-center gap-4 text-sm text-slate-400">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>{interview.date}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span>{interview.time}</span>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
+                {upcomingInterviews.length === 0 && (
+                  <div className="text-center py-8">
+                    <Calendar className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+                    <p className="text-slate-400 text-sm">No upcoming interviews</p>
+                  </div>
+                )}
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
 
-            {/* New Opportunities */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="glass-panel rounded-2xl p-6"
-            >
+          {/* New Opportunities - Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="col-span-12 md:col-span-7"
+          >
+            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-white">New Opportunities</h2>
-                <Link to="/opportunities" className="text-neon-blue hover:text-neon-purple transition-colors">
-                  <ArrowRight size={20} />
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <Briefcase className="w-6 h-6 text-cyan-400" />
+                  New Opportunities
+                </h2>
+                <Link to="/opportunities" className="flex items-center gap-1 text-cyan-400 hover:text-purple-400 transition-colors text-sm font-semibold">
+                  View All <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
 
               {loading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-24 bg-slate-800/50 rounded-lg animate-pulse" />
+                <div className="grid grid-cols-2 gap-4">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="h-32 bg-slate-800/50 rounded-xl animate-pulse" />
                   ))}
                 </div>
               ) : opportunities.length === 0 ? (
-                <div className="text-center py-8">
-                  <Briefcase className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                  <p className="text-slate-400 text-sm">No opportunities available</p>
+                <div className="text-center py-12">
+                  <Briefcase className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                  <p className="text-slate-400">No opportunities available</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   {opportunities.map((opp, index) => (
                     <motion.div
                       key={opp.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                      className="bg-slate-900/50 rounded-lg p-4 hover:bg-slate-800/50 transition-all cursor-pointer border border-transparent hover:border-neon-purple/30"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.05 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-cyan-500/30 transition-all cursor-pointer group"
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-white font-semibold text-sm flex-1">{opp.title}</h3>
-                        <Star className="w-4 h-4 text-yellow-400" />
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-white font-semibold text-sm line-clamp-2 flex-1 group-hover:text-cyan-400 transition-colors">
+                          {opp.role}
+                        </h3>
+                        <Star className="w-4 h-4 text-yellow-400 flex-shrink-0 ml-2" />
                       </div>
-                      <p className="text-slate-400 text-xs mb-3">{opp.company_name}</p>
-                      <div className="flex items-center gap-3 text-xs text-slate-500">
+                      <p className="text-slate-400 text-xs mb-3 line-clamp-1">{opp.company}</p>
+                      <div className="space-y-1">
                         {opp.location && (
-                          <div className="flex items-center gap-1">
-                            <MapPin size={12} />
-                            <span>{opp.location}</span>
+                          <div className="flex items-center gap-2 text-xs text-slate-500">
+                            <MapPin className="w-3 h-3" />
+                            <span className="line-clamp-1">{opp.location}</span>
                           </div>
                         )}
-                        {opp.stipend_max && (
-                          <div className="flex items-center gap-1">
-                            <DollarSign size={12} />
-                            <span>₹{opp.stipend_max}</span>
+                        {opp.stipendRange?.max && (
+                          <div className="flex items-center gap-2 text-xs text-green-400 font-semibold">
+                            <Zap className="w-3 h-3" />
+                            <span>₹{opp.stipendRange.max}/month</span>
                           </div>
                         )}
                       </div>
@@ -515,101 +585,63 @@ const StudentDashboard: React.FC = () => {
                   ))}
                 </div>
               )}
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
+
+          {/* Quick Actions - Full Width */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="col-span-12"
+          >
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link to="/resume-analyzer" className="group">
+                <div className="relative overflow-hidden rounded-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 group-hover:from-yellow-500/30 group-hover:to-orange-500/30 transition-all" />
+                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-yellow-500/30 transition-all">
+                    <BarChart2 className="w-10 h-10 text-yellow-400 mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-white font-semibold mb-1">Resume AI</h3>
+                    <p className="text-slate-400 text-sm">Analyze & improve</p>
+                  </div>
+                </div>
+              </Link>
+
+              <Link to="/calendar" className="group">
+                <div className="relative overflow-hidden rounded-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 group-hover:from-green-500/30 group-hover:to-emerald-500/30 transition-all" />
+                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-green-500/30 transition-all">
+                    <Calendar className="w-10 h-10 text-green-400 mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-white font-semibold mb-1">Calendar</h3>
+                    <p className="text-slate-400 text-sm">Manage schedule</p>
+                  </div>
+                </div>
+              </Link>
+
+              <Link to="/profile" className="group">
+                <div className="relative overflow-hidden rounded-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 group-hover:from-indigo-500/30 group-hover:to-purple-500/30 transition-all" />
+                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-indigo-500/30 transition-all">
+                    <Users className="w-10 h-10 text-indigo-400 mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-white font-semibold mb-1">Profile</h3>
+                    <p className="text-slate-400 text-sm">Update details</p>
+                  </div>
+                </div>
+              </Link>
+
+              <button onClick={() => setShowAnalysisHub(true)} className="group text-left">
+                <div className="relative overflow-hidden rounded-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-red-500/20 group-hover:from-pink-500/30 group-hover:to-red-500/30 transition-all" />
+                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-pink-500/30 transition-all">
+                    <TrendingUp className="w-10 h-10 text-pink-400 mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-white font-semibold mb-1">Analytics</h3>
+                    <p className="text-slate-400 text-sm">Track progress</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </motion.div>
         </div>
-
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-6"
-        >
-          <Link to="/opportunities" className="glass-panel rounded-2xl p-6 hover:scale-105 transition-transform group">
-            <Briefcase className="w-10 h-10 text-neon-blue mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-white font-semibold mb-2">Browse Opportunities</h3>
-            <p className="text-slate-400 text-sm">Find your next internship or placement</p>
-          </Link>
-
-          <Link to="/applications" className="glass-panel rounded-2xl p-6 hover:scale-105 transition-transform group">
-            <FileText className="w-10 h-10 text-neon-purple mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-white font-semibold mb-2">Track Applications</h3>
-            <p className="text-slate-400 text-sm">Monitor your application status</p>
-          </Link>
-
-          <Link to="/profile" className="glass-panel rounded-2xl p-6 hover:scale-105 transition-transform group">
-            <Award className="w-10 h-10 text-green-400 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-white font-semibold mb-2">Update Profile</h3>
-            <p className="text-slate-400 text-sm">Keep your information current</p>
-          </Link>
-
-          <Link to="/analytics" className="glass-panel rounded-2xl p-6 hover:scale-105 transition-transform group">
-            <TrendingUp className="w-10 h-10 text-yellow-400 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="text-white font-semibold mb-2">View Analytics</h3>
-            <p className="text-slate-400 text-sm">Track your progress and insights</p>
-          </Link>
-        </motion.div>
-
-        {/* Skill Progress Tracker */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mt-8 glass-panel rounded-2xl p-6"
-        >
-          <div className="flex items-center gap-2 mb-6">
-            <BookOpen className="w-5 h-5 text-neon-purple" />
-            <h2 className="text-2xl font-bold text-white">Skill Development Progress</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {(user?.skills || []).slice(0, 6).map((skill: any, index: number) => {
-              const progress = skill.level === 'Advanced' ? 90 : skill.level === 'Intermediate' ? 60 : 30;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-neon-purple/30 transition-all"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-white font-semibold text-sm">{skill.name}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      skill.level === 'Advanced' ? 'bg-green-500/20 text-green-400' :
-                      skill.level === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-cyan-500/20 text-cyan-400'
-                    }`}>
-                      {skill.level}
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                    <motion.div 
-                      className={`h-full rounded-full ${
-                        skill.level === 'Advanced' ? 'bg-gradient-to-r from-green-500 to-emerald-500' :
-                        skill.level === 'Intermediate' ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
-                        'bg-gradient-to-r from-teal-500 to-cyan-500'
-                      }`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                      transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-                    />
-                  </div>
-                  <p className="text-xs text-slate-500 mt-2">{progress}% mastered</p>
-                </motion.div>
-              );
-            })}
-            {(!user?.skills || user.skills.length === 0) && (
-              <div className="col-span-full text-center py-8">
-                <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <p className="text-slate-400">Add skills to your profile to track progress</p>
-                <Link to="/profile" className="text-neon-blue hover:text-neon-purple mt-2 inline-block">
-                  Add Skills
-                </Link>
-              </div>
-            )}
-          </div>
-        </motion.div>
       </div>
 
       {/* Rejection Analysis Modal */}
@@ -619,7 +651,7 @@ const StudentDashboard: React.FC = () => {
           onClose={() => setShowAnalysisHub(false)}
           application={selectedApplication}
           applications={applications}
-          student={user}
+          student={user as any}
           mode={analysisMode}
         />
       )}

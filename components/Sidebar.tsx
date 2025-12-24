@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Home, Briefcase, Users, FileText, Settings, LogOut, 
-  Calendar, BarChart3, UserCheck, BookOpen, ChevronLeft, 
-  ChevronRight, Bell
+  Home, Briefcase, FileText, Settings, LogOut, 
+  Calendar, BarChart3, Users, Sparkles, Zap, Menu, X
 } from 'lucide-react';
 import { UserRole } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import NotificationBell from './NotificationBell';
 
 interface SidebarProps {
   userRole?: UserRole;
@@ -24,8 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -36,26 +33,25 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  // Get navigation items based on user role
   const getNavigationItems = () => {
     switch (userRole) {
       case UserRole.STUDENT:
         return [
-          { label: 'Dashboard', path: '/dashboard', icon: Home },
-          { label: 'Opportunities', path: '/opportunities', icon: Briefcase },
-          { label: 'My Applications', path: '/applications', icon: FileText },
-          { label: 'Calendar', path: '/calendar', icon: Calendar },
-          { label: 'Profile', path: '/profile', icon: Users },
-          { label: 'Settings', path: '/settings', icon: Settings },
+          { label: 'Dashboard', path: '/dashboard', icon: Home, gradient: 'from-cyan-400 to-blue-500' },
+          { label: 'Opportunities', path: '/opportunities', icon: Briefcase, gradient: 'from-purple-400 to-pink-500' },
+          { label: 'Applications', path: '/applications', icon: FileText, gradient: 'from-orange-400 to-red-500' },
+          { label: 'Calendar', path: '/calendar', icon: Calendar, gradient: 'from-green-400 to-emerald-500' },
+          { label: 'Resume AI', path: '/resume-analyzer', icon: BarChart3, gradient: 'from-yellow-400 to-orange-500' },
+          { label: 'Profile', path: '/profile', icon: Users, gradient: 'from-indigo-400 to-purple-500' },
         ];
       
       case UserRole.PLACEMENT_OFFICER:
         return [
-          { label: 'Dashboard', path: '/placement/dashboard', icon: Home },
-          { label: 'Post Opportunity', path: '/placement/post', icon: Briefcase },
-          { label: 'Applications', path: '/placement/applications', icon: FileText },
-          { label: 'Calendar', path: '/calendar', icon: Calendar },
-          { label: 'Settings', path: '/settings', icon: Settings },
+          { label: 'Dashboard', path: '/placement/dashboard', icon: Home, gradient: 'from-cyan-400 to-blue-500' },
+          { label: 'Post Opportunity', path: '/placement/post', icon: Briefcase, gradient: 'from-purple-400 to-pink-500' },
+          { label: 'Applications', path: '/placement/applications', icon: FileText, gradient: 'from-orange-400 to-red-500' },
+          { label: 'Calendar', path: '/calendar', icon: Calendar, gradient: 'from-green-400 to-emerald-500' },
+          { label: 'Settings', path: '/settings', icon: Settings, gradient: 'from-indigo-400 to-purple-500' },
         ];
       
       default:
@@ -64,183 +60,204 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const navItems = getNavigationItems();
-  const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
-  const showExpanded = isExpanded || isHovered;
+  const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <>
-      {/* Hover trigger area - invisible zone on left edge */}
-      <div
-        className="fixed left-0 top-0 w-12 h-screen z-50"
-        onMouseEnter={() => setIsHovered(true)}
-      />
-      
-      <motion.aside
-        initial={{ x: -280 }}
-        animate={{ 
-          x: isHovered || isExpanded ? 0 : -280, 
-          width: showExpanded ? 280 : 80
-        }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onMouseLeave={() => setIsHovered(false)}
-        className="fixed left-0 top-0 h-screen bg-slate-950/95 backdrop-blur-xl border-r border-white/10 z-50 overflow-hidden shadow-2xl"
+      {/* Mobile Toggle Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="md:hidden fixed top-4 left-4 z-[100] p-3 rounded-2xl bg-black/40 backdrop-blur-2xl border border-white/10 hover:border-white/20 transition-all shadow-xl"
       >
-      {/* Motion Blur Overlay on Hover */}
+        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </motion.button>
+
+      {/* Backdrop for mobile */}
       <AnimatePresence>
-        {isHovered && (
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-gradient-to-r from-neon-blue/5 via-neon-purple/5 to-transparent pointer-events-none"
-            style={{ filter: 'blur(50px)' }}
+            onClick={() => setIsOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
           />
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col h-full relative z-10">
-        {/* Logo & Toggle */}
-        <div className="p-6 flex items-center justify-between border-b border-white/10">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple p-[2px]">
-              <div className="w-full h-full rounded-xl bg-slate-950 flex items-center justify-center">
-                <span className="text-lg font-bold gradient-text">W</span>
+      {/* Sidebar */}
+      <motion.aside
+        initial={false}
+        animate={{
+          x: isOpen ? 0 : '-100%',
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="fixed left-0 top-0 h-screen w-72 z-[70] md:translate-x-0 md:z-50"
+      >
+        {/* Glass Background with Gradient Border */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-black/95 backdrop-blur-3xl">
+          {/* Animated Gradient Border */}
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-r-3xl" />
+          <div className="absolute inset-[1px] bg-gradient-to-br from-slate-900/98 via-slate-900/95 to-black/98 backdrop-blur-3xl rounded-r-3xl" />
+          
+          {/* Animated Glow Effects */}
+          <motion.div
+            animate={{
+              opacity: [0.3, 0.6, 0.3],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute top-0 left-0 w-64 h-64 bg-cyan-500/20 rounded-full blur-[100px]"
+          />
+          <motion.div
+            animate={{
+              opacity: [0.3, 0.6, 0.3],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1
+            }}
+            className="absolute bottom-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-[100px]"
+          />
+        </div>
+
+        <div className="relative z-10 flex flex-col h-full p-6">
+          {/* Logo Section */}
+          <Link to="/" className="mb-8 group" onClick={() => setIsOpen(false)}>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-2xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity" />
+                <div className="relative w-14 h-14 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                  <Sparkles className="w-7 h-7 text-white" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  WhyNot
+                </h1>
+                <p className="text-xs text-slate-400 font-medium">AI-Powered Placement</p>
               </div>
             </div>
-            <AnimatePresence>
-              {showExpanded && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="text-xl font-bold tracking-tight text-white/90 whitespace-nowrap overflow-hidden"
-                >
-                  WhyNot
-                </motion.span>
-              )}
-            </AnimatePresence>
           </Link>
-          
-          {!isHovered && (
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-2 hover:bg-white/5 rounded-lg transition-colors"
-            >
-              {isExpanded ? (
-                <ChevronLeft className="w-4 h-4 text-slate-400" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              )}
-            </button>
-          )}
-        </div>
 
-        {/* User Profile */}
-        <div className="p-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            {userAvatar ? (
-              <img src={userAvatar} alt={userName} className="w-12 h-12 rounded-xl object-cover" />
-            ) : (
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white font-bold">
-                {initials}
+          {/* User Profile Card */}
+          <div className="mb-8 p-4 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all group">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-xl blur-md opacity-0 group-hover:opacity-60 transition-opacity" />
+                <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-xl flex items-center justify-center font-bold text-white">
+                  {initials}
+                </div>
               </div>
-            )}
-            <AnimatePresence>
-              {showExpanded && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-white truncate">{userName}</p>
+                <p className="text-xs text-slate-400 capitalize">{userRole?.toLowerCase().replace('_', ' ')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            {navItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              const Icon = item.icon;
+
+              return (
                 <motion.div
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="overflow-hidden"
+                  key={item.path}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  <p className="font-semibold text-white whitespace-nowrap">{userName}</p>
-                  <p className="text-xs text-slate-400 whitespace-nowrap">
-                    {userRole?.replace('_', ' ')}
-                  </p>
+                  <Link
+                    to={item.path}
+                    onClick={() => setIsOpen(false)}
+                    className="group relative block"
+                  >
+                    {/* Active Indicator */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNav"
+                        className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-xl border border-white/20"
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      />
+                    )}
+                    
+                    <div className={`relative flex items-center gap-3 p-3 rounded-xl transition-all ${
+                      isActive 
+                        ? 'text-white' 
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    }`}>
+                      {/* Icon with Gradient */}
+                      <div className={`relative w-10 h-10 rounded-lg flex items-center justify-center ${
+                        isActive 
+                          ? `bg-gradient-to-br ${item.gradient}` 
+                          : 'bg-white/5 group-hover:bg-white/10'
+                      } transition-all`}>
+                        <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+                      </div>
+                      
+                      {/* Label */}
+                      <span className={`text-sm font-semibold ${isActive ? 'text-white' : ''}`}>
+                        {item.label}
+                      </span>
+
+                      {/* Hover Glow */}
+                      {!isActive && (
+                        <div className={`absolute inset-0 bg-gradient-to-r ${item.gradient} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity blur-xl`} />
+                      )}
+                    </div>
+                  </Link>
                 </motion.div>
-              )}
-            </AnimatePresence>
+              );
+            })}
+          </nav>
+
+          {/* Bottom Actions */}
+          <div className="pt-6 border-t border-white/10 space-y-2">
+            <Link
+              to="/settings"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all group"
+            >
+              <div className="w-10 h-10 rounded-lg bg-white/5 group-hover:bg-white/10 flex items-center justify-center transition-all">
+                <Settings className="w-5 h-5" />
+              </div>
+              <span className="text-sm font-semibold">Settings</span>
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 p-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all group"
+            >
+              <div className="w-10 h-10 rounded-lg bg-red-500/10 group-hover:bg-red-500/20 flex items-center justify-center transition-all">
+                <LogOut className="w-5 h-5" />
+              </div>
+              <span className="text-sm font-semibold">Logout</span>
+            </button>
+          </div>
+
+          {/* AI Badge */}
+          <div className="mt-4 p-3 rounded-xl bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs font-bold text-cyan-400">AI-Powered Platform</span>
+            </div>
           </div>
         </div>
+      </motion.aside>
 
-        {/* Navigation Items */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all group relative overflow-hidden ${
-                  isActive
-                    ? 'bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 text-white border border-neon-blue/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-gradient-to-r from-neon-blue/10 to-neon-purple/10"
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  />
-                )}
-                <item.icon className={`w-5 h-5 flex-shrink-0 relative z-10 ${isActive ? 'text-neon-blue' : ''}`} />
-                <AnimatePresence>
-                  {showExpanded && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: 'auto' }}
-                      exit={{ opacity: 0, width: 0 }}
-                      className="font-medium whitespace-nowrap overflow-hidden relative z-10"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Notifications & Logout */}
-        <div className="p-4 border-t border-white/10 space-y-2">
-          <div className="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
-            <Bell className="w-5 h-5 flex-shrink-0" />
-            <AnimatePresence>
-              {showExpanded && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="font-medium whitespace-nowrap overflow-hidden"
-                >
-                  <NotificationBell />
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </div>
-          
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all"
-          >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
-            <AnimatePresence>
-              {showExpanded && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="font-medium whitespace-nowrap overflow-hidden"
-                >
-                  Logout
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-        </div>
-      </div>
-    </motion.aside>
+      {/* Spacer for desktop */}
+      <div className="hidden md:block w-72 flex-shrink-0" />
     </>
   );
 };

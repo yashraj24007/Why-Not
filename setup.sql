@@ -540,3 +540,52 @@ CREATE INDEX idx_event_reminders_user ON public.event_reminders(user_id);
 CREATE INDEX idx_event_reminders_event ON public.event_reminders(event_id);
 CREATE INDEX idx_event_reminders_time ON public.event_reminders(reminder_time) WHERE sent = FALSE;
 
+-- ============================================================================
+-- RESUME ANALYZER TABLES
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS public.resume_analyses (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  resume_url TEXT NOT NULL,
+  file_name TEXT NOT NULL,
+  overall_score INTEGER CHECK (overall_score >= 0 AND overall_score <= 100),
+  analysis_data JSONB, -- Detailed breakdown: sections, keywords, formatting
+  suggestions TEXT[], -- Array of improvement suggestions
+  ats_score INTEGER CHECK (ats_score >= 0 AND ats_score <= 100),
+  analyzed_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.resume_analyses ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own resume analyses
+CREATE POLICY "Users can view their own resume analyses"
+  ON public.resume_analyses FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Users can create their own resume analyses
+CREATE POLICY "Users can create their own resume analyses"
+  ON public.resume_analyses FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Users can delete their own resume analyses
+CREATE POLICY "Users can delete their own resume analyses"
+  ON public.resume_analyses FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Placement officers can view all resume analyses
+CREATE POLICY "Placement officers can view all resume analyses"
+  ON public.resume_analyses FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'PLACEMENT_OFFICER'
+    )
+  );
+
+-- Indexes for performance
+CREATE INDEX idx_resume_analyses_user ON public.resume_analyses(user_id);
+CREATE INDEX idx_resume_analyses_date ON public.resume_analyses(analyzed_at DESC);
+

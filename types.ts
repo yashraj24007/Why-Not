@@ -185,3 +185,66 @@ export interface CreateEventRequest {
   opportunity_id?: string;
   application_id?: string;
 }
+
+// ============================================================================
+// RESUME ANALYZER TYPES
+// ============================================================================
+
+export interface SectionScore {
+  name: string;
+  score: number; // 0-100
+  feedback: string;
+  strengths: string[];
+  improvements: string[];
+}
+
+export interface ATSAnalysis {
+  score: number; // 0-100
+  isATSFriendly: boolean;
+  issues: string[];
+  recommendations: string[];
+  detectedSections: string[];
+  missingSections: string[];
+  keywordDensity: number;
+}
+
+export interface ResumeAnalysisData {
+  overallScore: number;
+  sectionScores: SectionScore[];
+  atsAnalysis: ATSAnalysis;
+  keywordAnalysis: {
+    found: string[];
+    missing: string[];
+    suggestions: string[];
+  };
+  grammarIssues: string[];
+  formattingIssues: string[];
+  actionVerbs: {
+    used: string[];
+    suggested: string[];
+  };
+  quantifiableAchievements: {
+    count: number;
+    examples: string[];
+    suggestions: string[];
+  };
+}
+
+export interface ResumeAnalysis {
+  id: string;
+  user_id: string;
+  resume_url: string;
+  file_name: string;
+  overall_score: number;
+  analysis_data: ResumeAnalysisData;
+  suggestions: string[];
+  ats_score: number;
+  analyzed_at: string;
+  created_at: string;
+}
+
+export interface AnalyzeResumeRequest {
+  resumeText: string;
+  fileName: string;
+  targetRole?: string;
+}

@@ -14,10 +14,9 @@ import PlacementDashboard from './pages/PlacementDashboard';
 import PostOpportunityPage from './pages/PostOpportunityPage';
 import ApplicationsManagementPage from './pages/ApplicationsManagementPage';
 import CalendarPage from './pages/CalendarPage';
+import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import NotFoundPage from './pages/NotFoundPage';
 import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { AnimatePresence } from 'framer-motion';
@@ -37,7 +36,6 @@ const App: React.FC = () => {
   const isAuthenticated = !!user;
   
   // Show navigation based on auth state and page type
-  const showSidebar = false; // Disabled as per user request
   const showHeader = !isLanding; // Show header on all pages except landing (or maybe even on landing)
 
   // Show loading state while checking authentication
@@ -80,15 +78,6 @@ const App: React.FC = () => {
         </Suspense>
       )}
       
-      {/* Sidebar for authenticated users - DISABLED */}
-      {/* {showSidebar && (
-        <Sidebar 
-          userRole={user?.role}
-          userName={user?.name}
-          userAvatar={user?.avatar}
-        />
-      )} */}
-
       {/* Main content wrapper */}
       <div className="flex-1 flex flex-col">
         {/* Header for all users (excluding landing if desired, but logic above handles it) */}
@@ -201,6 +190,16 @@ const App: React.FC = () => {
             } 
           />
           
+          {/* Resume Analyzer Route - accessible to all authenticated users */}
+          <Route 
+            path="/resume-analyzer" 
+            element={
+              <ProtectedRoute userRole={user?.role}>
+                <ResumeAnalyzerPage />
+              </ProtectedRoute>
+            } 
+          />
+          
           {/* Settings Route - accessible to all authenticated users */}
           <Route 
             path="/settings" 
@@ -215,9 +214,6 @@ const App: React.FC = () => {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>
-      
-      {/* Footer - Show on all pages except landing */}
-      {!isLanding && <Footer />}
       </div>
     </div>
   );

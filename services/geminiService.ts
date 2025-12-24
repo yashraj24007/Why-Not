@@ -244,3 +244,171 @@ WhyNot Platform - Turning Rejections into Opportunities
 ═══════════════════════════════════════════════════════
   `.trim();
 };
+
+// ============================================================================
+// RESUME ANALYSIS
+// ============================================================================
+
+/**
+ * Analyze a resume using Gemini AI
+ * Returns comprehensive analysis including ATS compatibility, section scores, and suggestions
+ */
+export const analyzeResume = async (
+  resumeText: string,
+  targetRole: string = 'General',
+  userId: string
+): Promise<any> => {
+  if (!checkRateLimit(userId)) {
+    throw new Error('Rate limit exceeded. Please wait a minute before analyzing another resume.');
+  }
+
+  try {
+    const prompt = `You are an expert resume reviewer and ATS (Applicant Tracking System) specialist. Analyze the following resume and provide a comprehensive evaluation.
+
+RESUME CONTENT:
+${resumeText}
+
+TARGET ROLE: ${targetRole}
+
+Provide a detailed analysis in the following JSON format:
+{
+  "overallScore": <0-100>,
+  "sectionScores": [
+    {
+      "name": "Contact Information",
+      "score": <0-100>,
+      "feedback": "Brief feedback",
+      "strengths": ["strength1", "strength2"],
+      "improvements": ["improvement1", "improvement2"]
+    },
+    {
+      "name": "Professional Summary/Objective",
+      "score": <0-100>,
+      "feedback": "Brief feedback",
+      "strengths": [],
+      "improvements": []
+    },
+    {
+      "name": "Work Experience",
+      "score": <0-100>,
+      "feedback": "Brief feedback",
+      "strengths": [],
+      "improvements": []
+    },
+    {
+      "name": "Education",
+      "score": <0-100>,
+      "feedback": "Brief feedback",
+      "strengths": [],
+      "improvements": []
+    },
+    {
+      "name": "Skills",
+      "score": <0-100>,
+      "feedback": "Brief feedback",
+      "strengths": [],
+      "improvements": []
+    }
+  ],
+  "atsAnalysis": {
+    "score": <0-100>,
+    "isATSFriendly": <true/false>,
+    "issues": ["issue1", "issue2"],
+    "recommendations": ["rec1", "rec2"],
+    "detectedSections": ["Contact", "Experience", "Education", "Skills"],
+    "missingSections": ["Certifications", "Projects"],
+    "keywordDensity": <0-100>
+  },
+  "keywordAnalysis": {
+    "found": ["keyword1", "keyword2"],
+    "missing": ["missing1", "missing2"],
+    "suggestions": ["Add X", "Include Y"]
+  },
+  "grammarIssues": ["issue1", "issue2"],
+  "formattingIssues": ["issue1", "issue2"],
+  "actionVerbs": {
+    "used": ["Led", "Managed", "Developed"],
+    "suggested": ["Orchestrated", "Spearheaded", "Architected"]
+  },
+  "quantifiableAchievements": {
+    "count": <number>,
+    "examples": ["Increased sales by 30%"],
+    "suggestions": ["Add metrics to X", "Quantify Y"]
+  }
+}
+
+EVALUATION CRITERIA:
+1. ATS Compatibility: Check for standard section headers, simple formatting, no tables/graphics
+2. Content Quality: Strong action verbs, quantifiable achievements, relevant experience
+3. Relevance: Keywords matching ${targetRole} position
+4. Formatting: Clean structure, consistent formatting, appropriate length
+5. Grammar: Professional language, no errors
+
+Be specific and actionable in your feedback. Focus on improvements that will have the most impact.`;
+
+    const model = ai.models['gemini-2.0-flash-exp'];
+    const result = await model.generateContent(prompt);
+    const response = result.text;
+
+    // Parse JSON from response
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('Failed to parse AI response');
+    }
+
+    const analysis = JSON.parse(jsonMatch[0]);
+    return analysis;
+  } catch (error: any) {
+    console.error('Error analyzing resume:', error);
+    throw new Error(error.message || 'Failed to analyze resume. Please try again.');
+  }
+};
+
+/**
+ * Generate top-level suggestions from analysis data
+ */
+export const generateResumeSuggestions = (analysisData: any): string[] => {
+  const suggestions: string[] = [];
+
+  // Overall score-based suggestions
+  if (analysisData.overallScore < 60) {
+    suggestions.push('🔴 Overall resume needs significant improvement. Focus on the high-priority items below.');
+  } else if (analysisData.overallScore < 80) {
+    suggestions.push('🟡 Good foundation, but several areas need refinement for competitive applications.');
+  } else {
+    suggestions.push('🟢 Strong resume! Minor tweaks will make it excellent.');
+  }
+
+  // ATS suggestions
+  if (analysisData.atsAnalysis.score < 70) {
+    suggestions.push(`⚠️ ATS Score: ${analysisData.atsAnalysis.score}/100 - Your resume may not pass automated screening`);
+  }
+
+  // Section-specific suggestions
+  const weakSections = analysisData.sectionScores
+    .filter((s: any) => s.score < 70)
+    .map((s: any) => s.name);
+  
+  if (weakSections.length > 0) {
+    suggestions.push(`📋 Weak sections that need work: ${weakSections.join(', ')}`);
+  }
+
+  // Missing keywords
+  if (analysisData.keywordAnalysis.missing.length > 0) {
+    const topMissing = analysisData.keywordAnalysis.missing.slice(0, 3).join(', ');
+    suggestions.push(`🔑 Add these important keywords: ${topMissing}`);
+  }
+
+  // Quantifiable achievements
+  if (analysisData.quantifiableAchievements.count < 3) {
+    suggestions.push('📊 Add more quantifiable achievements with numbers, percentages, or metrics');
+  }
+
+  // Action verbs
+  if (analysisData.actionVerbs.suggested.length > 0) {
+    suggestions.push('💪 Replace weak verbs with stronger action verbs like: ' + 
+                    analysisData.actionVerbs.suggested.slice(0, 3).join(', '));
+  }
+
+  return suggestions;
+};
