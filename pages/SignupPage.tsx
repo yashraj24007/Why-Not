@@ -182,13 +182,38 @@ const SignupPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="relative min-h-screen flex items-center justify-center px-6 py-12 gradient-bg-purple overflow-hidden">
-      {/* Particle Background */}
-      <div className="fixed inset-0 z-0">
-        <ParticleBackground />
+      <div className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-slate-950 via-slate-900 to-black overflow-hidden">
+      {/* Animated Background Orbs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, 100, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 right-0 w-[800px] h-[800px] bg-cyan-500/30 rounded-full blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-purple-500/30 rounded-full blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.1, 0.2, 0.1],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-500/20 rounded-full blur-[150px]"
+        />
       </div>
-      
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neon-purple/5 via-transparent to-transparent pointer-events-none" />
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -197,28 +222,28 @@ const SignupPage: React.FC = () => {
         className="relative z-10 w-full max-w-2xl"
       >
         {/* Logo */}
-        <div className="text-center mb-8 glass-panel rounded-2xl p-6">
+        <div className="text-center mb-8 glass-panel rounded-2xl p-6 border border-white/10 backdrop-blur-xl bg-slate-900/80">
           <Link to="/" className="inline-flex items-center gap-2 group">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple p-[2px] shadow-lg shadow-neon-purple/50">
-              <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
-                <span className="text-xl font-bold gradient-text">W</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-500 p-[2px] shadow-lg shadow-purple-500/50">
+              <div className="w-full h-full rounded-xl bg-slate-950 flex items-center justify-center">
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">W</span>
               </div>
             </div>
-            <span className="text-3xl font-bold tracking-tight text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+            <span className="text-3xl font-bold tracking-tight text-white">
               WhyNot
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-white mt-6 mb-2 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] flex items-center justify-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-neon-purple/20 to-neon-blue/20 border border-neon-purple/30 shadow-lg shadow-neon-purple/20">
-              <UserPlus className="w-6 h-6 text-neon-purple" />
+          <h1 className="text-2xl font-bold text-white mt-6 mb-2 flex items-center justify-center gap-3">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-cyan-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/20">
+              <UserPlus className="w-6 h-6 text-purple-400" />
             </div>
             Create Account
           </h1>
-          <p className="text-slate-300 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]">Join the campus placement platform</p>
+          <p className="text-slate-400">Join the campus placement platform</p>
         </div>
 
         {/* Signup Form */}
-        <div className="glass-panel rounded-2xl p-8">
+        <div className="glass-panel rounded-2xl p-8 border border-white/10 backdrop-blur-xl bg-slate-900/80">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
@@ -245,8 +270,8 @@ const SignupPage: React.FC = () => {
                       key={option.value}
                       className={`relative flex items-start p-4 rounded-lg border cursor-pointer transition-all ${
                         formData.role === option.value
-                          ? 'glass-panel-dark border-neon-purple shadow-lg shadow-neon-purple/20'
-                          : 'glass-panel border-purple-glow-20 hover:border-purple-glow-30'
+                          ? 'bg-purple-500/10 border-purple-500/50 shadow-lg shadow-purple-500/20'
+                          : 'bg-white/5 border-white/10 hover:border-purple-500/30'
                       }`}
                     >
                       <input
@@ -257,7 +282,7 @@ const SignupPage: React.FC = () => {
                         onChange={handleChange}
                         className="sr-only"
                       />
-                      <Icon className={`w-5 h-5 mt-0.5 ${formData.role === option.value ? 'text-neon-purple' : 'text-slate-400'}`} />
+                      <Icon className={`w-5 h-5 mt-0.5 ${formData.role === option.value ? 'text-purple-400' : 'text-slate-400'}`} />
                       <div className="ml-3 flex-1">
                         <span className={`block text-sm font-medium ${formData.role === option.value ? 'text-white' : 'text-slate-300'}`}>
                           {option.label}
@@ -287,7 +312,7 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full pl-11 pr-4 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                     placeholder="John Doe"
                   />
                 </div>
@@ -307,8 +332,8 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-11 pr-4 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 transition-all ${
-                      emailError ? 'border-red-500/50' : 'focus:border-neon-purple/50'
+                    className={`w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
+                      emailError ? 'border-red-500/50' : 'focus:border-purple-500/50'
                     }`}
                     placeholder="john@college.edu"
                   />
@@ -333,7 +358,7 @@ const SignupPage: React.FC = () => {
                 required
                 value={formData.department}
                 onChange={handleChange}
-                className="w-full px-4 py-3 glass-panel rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
               >
                 <option value="" className="bg-slate-900">Select your branch</option>
                 <option value="Computer Science & Engineering" className="bg-slate-900">Computer Science & Engineering</option>
@@ -364,7 +389,7 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full pl-11 pr-12 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
+                    className="w-full pl-11 pr-12 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                     placeholder="••••••••"
                   />
                   <button
@@ -414,7 +439,7 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full pl-11 pr-12 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
+                    className="w-full pl-11 pr-12 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                     placeholder="••••••••"
                   />
                   <button
@@ -432,14 +457,13 @@ const SignupPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="relative w-full py-4 px-6 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple font-bold text-white text-lg
-                hover:scale-[1.02] hover:shadow-2xl hover:shadow-neon-purple/50 
+              className="relative w-full py-4 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 font-bold text-white text-lg
+                hover:scale-[1.02] hover:shadow-2xl hover:shadow-purple-500/50 
                 active:scale-[0.98]
                 transition-all duration-300
                 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-                before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-neon-purple before:to-neon-blue before:opacity-0 hover:before:opacity-100 before:transition-opacity before:-z-10
                 overflow-hidden
-                shadow-lg shadow-neon-blue/30"
+                shadow-lg shadow-purple-500/30"
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {loading ? (
@@ -459,12 +483,12 @@ const SignupPage: React.FC = () => {
 
           {/* Sign In Link */}
           <div className="mt-6">
-            <div className="bg-black/30 border border-white/10 rounded-lg p-4 text-center hover:border-neon-purple/30 transition-colors">
+            <div className="bg-black/30 border border-white/10 rounded-lg p-4 text-center hover:border-purple-500/30 transition-colors">
               <p className="text-slate-400 text-sm">
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  className="text-neon-purple hover:text-neon-blue transition-colors font-semibold inline-flex items-center gap-1"
+                  className="text-purple-400 hover:text-cyan-400 transition-colors font-semibold inline-flex items-center gap-1"
                 >
                   Sign in
                   <ArrowRight className="w-4 h-4" />

@@ -33,13 +33,38 @@ const LoginPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="relative min-h-screen flex items-center justify-center px-6 gradient-bg-purple overflow-hidden">
-      {/* Particle Background */}
-      <div className="fixed inset-0 z-0">
-        <ParticleBackground />
+      <div className="relative min-h-screen flex items-center justify-center px-6 pt-20 bg-gradient-to-br from-slate-950 via-slate-900 to-black overflow-hidden">
+      {/* Animated Background Orbs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, 100, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 right-0 w-[800px] h-[800px] bg-cyan-500/30 rounded-full blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-purple-500/30 rounded-full blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.1, 0.2, 0.1],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-500/20 rounded-full blur-[150px]"
+        />
       </div>
-      
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neon-purple/5 via-transparent to-transparent pointer-events-none" />
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -48,23 +73,23 @@ const LoginPage: React.FC = () => {
         className="relative z-10 w-full max-w-md"
       >
         {/* Logo */}
-        <div className="text-center mb-8 glass-panel rounded-2xl p-6">
+        <div className="text-center mb-8 glass-panel rounded-2xl p-6 border border-white/10 backdrop-blur-xl bg-slate-900/80">
           <Link to="/" className="inline-flex items-center gap-2 group">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple p-[2px] shadow-lg shadow-neon-blue/50">
-              <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
-                <span className="text-xl font-bold gradient-text">W</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-500 p-[2px] shadow-lg shadow-purple-500/50">
+              <div className="w-full h-full rounded-xl bg-slate-950 flex items-center justify-center">
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">W</span>
               </div>
             </div>
-            <span className="text-3xl font-bold tracking-tight text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+            <span className="text-3xl font-bold tracking-tight text-white">
               WhyNot
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-white mt-6 mb-2 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Welcome Back</h1>
-          <p className="text-slate-300 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-white mt-6 mb-2">Welcome Back</h1>
+          <p className="text-slate-400">Sign in to your account</p>
         </div>
 
         {/* Login Form */}
-        <div className="glass-panel rounded-2xl p-8">
+        <div className="glass-panel rounded-2xl p-8 border border-white/10 backdrop-blur-xl bg-slate-900/80">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
@@ -91,7 +116,7 @@ const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
+                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                   placeholder="student@college.edu"
                 />
               </div>
@@ -110,7 +135,7 @@ const LoginPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
+                  className="w-full pl-11 pr-12 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                   placeholder="••••••••"
                 />
                 <button
@@ -128,13 +153,13 @@ const LoginPage: React.FC = () => {
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-white/10 bg-black/50 text-neon-blue focus:ring-neon-blue/50"
+                  className="w-4 h-4 rounded border-white/10 bg-black/50 text-purple-500 focus:ring-purple-500/50"
                 />
                 <span className="ml-2 text-sm text-slate-400">Remember me</span>
               </label>
               <Link
                 to="/forgot-password"
-                className="text-sm text-neon-blue hover:text-neon-purple transition-colors"
+                className="text-sm text-cyan-400 hover:text-purple-400 transition-colors"
               >
                 Forgot password?
               </Link>
@@ -144,14 +169,13 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="relative w-full py-4 px-6 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple font-bold text-white text-lg
-                hover:scale-[1.02] hover:shadow-2xl hover:shadow-neon-blue/50 
+              className="relative w-full py-4 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 font-bold text-white text-lg
+                hover:scale-[1.02] hover:shadow-2xl hover:shadow-purple-500/50 
                 active:scale-[0.98]
                 transition-all duration-300
                 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-                before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-neon-purple before:to-neon-blue before:opacity-0 hover:before:opacity-100 before:transition-opacity before:-z-10
                 overflow-hidden
-                shadow-lg shadow-neon-purple/30"
+                shadow-lg shadow-purple-500/30"
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {loading ? (
@@ -171,12 +195,12 @@ const LoginPage: React.FC = () => {
 
           {/* Sign Up Link */}
           <div className="mt-6">
-            <div className="bg-black/30 border border-white/10 rounded-lg p-4 text-center hover:border-neon-blue/30 transition-colors">
+            <div className="bg-black/30 border border-white/10 rounded-lg p-4 text-center hover:border-purple-500/30 transition-colors">
               <p className="text-slate-400 text-sm">
                 Don't have an account?{' '}
                 <Link
                   to="/signup"
-                  className="text-neon-blue hover:text-neon-purple transition-colors font-semibold inline-flex items-center gap-1"
+                  className="text-cyan-400 hover:text-purple-400 transition-colors font-semibold inline-flex items-center gap-1"
                 >
                   Sign up
                   <ArrowRight className="w-4 h-4" />
@@ -187,17 +211,17 @@ const LoginPage: React.FC = () => {
 
           {/* Demo Credentials */}
           <div className="mt-6 pt-6 border-t border-white/10">
-            <div className="bg-gradient-to-br from-neon-blue/5 to-neon-purple/5 border border-neon-blue/20 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-cyan-500/5 to-purple-500/5 border border-cyan-500/20 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 rounded-full bg-neon-blue animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
                 <p className="text-sm font-semibold text-slate-300">Demo Credentials</p>
               </div>
               <div className="space-y-2 text-xs">
-                <div className="flex justify-between items-center p-3 bg-black/40 border border-white/5 rounded-lg hover:border-neon-blue/30 transition-colors">
+                <div className="flex justify-between items-center p-3 bg-black/40 border border-white/5 rounded-lg hover:border-cyan-500/30 transition-colors">
                   <span className="text-slate-400 font-medium">Student:</span>
                   <span className="text-slate-200 font-mono">student@demo.com / demo123</span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-black/40 border border-white/5 rounded-lg hover:border-neon-purple/30 transition-colors">
+                <div className="flex justify-between items-center p-3 bg-black/40 border border-white/5 rounded-lg hover:border-purple-500/30 transition-colors">
                   <span className="text-slate-400 font-medium">Placement:</span>
                   <span className="text-slate-200 font-mono">placement@demo.com / demo123</span>
                 </div>
