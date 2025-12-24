@@ -51,9 +51,9 @@ const LandingPage: React.FC = () => {
                   transition={{ duration: 1, delay: 0.8 }}
                   className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed font-light"
                 >
-                    A complete campus-centric platform that streamlines internships, industrial training, and placements. 
-                    AI-powered insights help students understand rejections and improve their profiles. 
-                    One-click applications, mentor approvals, and real-time tracking for all stakeholders.
+                    Stop wondering why you got rejected. Get AI-powered explanations that reveal skill gaps, 
+                    CGPA mismatches, and improvement priorities. Turn every <span className="text-rose-400 font-medium">"Not Selected"</span> into a 
+                    <span className="text-emerald-400 font-medium"> growth opportunity</span>.
                 </motion.p>
                 
                 <motion.div 
@@ -96,18 +96,36 @@ const LandingPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: false, amount: 0.2 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-neon-blue/30 transition-all duration-300 hover:shadow-lg hover:shadow-neon-blue/20 hover:-translate-y-2"
+                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-neon-blue/10 to-neon-purple/5 border-2 border-neon-blue/40 hover:border-neon-blue/60 transition-all duration-300 hover:shadow-2xl hover:shadow-neon-blue/30 hover:-translate-y-3"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full text-xs font-bold animate-pulse">
+                      🎯 CORE FEATURE
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/10 to-neon-purple/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10">
-                      <div className="w-14 h-14 bg-gradient-to-br from-neon-blue/20 to-neon-blue/5 rounded-xl flex items-center justify-center mb-6 text-neon-blue backdrop-blur-sm border border-neon-blue/20">
-                          <SearchX className="w-8 h-8" />
+                      <div className="w-16 h-16 bg-gradient-to-br from-neon-blue/30 to-neon-purple/20 rounded-xl flex items-center justify-center mb-6 text-neon-blue backdrop-blur-sm border-2 border-neon-blue/40 shadow-lg shadow-neon-blue/20">
+                          <BrainCircuit className="w-9 h-9" />
                       </div>
-                      <h3 className="text-2xl font-bold mb-3">AI Rejection Analysis</h3>
-                      <p className="text-slate-400">
-                          "Not Selected" is not an answer. Get personalized, AI-generated explanations for every rejection. 
-                          Understand skill gaps, CGPA requirements, and how to improve for next time.
+                      <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-neon-blue to-white bg-clip-text text-transparent">
+                        AI Rejection Coach
+                      </h3>
+                      <p className="text-slate-300 mb-4 leading-relaxed">
+                          <span className="font-semibold text-white">"Not Selected"</span> is not an answer. Get AI-powered, personalized explanations for <span className="text-neon-blue">every rejection</span>.
                       </p>
+                      <div className="space-y-2 text-sm text-slate-400">
+                        <div className="flex items-start gap-2">
+                          <span className="text-neon-blue mt-0.5">✓</span>
+                          <span><span className="font-medium text-white">Pattern Detection:</span> Analyze multiple rejections for common gaps</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-neon-purple mt-0.5">✓</span>
+                          <span><span className="font-medium text-white">Priority Improvements:</span> Ranked action items to fix first</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-neon-teal mt-0.5">✓</span>
+                          <span><span className="font-medium text-white">Export & Track:</span> Save analysis history, measure progress</span>
+                        </div>
+                      </div>
                     </div>
                 </motion.div>
 
@@ -141,12 +159,12 @@ const LandingPage: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-neon-teal/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10">
                       <div className="w-14 h-14 bg-gradient-to-br from-neon-teal/20 to-neon-teal/5 rounded-xl flex items-center justify-center mb-6 text-neon-teal backdrop-blur-sm border border-neon-teal/20">
-                          <Users className="w-8 h-8" />
+                          <LineChart className="w-8 h-8" />
                       </div>
-                      <h3 className="text-2xl font-bold mb-3">Mentor Approvals</h3>
+                      <h3 className="text-2xl font-bold mb-3">Real-Time Tracking</h3>
                       <p className="text-slate-400">
-                          Faculty mentors receive automated approval requests. Track applications, approve interviews, 
-                          and monitor student progress all in one dashboard.
+                          Monitor application status, interview schedules, and placement updates in real-time. 
+                          Automated notifications keep students and officers aligned on every step.
                       </p>
                     </div>
                 </motion.div>
@@ -237,15 +255,18 @@ const LandingPage: React.FC = () => {
                     <div className="w-16 h-16 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 flex items-center justify-center font-bold text-2xl shadow-lg shadow-rose-500/20">3</div>
                     <div>
                       <h3 className="text-2xl font-bold mb-3">One-Click Apply & Track</h3>
-                      <p className="text-slate-400 text-lg max-w-2xl">Apply with one click. Mentor receives approval request. Track every stage: applied → approved → interview → offer.</p>
+                      <p className="text-slate-400 text-lg max-w-2xl">Apply with one click. Track every stage in real-time: applied → interview → offer or rejection.</p>
                     </div>
                   </div>
 
                   <div className="flex flex-col items-center text-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 flex items-center justify-center font-bold text-2xl shadow-lg shadow-amber-400/20">4</div>
                     <div>
-                      <h3 className="text-2xl font-bold mb-3">Get AI-Powered Insights</h3>
-                      <p className="text-slate-400 text-lg max-w-2xl">Rejected? Get instant AI explanations. Understand why and what to improve. Turn failures into learning opportunities.</p>
+                      <h3 className="text-2xl font-bold mb-3">Learn from Every Rejection</h3>
+                      <p className="text-slate-400 text-lg max-w-2xl">
+                        Get rejected? Our AI analyzes <span className="text-neon-blue font-medium">why</span> and tells you <span className="text-emerald-400 font-medium">how to improve</span>. 
+                        Bulk analysis reveals patterns across multiple rejections, helping you fix the right things first.
+                      </p>
                     </div>
                   </div>
                 </div>

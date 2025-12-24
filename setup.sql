@@ -202,6 +202,40 @@ CREATE POLICY "System can insert notifications"
   ON public.notifications FOR INSERT
   WITH CHECK (true);
 
+-- Rejection Analysis History Table
+CREATE TABLE IF NOT EXISTS public.rejection_analyses (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  student_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
+  analysis_type TEXT DEFAULT 'single' CHECK (analysis_type IN ('single', 'bulk', 'pattern')),
+  analysis_text TEXT NOT NULL,
+  pattern_data JSONB, -- For bulk analysis: stores common patterns, missing skills, etc.
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.rejection_analyses ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Students can view their own analyses"
+  ON public.rejection_analyses FOR SELECT
+  USING (student_id = auth.uid());
+
+CREATE POLICY "Students can insert their own analyses"
+  ON public.rejection_analyses FOR INSERT
+  WITH CHECK (student_id = auth.uid());
+
+CREATE POLICY "Placement officers can view all analyses"
+  ON public.rejection_analyses FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'PLACEMENT_OFFICER'
+    )
+  );
+
+CREATE INDEX IF NOT EXISTS idx_rejection_analyses_student_id ON public.rejection_analyses(student_id);
+CREATE INDEX IF NOT EXISTS idx_rejection_analyses_created_at ON public.rejection_analyses(created_at DESC);
+
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -390,4 +424,119 @@ VALUES
     'While your foundational programming skills are strong, this role requires advanced expertise in TensorFlow, PyTorch, and production ML systems. Your current skill set (JavaScript, React, basic Python) shows great web development capability, but lacks the specialized ML frameworks and deep learning experience needed. Additionally, the role requires a minimum CGPA of 8.5, and your current 7.8 CGPA, while respectable, does not meet this threshold. We recommend completing advanced ML certifications, building ML projects using TensorFlow/PyTorch, and focusing on improving your academic performance to strengthen future applications.'
   );
 */
+
+-- ============================================================================
+-- CALENDAR SYSTEM TABLES
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS public.calendar_events (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  description TEXT,
+  event_type TEXT NOT NULL CHECK (event_type IN ('DEADLINE', 'INTERVIEW', 'DRIVE', 'ANNOUNCEMENT')),
+  start_date TIMESTAMPTZ NOT NULL,
+  end_date TIMESTAMPTZ,
+  opportunity_id UUID REFERENCES public.opportunities(id) ON DELETE CASCADE,
+  application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
+  created_by UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.calendar_events ENABLE ROW LEVEL SECURITY;
+
+-- Students can view all events
+CREATE POLICY "Students can view all calendar events"
+  ON public.calendar_events FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'STUDENT'
+    )
+  );
+
+-- Placement officers can view all events
+CREATE POLICY "Placement officers can view all calendar events"
+  ON public.calendar_events FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'PLACEMENT_OFFICER'
+    )
+  );
+
+-- Only placement officers can create/update/delete events
+CREATE POLICY "Placement officers can create events"
+  ON public.calendar_events FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'PLACEMENT_OFFICER'
+    )
+  );
+
+CREATE POLICY "Placement officers can update events"
+  ON public.calendar_events FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'PLACEMENT_OFFICER'
+    )
+  );
+
+CREATE POLICY "Placement officers can delete events"
+  ON public.calendar_events FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'PLACEMENT_OFFICER'
+    )
+  );
+
+-- Indexes for performance
+CREATE INDEX idx_calendar_events_start_date ON public.calendar_events(start_date);
+CREATE INDEX idx_calendar_events_event_type ON public.calendar_events(event_type);
+CREATE INDEX idx_calendar_events_opportunity ON public.calendar_events(opportunity_id);
+
+-- Event Reminders Table
+CREATE TABLE IF NOT EXISTS public.event_reminders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id UUID NOT NULL REFERENCES public.calendar_events(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  reminder_time TIMESTAMPTZ NOT NULL,
+  sent BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.event_reminders ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own reminders
+CREATE POLICY "Users can view their own reminders"
+  ON public.event_reminders FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Users can create their own reminders
+CREATE POLICY "Users can create their own reminders"
+  ON public.event_reminders FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own reminders
+CREATE POLICY "Users can update their own reminders"
+  ON public.event_reminders FOR UPDATE
+  USING (auth.uid() = user_id);
+
+-- Users can delete their own reminders
+CREATE POLICY "Users can delete their own reminders"
+  ON public.event_reminders FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Indexes for performance
+CREATE INDEX idx_event_reminders_user ON public.event_reminders(user_id);
+CREATE INDEX idx_event_reminders_event ON public.event_reminders(event_id);
+CREATE INDEX idx_event_reminders_time ON public.event_reminders(reminder_time) WHERE sent = FALSE;
 

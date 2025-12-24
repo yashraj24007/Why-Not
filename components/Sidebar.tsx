@@ -44,6 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           { label: 'Dashboard', path: '/dashboard', icon: Home },
           { label: 'Opportunities', path: '/opportunities', icon: Briefcase },
           { label: 'My Applications', path: '/applications', icon: FileText },
+          { label: 'Calendar', path: '/calendar', icon: Calendar },
           { label: 'Profile', path: '/profile', icon: Users },
           { label: 'Settings', path: '/settings', icon: Settings },
         ];
@@ -53,6 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           { label: 'Dashboard', path: '/placement/dashboard', icon: Home },
           { label: 'Post Opportunity', path: '/placement/post', icon: Briefcase },
           { label: 'Applications', path: '/placement/applications', icon: FileText },
+          { label: 'Calendar', path: '/calendar', icon: Calendar },
           { label: 'Settings', path: '/settings', icon: Settings },
         ];
       

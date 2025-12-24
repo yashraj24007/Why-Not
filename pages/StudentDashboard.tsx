@@ -3,17 +3,21 @@ import { motion } from 'framer-motion';
 import { 
   Briefcase, TrendingUp, FileText, Award, ArrowRight, Calendar, MapPin, DollarSign,
   Target, Clock, Zap, BookOpen, Users, CheckCircle, Flame, TrendingDown, Brain,
-  Bell, Star, Activity
+  Bell, Star, Activity, Sparkles, BarChart2, TrendingDown as TrendDown
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../services/api';
 import { Link } from 'react-router-dom';
+import RejectionAnalysisHub from '../components/RejectionAnalysisHub';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
   const [applications, setApplications] = useState<any[]>([]);
   const [opportunities, setOpportunities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAnalysisHub, setShowAnalysisHub] = useState(false);
+  const [analysisMode, setAnalysisMode] = useState<'single' | 'bulk'>('single');
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [activeView, setActiveView] = useState<'overview' | 'analytics'>('overview');
 
   // Mock data for innovative features
@@ -184,6 +188,88 @@ const StudentDashboard: React.FC = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* AI Rejection Analysis Hero Section - PROMINENT */}
+        {applications.filter(a => a.status === 'REJECTED').length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="mb-12 relative overflow-hidden rounded-3xl"
+          >
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-black to-neon-blue/20" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-neon-purple/30 blur-[120px] rounded-full" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-neon-blue/30 blur-[120px] rounded-full" />
+            
+            <div className="relative glass-panel border-2 border-neon-purple/30 p-8 md:p-12">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-neon-purple to-neon-blue flex items-center justify-center animate-pulse">
+                      <Sparkles className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-bold gradient-text">AI Rejection Coach</h2>
+                      <p className="text-sm text-neon-blue font-mono">Powered by Gemini 2.0</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+                    Turn your <span className="text-red-400 font-semibold">{applications.filter(a => a.status === 'REJECTED').length} rejection{applications.filter(a => a.status === 'REJECTED').length > 1 ? 's' : ''}</span> into 
+                    actionable insights. Get AI-powered analysis, identify patterns, and discover exactly what to improve.
+                  </p>
+
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => {
+                        setAnalysisMode('bulk');
+                        setShowAnalysisHub(true);
+                      }}
+                      className="px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-blue rounded-xl text-white font-semibold hover:shadow-xl hover:shadow-neon-purple/50 transition-all flex items-center gap-2 group"
+                    >
+                      <BarChart2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                      Analyze All Rejections
+                    </button>
+                    <Link
+                      to="/applications"
+                      className="px-6 py-3 glass-panel rounded-xl text-white font-semibold hover:bg-white/10 transition-all flex items-center gap-2"
+                    >
+                      <FileText className="w-5 h-5" />
+                      View Applications
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="glass-panel p-4 rounded-xl border border-neon-purple/20 hover:border-neon-purple/50 transition-all">
+                    <div className="flex items-center gap-3 mb-2">
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                      <span className="text-white font-semibold">Pattern Detection</span>
+                    </div>
+                    <p className="text-sm text-slate-400">Identify common missing skills across rejections</p>
+                  </div>
+                  
+                  <div className="glass-panel p-4 rounded-xl border border-neon-blue/20 hover:border-neon-blue/50 transition-all">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Target className="w-5 h-5 text-neon-blue" />
+                      <span className="text-white font-semibold">Priority Improvements</span>
+                    </div>
+                    <p className="text-sm text-slate-400">Get ranked list of skills to focus on</p>
+                  </div>
+                  
+                  <div className="glass-panel p-4 rounded-xl border border-purple-400/20 hover:border-purple-400/50 transition-all">
+                    <div className="flex items-center gap-3 mb-2">
+                      <TrendDown className="w-5 h-5 text-purple-400" />
+                      <span className="text-white font-semibold">Progress Tracking</span>
+                    </div>
+                    <p className="text-sm text-slate-400">See your improvement over time</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -525,6 +611,18 @@ const StudentDashboard: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Rejection Analysis Modal */}
+      {user && showAnalysisHub && (
+        <RejectionAnalysisHub
+          isOpen={showAnalysisHub}
+          onClose={() => setShowAnalysisHub(false)}
+          application={selectedApplication}
+          applications={applications}
+          student={user}
+          mode={analysisMode}
+        />
+      )}
     </div>
   );
 };

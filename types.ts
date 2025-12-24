@@ -138,3 +138,50 @@ export interface ExplanationRequest {
   jobRequiredSkills: string[];
   jobMinCgpa: number;
 }
+
+// ============================================================================
+// CALENDAR TYPES
+// ============================================================================
+
+export enum EventType {
+  DEADLINE = 'DEADLINE',
+  INTERVIEW = 'INTERVIEW',
+  DRIVE = 'DRIVE',
+  ANNOUNCEMENT = 'ANNOUNCEMENT'
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  description?: string;
+  event_type: EventType;
+  start_date: string;
+  end_date?: string;
+  opportunity_id?: string;
+  application_id?: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  // Populated from joins
+  opportunity?: JobOpportunity;
+  application?: Application;
+}
+
+export interface EventReminder {
+  id: string;
+  event_id: string;
+  user_id: string;
+  reminder_time: string;
+  sent: boolean;
+  created_at: string;
+}
+
+export interface CreateEventRequest {
+  title: string;
+  description?: string;
+  event_type: EventType;
+  start_date: string;
+  end_date?: string;
+  opportunity_id?: string;
+  application_id?: string;
+}

@@ -13,6 +13,7 @@ import SettingsPage from './pages/SettingsPage';
 import PlacementDashboard from './pages/PlacementDashboard';
 import PostOpportunityPage from './pages/PostOpportunityPage';
 import ApplicationsManagementPage from './pages/ApplicationsManagementPage';
+import CalendarPage from './pages/CalendarPage';
 import NotFoundPage from './pages/NotFoundPage';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -186,6 +187,16 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute userRole={user?.role}>
                 <ProfilePage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Calendar Route - accessible to all authenticated users */}
+          <Route 
+            path="/calendar" 
+            element={
+              <ProtectedRoute userRole={user?.role}>
+                <CalendarPage />
               </ProtectedRoute>
             } 
           />
