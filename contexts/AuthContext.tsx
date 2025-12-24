@@ -27,20 +27,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
+    // Set a safety timeout to prevent infinite loading
+    const loadingTimeout = setTimeout(() => {
+      if (mounted) {
+        console.warn('Auth loading timed out after 10 seconds');
+        setLoading(false);
+      }
+    }, 10000);
+
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      
+      clearTimeout(loadingTimeout);
       if (session?.user) {
         fetchUserProfile(session.user.id);
       } else {
         setLoading(false);
       }
     }).catch((error) => {
+      if (!mounted) return;
+      
       console.error('Auth session error:', error);
+      clearTimeout(loadingTimeout);
       setLoading(false);
     });
 
     // Listen for changes on auth state (sign in, sign out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      
       if (session?.user) {
         fetchUserProfile(session.user.id);
       } else {
@@ -49,7 +67,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(loadingTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
@@ -72,9 +94,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           skills: data.skills,
           preferences: data.preferences,
         });
+      } else {
+        // If no profile data, clear user and session
+        console.warn('No profile found for user:', userId);
+        setUser(null);
+        await supabase.auth.signOut();
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      // Clear user on error
+      setUser(null);
+      await supabase.auth.signOut().catch(console.error);
     } finally {
       setLoading(false);
     }

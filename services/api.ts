@@ -3,25 +3,39 @@ import { OpportunityType } from '../types';
 
 export const api = {
   async getStudentProfile(userId: string) {
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-    if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile fetch error:', profileError);
+        throw profileError;
+      }
 
-    const { data: studentProfile, error: studentError } = await supabase
-      .from('student_profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+      if (!profile) {
+        throw new Error('Profile not found');
+      }
 
-    if (studentError && studentError.code !== 'PGRST116') { // Ignore not found error for student profile
-      throw studentError;
+      const { data: studentProfile, error: studentError } = await supabase
+        .from('student_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      // PGRST116 is "not found" error - this is okay, not all users have student profiles
+      if (studentError && studentError.code !== 'PGRST116') {
+        console.error('Student profile fetch error:', studentError);
+        throw studentError;
+      }
+
+      return { ...profile, ...studentProfile };
+    } catch (error) {
+      console.error('getStudentProfile failed:', error);
+      throw error;
     }
-
-    return { ...profile, ...studentProfile };
   },
 
   async updateStudentProfile(userId: string, data: any) {
