@@ -81,7 +81,7 @@ const OpportunitiesPage: React.FC = () => {
                 <div>
                   <label className="block text-sm text-slate-400 mb-1">Type</label>
                   <select 
-                    className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm"
+                    className="w-full bg-black/30 border border-purple-glow-20 rounded p-2 text-sm"
                     value={filters.type}
                     onChange={(e) => setFilters({...filters, type: e.target.value})}
                   >
@@ -96,7 +96,7 @@ const OpportunitiesPage: React.FC = () => {
                   <input 
                     type="text" 
                     placeholder="e.g. Bangalore"
-                    className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm"
+                    className="w-full bg-black/30 border border-purple-glow-20 rounded p-2 text-sm"
                     value={filters.location}
                     onChange={(e) => setFilters({...filters, location: e.target.value})}
                   />
@@ -107,7 +107,7 @@ const OpportunitiesPage: React.FC = () => {
                   <input 
                     type="number" 
                     placeholder="0"
-                    className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm"
+                    className="w-full bg-black/30 border border-purple-glow-20 rounded p-2 text-sm"
                     value={filters.minStipend}
                     onChange={(e) => setFilters({...filters, minStipend: Number(e.target.value)})}
                   />
@@ -124,7 +124,7 @@ const OpportunitiesPage: React.FC = () => {
               <input 
                 type="text" 
                 placeholder="Search by role, company, or skills..." 
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full glass-panel rounded-xl py-3 pl-12 pr-4 text-white focus:ring-2 focus:ring-neon-purple/50 focus:outline-none"
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
               />

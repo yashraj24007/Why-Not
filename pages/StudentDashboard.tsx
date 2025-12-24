@@ -95,7 +95,7 @@ const StudentDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black pt-28 px-6 pb-12">
+    <div className="min-h-screen pt-28 px-6 pb-12">
       <div className="max-w-7xl mx-auto">
         {/* Welcome Section with Streak */}
         <motion.div

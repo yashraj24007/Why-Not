@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('STUDENT', 'PLACEMENT_OFFICER', 'FACULTY_MENTOR', 'EMPLOYER', 'ADMIN')),
+  role TEXT NOT NULL CHECK (role IN ('STUDENT', 'PLACEMENT_OFFICER')),
   avatar TEXT,
   department TEXT,
   organization TEXT,
@@ -120,13 +120,13 @@ CREATE POLICY "Everyone can view active opportunities"
   ON public.opportunities FOR SELECT
   USING (status = 'ACTIVE' OR posted_by = auth.uid());
 
-CREATE POLICY "Placement officers and employers can create opportunities"
+CREATE POLICY "Placement officers can create opportunities"
   ON public.opportunities FOR INSERT
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('PLACEMENT_OFFICER', 'EMPLOYER')
+      AND profiles.role = 'PLACEMENT_OFFICER'
     )
   );
 
@@ -138,9 +138,7 @@ CREATE TABLE IF NOT EXISTS public.applications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   opportunity_id UUID REFERENCES public.opportunities(id) ON DELETE CASCADE,
   student_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-  status TEXT DEFAULT 'APPLIED' CHECK (status IN ('APPLIED', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'REJECTED', 'OFFERED', 'ACCEPTED', 'PENDING_APPROVAL', 'COMPLETED')),
-  mentor_approved BOOLEAN DEFAULT FALSE,
-  mentor_id UUID REFERENCES public.profiles(id),
+  status TEXT DEFAULT 'APPLIED' CHECK (status IN ('APPLIED', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'REJECTED', 'OFFERED', 'ACCEPTED', 'COMPLETED')),
   cover_letter TEXT,
   rejection_reason TEXT,
   interview_date TIMESTAMPTZ,
@@ -165,19 +163,18 @@ CREATE POLICY "Placement officers can view all applications"
     EXISTS (
       SELECT 1 FROM public.profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('PLACEMENT_OFFICER', 'EMPLOYER', 'FACULTY_MENTOR')
+      AND profiles.role = 'PLACEMENT_OFFICER'
     )
   );
 
-CREATE POLICY "Placement officers and employers can update applications"
+CREATE POLICY "Placement officers can update applications"
   ON public.applications FOR UPDATE
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('PLACEMENT_OFFICER', 'EMPLOYER')
+      AND profiles.role = 'PLACEMENT_OFFICER'
     )
-    OR mentor_id = auth.uid()
   );
 
 CREATE TABLE IF NOT EXISTS public.notifications (

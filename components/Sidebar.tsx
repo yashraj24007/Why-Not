@@ -52,27 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         return [
           { label: 'Dashboard', path: '/placement/dashboard', icon: Home },
           { label: 'Post Opportunity', path: '/placement/post', icon: Briefcase },
-          { label: 'Opportunities', path: '/placement/opportunities', icon: Briefcase },
           { label: 'Applications', path: '/placement/applications', icon: FileText },
-          { label: 'Analytics', path: '/placement/analytics', icon: BarChart3 },
-          { label: 'Settings', path: '/settings', icon: Settings },
-        ];
-      
-      case UserRole.FACULTY_MENTOR:
-        return [
-          { label: 'Dashboard', path: '/mentor/dashboard', icon: Home },
-          { label: 'My Mentees', path: '/mentor/mentees', icon: Users },
-          { label: 'Approvals', path: '/mentor/approvals', icon: UserCheck },
-          { label: 'Resources', path: '/mentor/resources', icon: BookOpen },
-          { label: 'Settings', path: '/settings', icon: Settings },
-        ];
-      
-      case UserRole.EMPLOYER:
-        return [
-          { label: 'Dashboard', path: '/employer/dashboard', icon: Home },
-          { label: 'Post Job', path: '/employer/post', icon: Briefcase },
-          { label: 'Candidates', path: '/employer/candidates', icon: Users },
-          { label: 'Interviews', path: '/employer/interviews', icon: Calendar },
           { label: 'Settings', path: '/settings', icon: Settings },
         ];
       

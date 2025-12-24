@@ -104,10 +104,6 @@ const SignupPage: React.FC = () => {
 
     try {
       const additionalData: any = { department: formData.department };
-      
-      if (formData.role === UserRole.EMPLOYER || formData.role === UserRole.TRAINING_SUPERVISOR) {
-        additionalData.organization = formData.organization;
-      }
 
       await signUp(formData.email, formData.password, formData.name, formData.role, additionalData);
       // Don't navigate here - let App.tsx handle routing based on user role
@@ -135,9 +131,6 @@ const SignupPage: React.FC = () => {
                console.log("Profile missing, creating new profile...");
                // Create missing profile
                 const additionalData: any = { department: formData.department };
-                if (formData.role === UserRole.EMPLOYER || formData.role === UserRole.TRAINING_SUPERVISOR) {
-                    additionalData.organization = formData.organization;
-                }
 
                const { error: insertError } = await supabase.from('profiles').insert({
                   id: signInData.user.id,
@@ -184,15 +177,12 @@ const SignupPage: React.FC = () => {
 
   const roleOptions = [
     { value: UserRole.STUDENT, label: 'Student', icon: GraduationCap, description: 'Looking for internships and placements' },
-    { value: UserRole.FACULTY_MENTOR, label: 'Faculty Mentor', icon: User, description: 'Guide and approve student applications' },
     { value: UserRole.PLACEMENT_OFFICER, label: 'Placement Officer', icon: Building, description: 'Manage campus placements' },
-    { value: UserRole.EMPLOYER, label: 'Employer/Recruiter', icon: Building, description: 'Post job opportunities' },
-    { value: UserRole.TRAINING_SUPERVISOR, label: 'Training Supervisor', icon: User, description: 'Supervise internships' },
   ];
 
   return (
     <PageTransition>
-      <div className="relative min-h-screen flex items-center justify-center px-6 py-12 bg-black overflow-hidden">
+      <div className="relative min-h-screen flex items-center justify-center px-6 py-12 gradient-bg-purple overflow-hidden">
       {/* Particle Background */}
       <div className="fixed inset-0 z-0">
         <ParticleBackground />
@@ -207,7 +197,7 @@ const SignupPage: React.FC = () => {
         className="relative z-10 w-full max-w-2xl"
       >
         {/* Logo */}
-        <div className="text-center mb-8 backdrop-blur-sm bg-black/30 rounded-2xl p-6 border border-white/5">
+        <div className="text-center mb-8 glass-panel rounded-2xl p-6">
           <Link to="/" className="inline-flex items-center gap-2 group">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple p-[2px] shadow-lg shadow-neon-purple/50">
               <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
@@ -255,8 +245,8 @@ const SignupPage: React.FC = () => {
                       key={option.value}
                       className={`relative flex items-start p-4 rounded-lg border cursor-pointer transition-all ${
                         formData.role === option.value
-                          ? 'bg-neon-blue/10 border-neon-blue'
-                          : 'bg-black/30 border-white/10 hover:border-white/20'
+                          ? 'glass-panel-dark border-neon-purple shadow-lg shadow-neon-purple/20'
+                          : 'glass-panel border-purple-glow-20 hover:border-purple-glow-30'
                       }`}
                     >
                       <input
@@ -267,7 +257,7 @@ const SignupPage: React.FC = () => {
                         onChange={handleChange}
                         className="sr-only"
                       />
-                      <Icon className={`w-5 h-5 mt-0.5 ${formData.role === option.value ? 'text-neon-blue' : 'text-slate-400'}`} />
+                      <Icon className={`w-5 h-5 mt-0.5 ${formData.role === option.value ? 'text-neon-purple' : 'text-slate-400'}`} />
                       <div className="ml-3 flex-1">
                         <span className={`block text-sm font-medium ${formData.role === option.value ? 'text-white' : 'text-slate-300'}`}>
                           {option.label}
@@ -297,7 +287,7 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full pl-11 pr-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue/50 transition-all"
+                    className="w-full pl-11 pr-4 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
                     placeholder="John Doe"
                   />
                 </div>
@@ -317,8 +307,8 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-11 pr-4 py-3 bg-black/50 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 transition-all ${
-                      emailError ? 'border-red-500/50' : 'border-white/10 focus:border-neon-blue/50'
+                    className={`w-full pl-11 pr-4 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 transition-all ${
+                      emailError ? 'border-red-500/50' : 'focus:border-neon-purple/50'
                     }`}
                     placeholder="john@college.edu"
                   />
@@ -332,46 +322,31 @@ const SignupPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Department / Organization */}
+            {/* Department */}
             <div>
               <label htmlFor="department" className="block text-sm font-medium text-slate-300 mb-2">
-                {formData.role === UserRole.EMPLOYER || formData.role === UserRole.TRAINING_SUPERVISOR
-                  ? 'Organization'
-                  : 'Branch/Department'}
+                Branch/Department
               </label>
-              {formData.role === UserRole.EMPLOYER || formData.role === UserRole.TRAINING_SUPERVISOR ? (
-                <input
-                  id="organization"
-                  name="organization"
-                  type="text"
-                  required
-                  value={formData.organization}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue/50 transition-all"
-                  placeholder="Company Name"
-                />
-              ) : (
-                <select
-                  id="department"
-                  name="department"
-                  required
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue/50 transition-all"
-                >
-                  <option value="" className="bg-slate-900">Select your branch</option>
-                  <option value="Computer Science & Engineering" className="bg-slate-900">Computer Science & Engineering</option>
-                  <option value="Information Technology" className="bg-slate-900">Information Technology</option>
-                  <option value="Electronics & Communication" className="bg-slate-900">Electronics & Communication</option>
-                  <option value="Electrical Engineering" className="bg-slate-900">Electrical Engineering</option>
-                  <option value="Mechanical Engineering" className="bg-slate-900">Mechanical Engineering</option>
-                  <option value="Civil Engineering" className="bg-slate-900">Civil Engineering</option>
-                  <option value="Chemical Engineering" className="bg-slate-900">Chemical Engineering</option>
-                  <option value="Biotechnology" className="bg-slate-900">Biotechnology</option>
-                  <option value="Aerospace Engineering" className="bg-slate-900">Aerospace Engineering</option>
-                  <option value="Other" className="bg-slate-900">Other</option>
-                </select>
-              )}
+              <select
+                id="department"
+                name="department"
+                required
+                value={formData.department}
+                onChange={handleChange}
+                className="w-full px-4 py-3 glass-panel rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
+              >
+                <option value="" className="bg-slate-900">Select your branch</option>
+                <option value="Computer Science & Engineering" className="bg-slate-900">Computer Science & Engineering</option>
+                <option value="Information Technology" className="bg-slate-900">Information Technology</option>
+                <option value="Electronics & Communication" className="bg-slate-900">Electronics & Communication</option>
+                <option value="Electrical Engineering" className="bg-slate-900">Electrical Engineering</option>
+                <option value="Mechanical Engineering" className="bg-slate-900">Mechanical Engineering</option>
+                <option value="Civil Engineering" className="bg-slate-900">Civil Engineering</option>
+                <option value="Chemical Engineering" className="bg-slate-900">Chemical Engineering</option>
+                <option value="Biotechnology" className="bg-slate-900">Biotechnology</option>
+                <option value="Aerospace Engineering" className="bg-slate-900">Aerospace Engineering</option>
+                <option value="Other" className="bg-slate-900">Other</option>
+              </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -389,7 +364,7 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full pl-11 pr-12 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue/50 transition-all"
+                    className="w-full pl-11 pr-12 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
                     placeholder="••••••••"
                   />
                   <button
@@ -439,7 +414,7 @@ const SignupPage: React.FC = () => {
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full pl-11 pr-12 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue/50 transition-all"
+                    className="w-full pl-11 pr-12 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
                     placeholder="••••••••"
                   />
                   <button

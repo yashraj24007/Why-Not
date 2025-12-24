@@ -46,16 +46,6 @@ const Header: React.FC<HeaderProps> = ({
           { label: 'Dashboard', path: '/placement/dashboard', icon: Home },
         ];
       
-      case UserRole.FACULTY_MENTOR:
-        return [
-          { label: 'Dashboard', path: '/mentor/dashboard', icon: Home },
-        ];
-      
-      case UserRole.EMPLOYER:
-        return [
-          { label: 'Dashboard', path: '/employer/dashboard', icon: Home },
-        ];
-      
       default:
         return [];
     }
@@ -65,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-black/40 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-black/20">
+    <header className="fixed top-0 left-0 w-full z-50 transition-all duration-300 glass-panel shadow-lg shadow-black/20">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center py-3">
           {/* Logo */}

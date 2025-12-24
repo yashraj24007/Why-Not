@@ -5,7 +5,7 @@ import {
   UserRole
 } from './types';
 
-// Student Profiles (Simplified - removed mentor field)
+// Student Profiles
 export const studentProfiles: StudentProfile[] = [
   {
     id: 'STU001',
@@ -58,8 +58,9 @@ export const studentProfiles: StudentProfile[] = [
       industries: ['Electronics', 'Automotive', 'Manufacturing'],
       locations: ['Chennai', 'Bangalore', 'Mumbai'],
       stipendRange: { min: 12000, max: 25000 },
-      opportunityTypes: [OpportunityType.INTERNSHIP, OpportunityType.PLACEMENT]
+      opportunityTypes: [OpportunityType.INDUSTRIAL_TRAINING, OpportunityType.PLACEMENT]
     },
+    mentor: 'FAC002',
     completedInternships: 0,
     placementStatus: 'unplaced',
     avatar: 'https://i.pravatar.cc/150?img=12'
@@ -86,9 +87,10 @@ export const studentProfiles: StudentProfile[] = [
       industries: ['Manufacturing', 'Automotive', 'Aerospace'],
       locations: ['Pune', 'Bangalore', 'Delhi'],
       stipendRange: { min: 10000, max: 20000 },
-      opportunityTypes: [OpportunityType.INTERNSHIP, OpportunityType.PLACEMENT]
+      opportunityTypes: [OpportunityType.INTERNSHIP, OpportunityType.INDUSTRIAL_TRAINING]
     },
-    completedInternships: 2,
+    mentor: 'FAC003',
+    completedInternships: 0,
     placementStatus: 'unplaced',
     avatar: 'https://i.pravatar.cc/150?img=25'
   },
@@ -98,26 +100,28 @@ export const studentProfiles: StudentProfile[] = [
     email: 'karan.singh@college.edu',
     phone: '+91 98765 43213',
     department: 'Computer Science',
-    major: 'Computer Science & Engineering',
-    year: 2,
-    semester: 4,
+    major: 'Information Technology',
+    year: 4,
+    semester: 8,
     cgpa: 9.1,
     skills: [
-      { name: 'Java', level: 'Advanced', verified: true },
-      { name: 'Spring Boot', level: 'Intermediate', verified: true },
-      { name: 'Microservices', level: 'Intermediate', verified: false },
-      { name: 'Kubernetes', level: 'Beginner', verified: false },
-      { name: 'AWS', level: 'Intermediate', verified: true }
+      { name: 'Full Stack Development', level: 'Advanced', verified: true },
+      { name: 'Cloud Computing', level: 'Advanced', verified: true },
+      { name: 'DevOps', level: 'Intermediate', verified: true },
+      { name: 'Kubernetes', level: 'Intermediate', verified: true },
+      { name: 'System Design', level: 'Advanced', verified: false }
     ],
     resume: '/resumes/karan-singh.pdf',
+    coverLetter: '/cover-letters/karan-singh.pdf',
     preferences: {
-      industries: ['Technology', 'E-commerce', 'Fintech'],
-      locations: ['Bangalore', 'Mumbai', 'Hyderabad'],
+      industries: ['Technology', 'Cloud Services', 'Startups'],
+      locations: ['Bangalore', 'Gurgaon', 'Mumbai'],
       stipendRange: { min: 20000, max: 40000 },
-      opportunityTypes: [OpportunityType.INTERNSHIP, OpportunityType.PLACEMENT]
+      opportunityTypes: [OpportunityType.PLACEMENT, OpportunityType.INTERNSHIP]
     },
-    completedInternships: 0,
-    placementStatus: 'unplaced',
+    mentor: 'FAC001',
+    completedInternships: 2,
+    placementStatus: 'placed',
     avatar: 'https://i.pravatar.cc/150?img=33'
   },
   {
@@ -127,26 +131,27 @@ export const studentProfiles: StudentProfile[] = [
     phone: '+91 98765 43214',
     department: 'Civil',
     major: 'Civil Engineering',
-    year: 4,
-    semester: 8,
-    cgpa: 7.6,
+    year: 3,
+    semester: 6,
+    cgpa: 7.5,
     skills: [
-      { name: 'Structural Analysis', level: 'Advanced', verified: true },
+      { name: 'Structural Analysis', level: 'Intermediate', verified: true },
       { name: 'AutoCAD', level: 'Advanced', verified: true },
-      { name: 'Revit', level: 'Intermediate', verified: true },
-      { name: 'Project Planning', level: 'Intermediate', verified: false },
-      { name: 'Quantity Surveying', level: 'Intermediate', verified: true }
+      { name: 'Construction Management', level: 'Beginner', verified: false },
+      { name: 'Surveying', level: 'Intermediate', verified: true },
+      { name: 'STAAD Pro', level: 'Intermediate', verified: true }
     ],
     resume: '/resumes/sneha-reddy.pdf',
     preferences: {
       industries: ['Construction', 'Infrastructure', 'Real Estate'],
-      locations: ['Hyderabad', 'Chennai', 'Bangalore'],
-      stipendRange: { min: 8000, max: 15000 },
-      opportunityTypes: [OpportunityType.INTERNSHIP, OpportunityType.PLACEMENT]
+      locations: ['Hyderabad', 'Bangalore', 'Chennai'],
+      stipendRange: { min: 8000, max: 18000 },
+      opportunityTypes: [OpportunityType.INDUSTRIAL_TRAINING, OpportunityType.INTERNSHIP]
     },
+    mentor: 'FAC004',
     completedInternships: 1,
-    placementStatus: 'placed',
-    avatar: 'https://i.pravatar.cc/150?img=44'
+    placementStatus: 'in-process',
+    avatar: 'https://i.pravatar.cc/150?img=45'
   }
 ];
 
@@ -156,18 +161,18 @@ export const placementOfficers: PlacementOfficerProfile[] = [
     id: 'PLO001',
     name: 'Dr. Rajesh Kumar',
     email: 'rajesh.kumar@college.edu',
-    phone: '+91 98765 99001',
+    phone: '+91 98765 00001',
     department: 'Training & Placement Cell',
     role: UserRole.PLACEMENT_OFFICER,
     managedDepartments: ['Computer Science', 'Electronics', 'Information Technology'],
     yearsOfExperience: 12,
-    avatar: 'https://i.pravatar.cc/150?img=59'
+    avatar: 'https://i.pravatar.cc/150?img=60'
   },
   {
     id: 'PLO002',
-    name: 'Ms. Shalini Iyer',
-    email: 'shalini.iyer@college.edu',
-    phone: '+91 98765 99002',
+    name: 'Ms. Sunita Desai',
+    email: 'sunita.desai@college.edu',
+    phone: '+91 98765 00002',
     department: 'Training & Placement Cell',
     role: UserRole.PLACEMENT_OFFICER,
     managedDepartments: ['Mechanical', 'Civil', 'Chemical'],
@@ -177,7 +182,6 @@ export const placementOfficers: PlacementOfficerProfile[] = [
 ];
 
 // Only 2 user types: STUDENT and PLACEMENT_OFFICER
-// Removed: FacultyMentor, Employer, TrainingSupervisor roles
 
 export const getAllProfiles = () => ({
   students: studentProfiles,

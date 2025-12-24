@@ -5,7 +5,6 @@ export enum ApplicationStatus {
   REJECTED = 'REJECTED',
   OFFERED = 'OFFERED',
   ACCEPTED = 'ACCEPTED',
-  PENDING_APPROVAL = 'PENDING_APPROVAL',
   COMPLETED = 'COMPLETED'
 }
 
@@ -31,10 +30,7 @@ export interface AuthUser {
 
 export enum UserRole {
   STUDENT = 'STUDENT',
-  PLACEMENT_OFFICER = 'PLACEMENT_OFFICER',
-  FACULTY_MENTOR = 'FACULTY_MENTOR',
-  EMPLOYER = 'EMPLOYER',
-  ADMIN = 'ADMIN'
+  PLACEMENT_OFFICER = 'PLACEMENT_OFFICER'
 }
 
 export enum OpportunityType {
@@ -85,32 +81,6 @@ export interface PlacementOfficerProfile {
   avatar?: string;
 }
 
-export interface FacultyMentorProfile {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  department: string;
-  role: UserRole.FACULTY_MENTOR;
-  specialization: string[];
-  mentees: string[]; // student IDs
-  avatar?: string;
-}
-
-export interface EmployerProfile {
-  id: string;
-  companyName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  industry: string;
-  website?: string;
-  location: string;
-  verified: boolean;
-  role: UserRole.EMPLOYER;
-  logo?: string;
-}
-
 export interface JobOpportunity {
   id: string;
   role: string;
@@ -133,7 +103,7 @@ export interface JobOpportunity {
   filledSlots: number;
   placementConversion: boolean;
   status: 'active' | 'closed' | 'draft';
-  postedBy: string; // employer ID
+  postedBy: string; // placement officer ID
 }
 
 export interface Application {
@@ -144,12 +114,6 @@ export interface Application {
   student: StudentProfile;
   status: ApplicationStatus;
   appliedDate: string;
-  mentorApproval?: {
-    status: 'pending' | 'approved' | 'rejected';
-    mentorId: string;
-    comments?: string;
-    date?: string;
-  };
   interviewSchedule?: {
     date: string;
     time: string;

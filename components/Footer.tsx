@@ -17,7 +17,6 @@ const Footer: React.FC = () => {
         return [
           { label: 'Opportunities', path: '/opportunities' },
           { label: 'My Applications', path: '/applications' },
-          { label: 'Analytics', path: '/analytics' },
           { label: 'Settings', path: '/settings' },
         ];
       
@@ -25,24 +24,6 @@ const Footer: React.FC = () => {
         return [
           { label: 'Post Opportunity', path: '/placement/post' },
           { label: 'Applications', path: '/placement/applications' },
-          { label: 'Analytics', path: '/placement/analytics' },
-          { label: 'Students', path: '/placement/students' },
-        ];
-      
-      case UserRole.FACULTY_MENTOR:
-        return [
-          { label: 'My Mentees', path: '/mentor/mentees' },
-          { label: 'Approvals', path: '/mentor/approvals' },
-          { label: 'Resources', path: '/mentor/resources' },
-          { label: 'Guidelines', path: '/mentor/guidelines' },
-        ];
-      
-      case UserRole.EMPLOYER:
-        return [
-          { label: 'Post Job', path: '/employer/post' },
-          { label: 'Candidates', path: '/employer/candidates' },
-          { label: 'Interviews', path: '/employer/interviews' },
-          { label: 'Analytics', path: '/employer/analytics' },
         ];
       
       default:

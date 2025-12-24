@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="relative min-h-screen flex items-center justify-center px-6 bg-black overflow-hidden">
+      <div className="relative min-h-screen flex items-center justify-center px-6 gradient-bg-purple overflow-hidden">
       {/* Particle Background */}
       <div className="fixed inset-0 z-0">
         <ParticleBackground />
@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
         className="relative z-10 w-full max-w-md"
       >
         {/* Logo */}
-        <div className="text-center mb-8 backdrop-blur-sm bg-black/30 rounded-2xl p-6 border border-white/5">
+        <div className="text-center mb-8 glass-panel rounded-2xl p-6">
           <Link to="/" className="inline-flex items-center gap-2 group">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple p-[2px] shadow-lg shadow-neon-blue/50">
               <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
@@ -91,7 +91,7 @@ const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue/50 transition-all"
+                  className="w-full pl-11 pr-4 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
                   placeholder="student@college.edu"
                 />
               </div>
@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3 bg-black/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue/50 transition-all"
+                  className="w-full pl-11 pr-12 py-3 glass-panel rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple/50 transition-all"
                   placeholder="••••••••"
                 />
                 <button
