@@ -189,6 +189,67 @@ const SettingsPage: React.FC = () => {
 
         {/* Bento Grid Layout */}
         <div className="grid grid-cols-12 gap-6">
+          {/* Account Settings - 5 cols */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+            className="col-span-12 md:col-span-5"
+          >
+            <div className="glass-panel rounded-3xl p-8 border border-white/10 h-full relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
+              
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
+                  <User className="w-6 h-6 text-purple-400" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Account Settings</h2>
+                  <p className="text-slate-400 text-sm">Manage your profile and security</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {/* Change Password */}
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-colors">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Lock className="w-5 h-5 text-purple-400" />
+                    <h3 className="font-bold text-white">Security</h3>
+                  </div>
+                  <button 
+                    onClick={() => showToast('info', 'Password reset link sent to your email')}
+                    className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 rounded-xl text-sm font-semibold text-white transition-all border border-white/10 hover:border-purple-500/30 flex items-center justify-center gap-2"
+                  >
+                    <Shield className="w-4 h-4" />
+                    Change Password
+                  </button>
+                </div>
+
+                {/* Notifications */}
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-colors">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Bell className="w-5 h-5 text-purple-400" />
+                    <h3 className="font-bold text-white">Notifications</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-300">Email Notifications</span>
+                      <div className="w-10 h-6 bg-purple-500 rounded-full relative cursor-pointer">
+                        <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-300">Push Notifications</span>
+                      <div className="w-10 h-6 bg-slate-700 rounded-full relative cursor-pointer">
+                        <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Developer Tools - 7 cols */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

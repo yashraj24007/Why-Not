@@ -24,6 +24,7 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const PlacementDashboard = lazy(() => import('./pages/PlacementDashboard'));
 const PostOpportunityPage = lazy(() => import('./pages/PostOpportunityPage'));
+const ManageOpportunitiesPage = lazy(() => import('./pages/ManageOpportunitiesPage'));
 const ApplicationsManagementPage = lazy(() => import('./pages/ApplicationsManagementPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const ResumeAnalyzerPage = lazy(() => import('./pages/ResumeAnalyzerPage'));
@@ -167,6 +168,22 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
                 <PostOpportunityPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/placement/edit/:id" 
+            element={
+              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
+                <PostOpportunityPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/placement/opportunities" 
+            element={
+              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
+                <ManageOpportunitiesPage />
               </ProtectedRoute>
             } 
           />

@@ -11,7 +11,7 @@ const ApplicationsPage: React.FC = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAnalysisHub, setShowAnalysisHub] = useState(false);
-  const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [analysisMode, setAnalysisMode] = useState<'single' | 'bulk'>('single');
 
   useEffect(() => {
     if (user) {
@@ -45,8 +45,16 @@ const ApplicationsPage: React.FC = () => {
 
   const openAnalysis = (app: any) => {
     setSelectedApplication(app);
+    setAnalysisMode('single');
     setShowAnalysisHub(true);
   };
+
+  const openBulkAnalysis = () => {
+    setAnalysisMode('bulk');
+    setShowAnalysisHub(true);
+  };
+
+  const rejectedCount = applications.filter(app => app.status === 'REJECTED').length;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -98,11 +106,20 @@ const ApplicationsPage: React.FC = () => {
         </div>
 
         <div className="relative z-10 max-w-[1800px] mx-auto px-4 md:px-8 pb-12">
-          <div 
-            className="mb-8"
-          >
-            <h1 className="text-3xl md:text-4xl font-black text-white mb-2">My Applications</h1>
-            <p className="text-slate-400 text-lg">Track the status of your internship and placement applications</p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black text-white mb-2">My Applications</h1>
+              <p className="text-slate-400 text-lg">Track the status of your internship and placement applications</p>
+            </div>
+            {rejectedCount > 1 && (
+              <button
+                onClick={openBulkAnalysis}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-rose-500/30 transition-all"
+              >
+                <Brain className="w-5 h-5" />
+                Analyze All Rejections ({rejectedCount})
+              </button>
+            )}
           </div>
 
         {loading ? (
@@ -261,8 +278,9 @@ const ApplicationsPage: React.FC = () => {
           isOpen={showAnalysisHub}
           onClose={() => setShowAnalysisHub(false)}
           application={selectedApplication}
+          applications={applications}
           student={user as any}
-          mode="single"
+          mode={analysisMode}
         />
       )}
     </PageTransition>

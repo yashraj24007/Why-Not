@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, ArrowLeft, Save, AlertCircle, CheckCircle } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PageTransition from '../components/common/PageTransition';
 
 const PostOpportunityPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = !!id;
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   
@@ -27,6 +30,47 @@ const PostOpportunityPage: React.FC = () => {
     duration: '',
     deadline: ''
   });
+
+  useEffect(() => {
+    if (isEditMode && user) {
+      fetchOpportunity();
+    }
+  }, [id, user]);
+
+  const fetchOpportunity = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setFormData({
+          title: data.title,
+          description: data.description,
+          type: data.type,
+          company_name: data.company_name,
+          application_url: data.application_url || '',
+          department: data.department || '',
+          required_skills: data.required_skills?.map((s: any) => s.name).join(', ') || '',
+          min_cgpa: data.min_cgpa?.toString() || '',
+          stipend_min: data.stipend_min?.toString() || '',
+          stipend_max: data.stipend_max?.toString() || '',
+          location: data.location || '',
+          duration: data.duration || '',
+          deadline: data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : ''
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching opportunity:', error);
+      setMessage({ type: 'error', text: 'Failed to load opportunity details' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,19 +112,29 @@ const PostOpportunityPage: React.FC = () => {
         status: 'ACTIVE'
       };
 
-      const { error } = await supabase
-        .from('opportunities')
-        .insert(opportunityData);
+      let error;
+      if (isEditMode) {
+        const { error: updateError } = await supabase
+          .from('opportunities')
+          .update(opportunityData)
+          .eq('id', id);
+        error = updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from('opportunities')
+          .insert(opportunityData);
+        error = insertError;
+      }
 
       if (error) throw error;
 
-      setMessage({ type: 'success', text: 'Opportunity posted successfully!' });
+      setMessage({ type: 'success', text: `Opportunity ${isEditMode ? 'updated' : 'posted'} successfully!` });
       setTimeout(() => {
-        navigate('/placement/dashboard');
+        navigate('/placement/opportunities');
       }, 2000);
     } catch (error: any) {
-      console.error('Error posting opportunity:', error);
-      setMessage({ type: 'error', text: error.message || 'Failed to post opportunity' });
+      console.error('Error saving opportunity:', error);
+      setMessage({ type: 'error', text: error.message || 'Failed to save opportunity' });
     } finally {
       setLoading(false);
     }
@@ -130,9 +184,11 @@ const PostOpportunityPage: React.FC = () => {
           >
             <h1 className="text-3xl font-bold mb-2 flex items-center gap-3 text-white">
               <Briefcase className="text-purple-400" />
-              Post New Opportunity
+              {isEditMode ? 'Edit Opportunity' : 'Post New Opportunity'}
             </h1>
-            <p className="text-slate-400">Add external roles from companies like Microsoft or Google. Students will be redirected to the official application link you provide.</p>
+            <p className="text-slate-400">
+              {isEditMode ? 'Update the details of your job listing' : 'Add external roles from companies like Microsoft or Google. Students will be redirected to the official application link you provide.'}
+            </p>
           </motion.div>
 
         <div className="mb-6 p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 text-amber-100 text-sm">
