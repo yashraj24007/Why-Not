@@ -79,10 +79,10 @@ const StudentDashboard: React.FC = () => {
   };
 
   const stats = [
-    { label: 'Applications', value: applications.length, icon: FileText, color: 'from-rose-500 to-indigo-500', change: '+3 this week' },
-    { label: 'Interviews', value: applications.filter(a => a.status === 'INTERVIEW_SCHEDULED').length, icon: Users, color: 'from-purple-500 to-pink-500', change: '2 upcoming' },
-    { label: 'Offers', value: applications.filter(a => a.status === 'ACCEPTED').length, icon: Award, color: 'from-green-500 to-emerald-500', change: 'Congrats!' },
-    { label: 'Profile Views', value: 156, icon: Eye, color: 'from-orange-500 to-red-500', change: '+12 today' },
+    { label: 'Applications', value: applications.length, icon: FileText, color: 'text-rose-400', gradient: 'from-rose-500 to-purple-500', change: '+3 this week' },
+    { label: 'Interviews', value: applications.filter(a => a.status === 'INTERVIEW_SCHEDULED').length, icon: Users, color: 'text-purple-400', gradient: 'from-purple-500 to-indigo-500', change: '2 upcoming' },
+    { label: 'Offers', value: applications.filter(a => a.status === 'ACCEPTED').length, icon: Award, color: 'text-indigo-400', gradient: 'from-indigo-500 to-purple-500', change: 'Congrats!' },
+    { label: 'Profile Views', value: 156, icon: Eye, color: 'text-pink-400', gradient: 'from-pink-500 to-rose-500', change: '+12 today' },
   ];
 
   const recentActivity = [
@@ -143,14 +143,17 @@ const StudentDashboard: React.FC = () => {
             {/* Welcome Card - spans 8 columns */}
             <div className="md:col-span-8">
               <div className="relative group h-full">
-                {/* Glow effect on hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                {/* Gradient Border Effect */}
+                <div className="absolute -inset-[1px] bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500 rounded-3xl opacity-30 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
                 
-                <div className="relative glass-panel rounded-3xl p-8 border border-white/10 group-hover:border-white/20 transition-all h-full flex flex-col justify-between">
-                  <div className="flex items-start justify-between">
+                <div className="relative glass-panel rounded-3xl p-8 h-full flex flex-col justify-between overflow-hidden">
+                  {/* Background Gradient Blob */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  
+                  <div className="relative z-10 flex items-start justify-between">
                     <div className="flex-1">
                       <motion.div 
-                        className="flex items-center gap-3 mb-3"
+                        className="flex items-start gap-3 mb-3"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
@@ -161,11 +164,12 @@ const StudentDashboard: React.FC = () => {
                             scale: [1, 1.1, 1, 1.1, 1],
                           }}
                           transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                          className="-mt-1"
                         >
                           <Sparkles className="w-8 h-8 text-rose-400" />
                         </motion.div>
                         <div>
-                          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-rose-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                          <h1 className="text-4xl md:text-5xl font-black text-white">
                             Welcome back, {user?.name?.split(' ')[0] || 'Student'}!
                           </h1>
                           <p className="text-slate-400 text-lg mt-1">Ready to take the next step in your career?</p>
@@ -183,9 +187,9 @@ const StudentDashboard: React.FC = () => {
                             {profileCompletion}%
                           </span>
                         </div>
-                        <div className="relative h-3 bg-slate-800/80 rounded-full overflow-hidden border border-slate-700/50">
+                        <div className="relative h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
                           <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-rose-500 via-purple-500 to-pink-500"
+                            className="absolute inset-0 bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500"
                             initial={{ width: 0 }}
                             animate={{ width: `${profileCompletion}%` }}
                             transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
@@ -211,10 +215,10 @@ const StudentDashboard: React.FC = () => {
                       className="hidden md:block"
                     >
                       <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl blur-xl opacity-60" />
-                        <div className="relative glass-panel rounded-2xl p-6 border border-orange-500/20">
+                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-rose-600 rounded-2xl blur-xl opacity-40" />
+                        <div className="relative glass-panel rounded-2xl p-6">
                           <div className="text-center">
-                            <Flame className="w-12 h-12 text-orange-400 mx-auto mb-2" />
+                            <Flame className="w-12 h-12 text-orange-500 mx-auto mb-2" />
                             <p className="text-3xl font-black text-white">{loginStreak}</p>
                             <p className="text-xs text-orange-400 font-semibold">Day Streak</p>
                           </div>
@@ -233,30 +237,34 @@ const StudentDashboard: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
                 whileHover={{ scale: 1.02 }}
-                className="relative h-full"
+                className="relative h-full group"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl blur-xl" />
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-rose-500 to-purple-500 rounded-3xl opacity-30 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
                 <button
                   onClick={() => setShowAnalysisHub(true)}
-                  className="relative w-full h-full glass-panel rounded-3xl p-8 border border-purple-500/30 hover:border-purple-500/50 transition-all group"
+                  className="relative w-full h-full glass-panel rounded-3xl p-8 hover:border-transparent hover:bg-rose-500/5 transition-all overflow-hidden"
                 >
-                  <div className="flex flex-col items-center justify-center h-full text-center gap-4">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                  
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-center gap-4">
                     <motion.div
                       animate={{
                         rotate: [0, 5, -5, 0],
                         scale: [1, 1.1, 1, 1.1, 1],
                       }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center"
+                      className="w-20 h-20 bg-gradient-to-br from-rose-500 to-purple-500 p-[1px] rounded-2xl"
                     >
-                      <Brain className="w-10 h-10 text-white" />
+                      <div className="w-full h-full bg-black rounded-[15px] flex items-center justify-center">
+                        <Brain className="w-10 h-10 text-rose-400" />
+                      </div>
                     </motion.div>
                     <div>
                       <h3 className="text-xl font-bold text-white mb-1">AI Rejection Coach</h3>
                       <p className="text-sm text-slate-400">Turn rejections into opportunities</p>
                     </div>
                     {applications.filter(a => a.status === 'REJECTED').length > 0 && (
-                      <span className="px-4 py-2 bg-red-500/20 text-red-400 rounded-full text-sm font-semibold">
+                      <span className="px-4 py-2 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-full text-sm font-semibold">
                         {applications.filter(a => a.status === 'REJECTED').length} rejections to analyze
                       </span>
                     )}
@@ -270,99 +278,37 @@ const StudentDashboard: React.FC = () => {
         {/* Bento Grid Layout */}
         <div className="grid grid-cols-12 gap-6">
           {/* Stats Row - Dynamic sizes for visual interest */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
-            className="col-span-12 md:col-span-3"
-          >
-            <div className="relative group h-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-rose-500/20 to-indigo-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-rose-500/30 transition-all h-full">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-rose-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                    <FileText className="w-7 h-7 text-white" />
+          {stats.map((stat, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 + index * 0.1, ease: "easeOut" }}
+              className="col-span-12 md:col-span-3"
+            >
+              <div className="relative group h-full">
+                {/* Gradient Border Effect */}
+                <div className={`absolute -inset-[1px] bg-gradient-to-br ${stat.gradient} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm`} />
+                
+                <div className="relative glass-panel rounded-2xl p-6 h-full hover:-translate-y-1 transition-transform duration-300">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${stat.gradient} p-[1px]`}>
+                      <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                        <stat.icon className={`w-7 h-7 ${stat.color}`} />
+                      </div>
+                    </div>
+                    {stat.change && (
+                      <span className={`px-3 py-1 bg-black/40 border border-white/5 rounded-full text-xs font-semibold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                        {stat.change}
+                      </span>
+                    )}
                   </div>
-                  <span className="px-3 py-1 bg-cyan-500/20 text-rose-400 rounded-full text-xs font-semibold">
-                    +3 this week
-                  </span>
+                  <p className="text-slate-400 text-sm mb-1 font-medium uppercase tracking-wide">{stat.label}</p>
+                  <p className="text-4xl font-black text-white">{stat.value}</p>
                 </div>
-                <p className="text-slate-400 text-sm mb-1">Applications</p>
-                <p className="text-4xl font-black text-white">{applications.length}</p>
               </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-            className="col-span-12 md:col-span-3"
-          >
-            <div className="relative group h-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-purple-500/30 transition-all h-full">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Users className="w-7 h-7 text-white" />
-                  </div>
-                  <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">
-                    2 upcoming
-                  </span>
-                </div>
-                <p className="text-slate-400 text-sm mb-1">Interviews</p>
-                <p className="text-4xl font-black text-white">{applications.filter(a => a.status === 'INTERVIEW_SCHEDULED').length}</p>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
-            className="col-span-12 md:col-span-3"
-          >
-            <div className="relative group h-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-green-500/30 transition-all h-full">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                    <Award className="w-7 h-7 text-white" />
-                  </div>
-                  {applications.filter(a => a.status === 'ACCEPTED').length > 0 && (
-                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">
-                      Congrats!
-                    </span>
-                  )}
-                </div>
-                <p className="text-slate-400 text-sm mb-1">Offers</p>
-                <p className="text-4xl font-black text-white">{applications.filter(a => a.status === 'ACCEPTED').length}</p>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
-            className="col-span-12 md:col-span-3"
-          >
-            <div className="relative group h-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative glass-panel rounded-2xl p-6 border border-white/10 group-hover:border-orange-500/30 transition-all h-full">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-                    <Eye className="w-7 h-7 text-white" />
-                  </div>
-                  <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs font-semibold">
-                    +12 today
-                  </span>
-                </div>
-                <p className="text-slate-400 text-sm mb-1">Profile Views</p>
-                <p className="text-4xl font-black text-white">156</p>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          ))}
 
           {/* Recent Applications - Large Card */}
           <motion.div
@@ -371,14 +317,16 @@ const StudentDashboard: React.FC = () => {
             transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
             className="col-span-12 md:col-span-7"
           >
-            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
-              <div className="flex items-center justify-between mb-6">
+            <div className="relative glass-panel rounded-2xl p-6 h-full overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="relative z-10 flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <FileText className="w-6 h-6 text-rose-400" />
                   Recent Applications
                 </h2>
-                <Link to="/applications" className="flex items-center gap-1 text-rose-400 hover:text-purple-400 transition-colors text-sm font-semibold">
-                  View All <ArrowRight className="w-4 h-4" />
+                <Link to="/applications" className="flex items-center gap-1 text-rose-400 hover:text-purple-400 transition-colors text-sm font-semibold group">
+                  View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
 
@@ -392,7 +340,7 @@ const StudentDashboard: React.FC = () => {
                 <div className="text-center py-12">
                   <FileText className="w-16 h-16 text-slate-700 mx-auto mb-4" />
                   <p className="text-slate-400 mb-4">No applications yet</p>
-                  <Link to="/opportunities" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all">
+                  <Link to="/opportunities" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 to-purple-500 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all">
                     <Briefcase className="w-5 h-5" />
                     Browse Opportunities
                   </Link>
@@ -406,20 +354,20 @@ const StudentDashboard: React.FC = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                       whileHover={{ scale: 1.02, x: 5 }}
-                      className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-rose-500/30 transition-all cursor-pointer group"
+                      className="bg-white/5 rounded-xl p-4 border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer group"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <h3 className="text-white font-semibold mb-1 group-hover:text-rose-400 transition-colors">
+                          <h3 className="text-white font-semibold mb-1 group-hover:text-purple-400 transition-colors">
                             {app.job?.role || 'Position'}
                           </h3>
                           <p className="text-slate-400 text-sm">{app.job?.company || 'Company'}</p>
                         </div>
                         <span className={`px-4 py-2 rounded-full text-xs font-semibold ${
-                          app.status === 'PENDING' ? 'bg-cyan-500/20 text-rose-400' :
-                          app.status === 'SHORTLISTED' ? 'bg-green-500/20 text-green-400' :
-                          app.status === 'INTERVIEW_SCHEDULED' ? 'bg-purple-500/20 text-purple-400' :
-                          app.status === 'ACCEPTED' ? 'bg-emerald-500/20 text-emerald-400' :
+                          app.status === 'PENDING' ? 'bg-purple-500/20 text-purple-300' :
+                          app.status === 'SHORTLISTED' ? 'bg-purple-500/20 text-purple-300' :
+                          app.status === 'INTERVIEW_SCHEDULED' ? 'bg-purple-500/20 text-purple-300' :
+                          app.status === 'ACCEPTED' ? 'bg-purple-500/20 text-purple-300' :
                           app.status === 'REJECTED' ? 'bg-red-500/20 text-red-400' :
                           'bg-slate-500/20 text-slate-400'
                         }`}>
@@ -440,26 +388,28 @@ const StudentDashboard: React.FC = () => {
             transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
             className="col-span-12 md:col-span-5"
           >
-            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
-              <div className="flex items-center gap-2 mb-6">
+            <div className="relative glass-panel rounded-2xl p-6 h-full overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="relative z-10 flex items-center gap-2 mb-6">
                 <Activity className="w-5 h-5 text-purple-400" />
                 <h2 className="text-xl font-bold text-white">Recent Activity</h2>
               </div>
-              <div className="space-y-4 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pr-2">
+              <div className="space-y-4 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pr-2 relative z-10">
                 {recentActivity.map((activity, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-3 p-3 rounded-xl bg-slate-900/30 hover:bg-slate-800/50 transition-all border border-slate-800 hover:border-purple-500/30"
+                    className="flex items-start gap-3 p-3 rounded-xl bg-white/5 hover:bg-purple-500/10 transition-all border border-white/5 hover:border-purple-500/50 group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/10 to-indigo-500/10 flex items-center justify-center flex-shrink-0 group-hover:from-purple-500/20 group-hover:to-indigo-500/20 transition-colors">
                       <activity.icon className="w-5 h-5 text-purple-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white">
-                        {activity.action} <span className="text-purple-400 font-semibold">{activity.company}</span>
+                        {activity.action} <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent font-semibold">{activity.company}</span>
                       </p>
                       <p className="text-xs text-slate-500 mt-1">{activity.time}</p>
                     </div>
@@ -476,12 +426,14 @@ const StudentDashboard: React.FC = () => {
             transition={{ duration: 0.4, delay: 0.7, ease: "easeOut" }}
             className="col-span-12 md:col-span-5"
           >
-            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
-              <div className="flex items-center gap-2 mb-6">
-                <Calendar className="w-5 h-5 text-green-400" />
+            <div className="relative glass-panel rounded-2xl p-6 h-full overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="relative z-10 flex items-center gap-2 mb-6">
+                <Calendar className="w-5 h-5 text-indigo-400" />
                 <h2 className="text-xl font-bold text-white">Upcoming Interviews</h2>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-4 relative z-10">
                 {upcomingInterviews.map((interview, index) => (
                   <motion.div
                     key={index}
@@ -489,23 +441,22 @@ const StudentDashboard: React.FC = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.02 }}
-                    className="relative overflow-hidden rounded-xl"
+                    className="relative group"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20" />
-                    <div className="relative p-4 border border-green-500/20 hover:border-green-500/40 transition-all">
+                    <div className="relative bg-white/5 rounded-xl p-4 border border-white/5 hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all">
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="text-white font-semibold text-lg">{interview.company}</h3>
-                        <span className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full font-semibold">
+                        <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs rounded-full font-semibold border border-indigo-500/20">
                           {interview.type}
                         </span>
                       </div>
                       <div className="flex items-center gap-4 text-sm text-slate-400">
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
+                          <Calendar className="w-4 h-4 text-indigo-400" />
                           <span>{interview.date}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-4 h-4 text-indigo-400" />
                           <span>{interview.time}</span>
                         </div>
                       </div>
@@ -529,14 +480,16 @@ const StudentDashboard: React.FC = () => {
             transition={{ duration: 0.4, delay: 0.8, ease: "easeOut" }}
             className="col-span-12 md:col-span-7"
           >
-            <div className="glass-panel rounded-2xl p-6 border border-white/10 h-full">
-              <div className="flex items-center justify-between mb-6">
+            <div className="relative glass-panel rounded-2xl p-6 h-full overflow-hidden">
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+              
+              <div className="relative z-10 flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <Briefcase className="w-6 h-6 text-rose-400" />
                   New Opportunities
                 </h2>
-                <Link to="/opportunities" className="flex items-center gap-1 text-rose-400 hover:text-purple-400 transition-colors text-sm font-semibold">
-                  View All <ArrowRight className="w-4 h-4" />
+                <Link to="/opportunities" className="flex items-center gap-1 text-rose-400 hover:text-purple-400 transition-colors text-sm font-semibold group">
+                  View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
 
@@ -552,7 +505,7 @@ const StudentDashboard: React.FC = () => {
                   <p className="text-slate-400">No opportunities available</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 relative z-10">
                   {opportunities.map((opp, index) => (
                     <motion.div
                       key={opp.id}
@@ -560,7 +513,7 @@ const StudentDashboard: React.FC = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.05 }}
                       whileHover={{ scale: 1.05, y: -5 }}
-                      className="bg-slate-900/50 rounded-xl p-4 border border-slate-800 hover:border-rose-500/30 transition-all cursor-pointer group"
+                      className="bg-white/5 rounded-xl p-4 border border-white/5 hover:border-rose-500/30 transition-all cursor-pointer group"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="text-white font-semibold text-sm line-clamp-2 flex-1 group-hover:text-rose-400 transition-colors">
@@ -577,7 +530,7 @@ const StudentDashboard: React.FC = () => {
                           </div>
                         )}
                         {opp.stipendRange?.max && (
-                          <div className="flex items-center gap-2 text-xs text-green-400 font-semibold">
+                          <div className="flex items-center gap-2 text-xs text-rose-400 font-semibold">
                             <Zap className="w-3 h-3" />
                             <span>₹{opp.stipendRange.max}/month</span>
                           </div>
@@ -598,47 +551,55 @@ const StudentDashboard: React.FC = () => {
             className="col-span-12"
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link to="/resume-analyzer" className="group">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 group-hover:from-yellow-500/30 group-hover:to-orange-500/30 transition-all" />
-                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-yellow-500/30 transition-all">
-                    <BarChart2 className="w-10 h-10 text-yellow-400 mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-white font-semibold mb-1">Resume AI</h3>
-                    <p className="text-slate-400 text-sm">Analyze & improve</p>
+              <Link to="/resume-analyzer" className="group relative">
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-rose-500 to-purple-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+                <div className="relative glass-panel rounded-2xl p-6 h-full hover:-translate-y-1 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-purple-500 p-[1px] mb-4">
+                    <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                      <BarChart2 className="w-6 h-6 text-rose-400" />
+                    </div>
                   </div>
+                  <h3 className="text-white font-bold text-lg mb-1">Resume AI</h3>
+                  <p className="text-slate-400 text-sm">Analyze & improve</p>
                 </div>
               </Link>
 
-              <Link to="/calendar" className="group">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 group-hover:from-green-500/30 group-hover:to-emerald-500/30 transition-all" />
-                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-green-500/30 transition-all">
-                    <Calendar className="w-10 h-10 text-green-400 mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-white font-semibold mb-1">Calendar</h3>
-                    <p className="text-slate-400 text-sm">Manage schedule</p>
+              <Link to="/calendar" className="group relative">
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+                <div className="relative glass-panel rounded-2xl p-6 h-full hover:-translate-y-1 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 p-[1px] mb-4">
+                    <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-purple-400" />
+                    </div>
                   </div>
+                  <h3 className="text-white font-bold text-lg mb-1">Calendar</h3>
+                  <p className="text-slate-400 text-sm">Manage schedule</p>
                 </div>
               </Link>
 
-              <Link to="/profile" className="group">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 group-hover:from-indigo-500/30 group-hover:to-purple-500/30 transition-all" />
-                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-indigo-500/30 transition-all">
-                    <Users className="w-10 h-10 text-indigo-400 mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-white font-semibold mb-1">Profile</h3>
-                    <p className="text-slate-400 text-sm">Update details</p>
+              <Link to="/profile" className="group relative">
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+                <div className="relative glass-panel rounded-2xl p-6 h-full hover:-translate-y-1 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 p-[1px] mb-4">
+                    <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                      <Users className="w-6 h-6 text-indigo-400" />
+                    </div>
                   </div>
+                  <h3 className="text-white font-bold text-lg mb-1">Profile</h3>
+                  <p className="text-slate-400 text-sm">Update details</p>
                 </div>
               </Link>
 
-              <button onClick={() => setShowAnalysisHub(true)} className="group text-left">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-red-500/20 group-hover:from-pink-500/30 group-hover:to-red-500/30 transition-all" />
-                  <div className="relative glass-panel p-6 border border-white/10 group-hover:border-pink-500/30 transition-all">
-                    <TrendingUp className="w-10 h-10 text-pink-400 mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-white font-semibold mb-1">Analytics</h3>
-                    <p className="text-slate-400 text-sm">Track progress</p>
+              <button onClick={() => setShowAnalysisHub(true)} className="group relative text-left w-full">
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+                <div className="relative glass-panel rounded-2xl p-6 h-full hover:-translate-y-1 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 p-[1px] mb-4">
+                    <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-pink-400" />
+                    </div>
                   </div>
+                  <h3 className="text-white font-bold text-lg mb-1">Analytics</h3>
+                  <p className="text-slate-400 text-sm">Track progress</p>
                 </div>
               </button>
             </div>
