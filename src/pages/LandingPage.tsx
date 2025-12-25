@@ -123,7 +123,7 @@ const LandingPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-white/5 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-3"
+                  className="relative group p-8 rounded-2xl h-full backdrop-blur-xl bg-white/5 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-3"
                 >
                     <div className="absolute -top-3 -right-3 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-xs font-bold animate-pulse">
                       🎯 CORE FEATURE
@@ -139,20 +139,6 @@ const LandingPage: React.FC = () => {
                       <p className="text-slate-300 mb-4 leading-relaxed">
                           <span className="font-semibold text-white">"Not Selected"</span> is not an answer. Get AI-powered, personalized explanations for <span className="text-neon-purple">every rejection</span>.
                       </p>
-                      <div className="space-y-2 text-sm text-slate-400">
-                        <div className="flex items-start gap-2">
-                          <span className="text-indigo-400 mt-0.5">✓</span>
-                          <span><span className="font-medium text-white">Pattern Detection:</span> Analyze multiple rejections for common gaps</span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <span className="text-purple-400 mt-0.5">✓</span>
-                          <span><span className="font-medium text-white">Priority Improvements:</span> Ranked action items to fix first</span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <span className="text-pink-400 mt-0.5">✓</span>
-                          <span><span className="font-medium text-white">Export & Track:</span> Save analysis history, measure progress</span>
-                        </div>
-                      </div>
                     </div>
                 </motion.div>
 
@@ -161,7 +147,7 @@ const LandingPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-2"
+                  className="relative group p-8 rounded-2xl h-full  backdrop-blur-xl bg-white/5 border border-white/10 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-2"
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10">
@@ -181,7 +167,7 @@ const LandingPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-2"
+                  className="relative group p-8 rounded-2xl h-full  backdrop-blur-xl bg-white/5 border border-white/10 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-2"
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10">
@@ -201,7 +187,7 @@ const LandingPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-pink-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/20 hover:-translate-y-2"
+                  className="relative group p-8 rounded-2xl h-full  backdrop-blur-xl bg-white/5 border border-white/10 hover:border-pink-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/20 hover:-translate-y-2"
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10">
@@ -221,7 +207,7 @@ const LandingPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-orange-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20 hover:-translate-y-2"
+                  className="relative group p-8 rounded-2xl h-full  backdrop-blur-xl bg-white/5 border border-white/10 hover:border-orange-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20 hover:-translate-y-2"
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10">
@@ -241,7 +227,7 @@ const LandingPage: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative group p-8 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 hover:-translate-y-2"
+                  className="relative group p-8 rounded-2xl h-full  backdrop-blur-xl bg-white/5 border border-white/10 hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 hover:-translate-y-2"
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10">
