@@ -52,7 +52,7 @@ const LandingPage: React.FC = () => {
         </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 min-h-screen flex flex-col justify-center pt-32 px-6 md:px-12 lg:px-24">
+      <section className="relative z-10 min-h-screen flex flex-col justify-start pt-32 px-6 md:px-12 lg:px-24">
         <div className="max-w-4xl w-full">
             <motion.div
                 initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -303,65 +303,7 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Statistics Section */}
-      <section className="relative z-10 py-24 px-6 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Platform <span className="bg-gradient-to-r from-rose-400 to-purple-400 bg-clip-text text-transparent">Impact</span></h2>
-            <p className="text-slate-400 text-lg">Real results from campuses using WhyNot</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-center p-8 rounded-2xl backdrop-blur-xl bg-slate-900/60 border border-indigo-500/20 hover:border-indigo-500/40 transition-all"
-            >
-              <div className="text-5xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-3">85%</div>
-              <div className="text-slate-300 font-semibold mb-2">Faster Applications</div>
-              <div className="text-slate-500 text-sm">Average time saved per opportunity</div>
-            </motion.div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-center p-8 rounded-2xl backdrop-blur-xl bg-slate-900/60 border border-purple-500/20 hover:border-purple-500/40 transition-all"
-            >
-              <div className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-3">92%</div>
-              <div className="text-slate-300 font-semibold mb-2">Student Satisfaction</div>
-              <div className="text-slate-500 text-sm">Found rejection insights helpful</div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-center p-8 rounded-2xl backdrop-blur-xl bg-slate-900/60 border border-rose-500/20 hover:border-rose-500/40 transition-all"
-            >
-              <div className="text-5xl font-bold bg-gradient-to-r from-rose-400 to-orange-400 bg-clip-text text-transparent mb-3">3.5x</div>
-              <div className="text-slate-300 font-semibold mb-2">More Interviews</div>
-              <div className="text-slate-500 text-sm">After implementing AI feedback</div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-center p-8 rounded-2xl backdrop-blur-xl bg-slate-900/60 border border-rose-500/20 hover:border-rose-500/40 transition-all"
-            >
-              <div className="text-5xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent mb-3">100%</div>
-              <div className="text-slate-300 font-semibold mb-2">Digital Transparency</div>
-              <div className="text-slate-500 text-sm">All processes tracked online</div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Why Choose WhyNot Section */}
       <section className="relative z-10 py-24 px-6 backdrop-blur-sm">
@@ -447,92 +389,7 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="relative z-10 py-24 px-6 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">What Students Are <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Saying</span></h2>
-            <p className="text-slate-400 text-lg">Real experiences from students who transformed rejections into success</p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="p-8 rounded-2xl backdrop-blur-xl bg-slate-900/60 border border-purple-500/20 hover:border-purple-500/40 transition-all"
-            >
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
-              </div>
-              <p className="text-slate-300 mb-6 leading-relaxed italic">
-                "After 3 rejections, WhyNot's AI told me my resume lacked specific tech skills mentioned in job descriptions. 
-                I upskilled for 2 weeks and landed 4 interviews in the next cycle!"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-white">
-                  PK
-                </div>
-                <div>
-                  <div className="font-semibold text-white">Priya Kapoor</div>
-                  <div className="text-sm text-slate-400">Computer Engineering, 2024</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-8 rounded-2xl backdrop-blur-xl bg-slate-900/60 border border-indigo-500/20 hover:border-indigo-500/40 transition-all"
-            >
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
-              </div>
-              <p className="text-slate-300 mb-6 leading-relaxed italic">
-                "One-click apply saved me hours. I used to spend 30 minutes per application filling forms. 
-                Now I apply in seconds and spend that time preparing for interviews instead."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white">
-                  AS
-                </div>
-                <div>
-                  <div className="font-semibold text-white">Arjun Sharma</div>
-                  <div className="text-sm text-slate-400">Mechanical Engineering, 2025</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="p-8 rounded-2xl backdrop-blur-xl bg-slate-900/60 border border-rose-500/20 hover:border-rose-500/40 transition-all"
-            >
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
-              </div>
-              <p className="text-slate-300 mb-6 leading-relaxed italic">
-                "The bulk rejection analysis was a game-changer. It showed I was applying to roles requiring 8+ CGPA when I had 7.2. 
-                I focused on companies with flexible criteria and got placed in 2 months!"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center font-bold text-white">
-                  SD
-                </div>
-                <div>
-                  <div className="font-semibold text-white">Sneha Desai</div>
-                  <div className="text-sm text-slate-400">Electronics Engineering, 2024</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Final CTA Section */}
       <section className="relative z-10 py-32 px-6 backdrop-blur-sm">
