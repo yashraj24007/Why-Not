@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({
       case UserRole.PLACEMENT_OFFICER:
         return [
           { label: 'Dashboard', path: '/placement/dashboard', icon: Home },
-          { label: 'Post Job', path: '/placement/post-opportunity', icon: Briefcase },
+          { label: 'Opportunities', path: '/placement/opportunities', icon: Briefcase },
           { label: 'Applications', path: '/placement/applications', icon: FileText },
         ];
       

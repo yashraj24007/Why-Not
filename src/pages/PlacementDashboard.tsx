@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Briefcase, Users, TrendingUp, Calendar, PlusCircle, Clock, 
-  CheckCircle, XCircle, FileText, ArrowRight, Award, Search 
+  CheckCircle, XCircle, FileText, ArrowRight, Award, Search,
+  User, HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabaseClient';
@@ -287,23 +288,23 @@ const PlacementDashboard: React.FC = () => {
                         </div>
                       </Link>
                       
-                      <Link to="/placement/opportunities" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-indigo-500/20 transition-all border border-white/5 hover:border-indigo-500/50 group cursor-pointer">
+                      <Link to="/profile" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-indigo-500/20 transition-all border border-white/5 hover:border-indigo-500/50 group cursor-pointer">
                         <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-400 group-hover:text-indigo-300">
-                          <Briefcase size={20} />
+                          <User size={20} />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-white">Manage Jobs</h3>
-                          <p className="text-xs text-slate-400">Edit active listings</p>
+                          <h3 className="font-semibold text-white">My Profile</h3>
+                          <p className="text-xs text-slate-400">View and edit profile</p>
                         </div>
                       </Link>
 
-                      <Link to="/placement/applications" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-rose-500/20 transition-all border border-white/5 hover:border-rose-500/50 group cursor-pointer">
+                      <Link to="/help-center" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-rose-500/20 transition-all border border-white/5 hover:border-rose-500/50 group cursor-pointer">
                         <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400 group-hover:text-rose-300">
-                          <Users size={20} />
+                          <HelpCircle size={20} />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-white">Review Applications</h3>
-                          <p className="text-xs text-slate-400">Shortlist candidates</p>
+                          <h3 className="font-semibold text-white">Help & Support</h3>
+                          <p className="text-xs text-slate-400">Get assistance</p>
                         </div>
                       </Link>
                     </div>

@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       case UserRole.PLACEMENT_OFFICER:
         return [
           { label: 'Dashboard', path: '/placement/dashboard', icon: Home, gradient: 'from-cyan-400 to-blue-500' },
-          { label: 'Post Opportunity', path: '/placement/post', icon: Briefcase, gradient: 'from-purple-400 to-pink-500' },
+          { label: 'Opportunities', path: '/placement/opportunities', icon: Briefcase, gradient: 'from-purple-400 to-pink-500' },
           { label: 'Applications', path: '/placement/applications', icon: FileText, gradient: 'from-orange-400 to-red-500' },
           { label: 'Calendar', path: '/calendar', icon: Calendar, gradient: 'from-green-400 to-emerald-500' },
           { label: 'Settings', path: '/settings', icon: Settings, gradient: 'from-indigo-400 to-purple-500' },
