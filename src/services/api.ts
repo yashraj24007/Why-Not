@@ -87,7 +87,7 @@ export const api = {
     let query = supabase
       .from('opportunities')
       .select('*, posted_by:profiles(name, organization)')
-      .eq('status', 'ACTIVE');
+      .eq('status', 'active');
 
     if (filters?.type) query = query.eq('type', filters.type);
     if (filters?.department) query = query.eq('department', filters.department);

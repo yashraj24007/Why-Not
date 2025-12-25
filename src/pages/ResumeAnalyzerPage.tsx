@@ -29,8 +29,10 @@ const ResumeAnalyzerPage: React.FC = () => {
   const [showComparison, setShowComparison] = useState(false);
 
   useEffect(() => {
-    loadAnalyses();
-  }, []);
+    if (user?.id) {
+      loadAnalyses();
+    }
+  }, [user?.id]);
 
   const loadAnalyses = async () => {
     if (!user?.id) return;

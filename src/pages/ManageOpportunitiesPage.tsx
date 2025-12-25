@@ -17,7 +17,7 @@ interface Opportunity {
   company_name: string;
   location: string;
   type: string;
-  status: 'ACTIVE' | 'CLOSED' | 'DRAFT';
+  status: 'active' | 'closed' | 'draft';
   posted_by: string;
   created_at: string;
   deadline: string;
@@ -33,6 +33,7 @@ const ManageOpportunitiesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -47,6 +48,7 @@ const ManageOpportunitiesPage: React.FC = () => {
   const fetchOpportunities = async () => {
     try {
       setLoading(true);
+      setError(null);
       const { data, error } = await supabase
         .from('opportunities')
         .select('*')
@@ -55,8 +57,9 @@ const ManageOpportunitiesPage: React.FC = () => {
 
       if (error) throw error;
       setOpportunities(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching opportunities:', error);
+      setError(error.message || 'Failed to load opportunities');
       showToast('error', 'Failed to load opportunities');
     } finally {
       setLoading(false);
@@ -94,9 +97,9 @@ const ManageOpportunitiesPage: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'text-green-600 bg-green-100';
-      case 'CLOSED': return 'text-red-600 bg-red-100';
-      case 'DRAFT': return 'text-yellow-600 bg-yellow-100';
+      case 'active': return 'text-green-600 bg-green-100';
+      case 'closed': return 'text-red-600 bg-red-100';
+      case 'draft': return 'text-yellow-600 bg-yellow-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };

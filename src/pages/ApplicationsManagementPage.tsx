@@ -23,14 +23,30 @@ const ApplicationsManagementPage: React.FC = () => {
 
   const fetchApplications = async () => {
     try {
+      setLoading(true);
+      
+      // First get opportunities posted by this user
+      const { data: myOpportunities } = await supabase
+        .from('opportunities')
+        .select('id')
+        .eq('posted_by', user!.id);
+
+      const opportunityIds = myOpportunities?.map(o => o.id) || [];
+      
+      if (opportunityIds.length === 0) {
+        setApplications([]);
+        setLoading(false);
+        return;
+      }
+
       let query = supabase
         .from('applications')
         .select(`
           *,
-          opportunity:opportunities!inner(title, company_name, posted_by),
+          opportunity:opportunities(title, company_name, posted_by),
           student:profiles(name, email, department)
         `)
-        .eq('opportunity.posted_by', user!.id)
+        .in('opportunity_id', opportunityIds)
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'ALL') {

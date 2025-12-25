@@ -24,10 +24,10 @@ const PlacementDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       fetchDashboardData();
     }
-  }, [user]);
+  }, [user?.id]);
 
   const fetchDashboardData = async () => {
     try {
@@ -38,15 +38,19 @@ const PlacementDashboard: React.FC = () => {
         .eq('posted_by', user!.id);
 
       // Fetch applications for my opportunities
-      const { data: applications } = await supabase
-        .from('applications')
-        .select(`
-          *,
-          opportunity:opportunities!inner(title, posted_by),
-          student:profiles!applications_student_id_fkey(name, email, avatar)
-        `)
-        .eq('opportunity.posted_by', user!.id)
-        .order('created_at', { ascending: false });
+      const myOpportunityIds = opportunities?.map(o => o.id) || [];
+      
+      const { data: applications } = myOpportunityIds.length > 0
+        ? await supabase
+            .from('applications')
+            .select(`
+              *,
+              opportunity:opportunities(title, posted_by),
+              student:profiles!applications_student_id_fkey(name, email, avatar)
+            `)
+            .in('opportunity_id', myOpportunityIds)
+            .order('created_at', { ascending: false })
+        : { data: [] };
 
       // Fetch student stats
       const { count: studentCount } = await supabase
@@ -61,7 +65,7 @@ const PlacementDashboard: React.FC = () => {
 
       setStats({
         totalOpportunities: opportunities?.length || 0,
-        activeOpportunities: opportunities?.filter(o => o.status === 'ACTIVE').length || 0,
+        activeOpportunities: opportunities?.filter(o => o.status === 'active').length || 0,
         totalApplications: applications?.length || 0,
         pendingApplications: applications?.filter(a => a.status === 'PENDING').length || 0,
         totalStudents: studentCount || 0,

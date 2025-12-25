@@ -30,8 +30,10 @@ const CalendarPage: React.FC = () => {
 
   // Load events
   useEffect(() => {
-    loadEvents();
-  }, []);
+    if (user?.id) {
+      loadEvents();
+    }
+  }, [user?.id]);
 
   const loadEvents = async () => {
     try {

@@ -5,13 +5,16 @@ import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import PageTransition from '../components/common/PageTransition';
 import RejectionAnalysisHub from '../components/features/RejectionAnalysisHub';
+import { useToast } from '../contexts/ToastContext';
 
 const ApplicationsPage: React.FC = () => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAnalysisHub, setShowAnalysisHub] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<'single' | 'bulk'>('single');
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
 
   useEffect(() => {
     if (user) {
@@ -25,6 +28,7 @@ const ApplicationsPage: React.FC = () => {
       setApplications(data || []);
     } catch (error) {
       console.error('Error fetching applications:', error);
+      showToast('error', 'Failed to load applications');
     } finally {
       setLoading(false);
     }
@@ -37,9 +41,10 @@ const ApplicationsPage: React.FC = () => {
       setApplications(apps => apps.map(app => 
         app.id === appId ? { ...app, status: newStatus } : app
       ));
+      showToast('success', 'Application status updated');
     } catch (error) {
       console.error('Error updating status:', error);
-      alert('Failed to update status');
+      showToast('error', 'Failed to update status');
     }
   };
 

@@ -11,9 +11,11 @@ import { supabase } from '../services/supabaseClient';
 import { Application, JobOpportunity } from '../types';
 import RejectionAnalysisHub from '../components/features/RejectionAnalysisHub';
 import PageTransition from '../components/common/PageTransition';
+import { useToast } from '../contexts/ToastContext';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [applications, setApplications] = useState<Application[]>([]);
   const [opportunities, setOpportunities] = useState<JobOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ const StudentDashboard: React.FC = () => {
         supabase
           .from('opportunities')
           .select('*')
-          .eq('is_published', true)
+          .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(6)
       ]);
@@ -53,6 +55,7 @@ const StudentDashboard: React.FC = () => {
       if (oppsResult.data) setOpportunities(oppsResult.data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      showToast('error', 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }

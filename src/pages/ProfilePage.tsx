@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   User, Mail, Phone, Book, Award, FileText, Edit, MapPin, 
@@ -33,6 +33,27 @@ const ProfilePage: React.FC = () => {
   const [newSkill, setNewSkill] = useState({ name: '', level: 'Beginner' as 'Beginner' | 'Intermediate' | 'Advanced' });
   const [newLocation, setNewLocation] = useState('');
   const [newRole, setNewRole] = useState('');
+
+  // Update form data when user data changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        phone: user.phone || '',
+        department: user.department || '',
+        cgpa: user.cgpa || 0,
+        major: user.major || '',
+        year: user.year || 0,
+        semester: user.semester || 0,
+        skills: user.skills || [],
+        preferences: {
+          roles: user.preferences?.roles || [],
+          locations: user.preferences?.locations || [],
+          minStipend: user.preferences?.minStipend || 0
+        }
+      });
+    }
+  }, [user]);
 
   const handleSave = async () => {
     setSaving(true);

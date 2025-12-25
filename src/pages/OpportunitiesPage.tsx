@@ -9,9 +9,11 @@ import { useAuth } from '../contexts/AuthContext';
 import PageTransition from '../components/common/PageTransition';
 import { useDebounce } from '../hooks/useDebounce';
 import { LoadingGrid } from '../components/common/LoadingSkeleton';
+import { useToast } from '../contexts/ToastContext';
 
 const OpportunitiesPage: React.FC = () => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [opportunities, setOpportunities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -24,8 +26,10 @@ const OpportunitiesPage: React.FC = () => {
   const debouncedSearch = useDebounce(filters.search, 300);
 
   useEffect(() => {
-    fetchOpportunities();
-  }, [debouncedSearch, filters.type, filters.location, filters.minStipend]);
+    if (user?.id) {
+      fetchOpportunities();
+    }
+  }, [user?.id, debouncedSearch, filters.type, filters.location, filters.minStipend]);
 
   const fetchOpportunities = async () => {
     setLoading(true);
@@ -39,6 +43,7 @@ const OpportunitiesPage: React.FC = () => {
       setOpportunities(data || []);
     } catch (error) {
       console.error('Error fetching opportunities:', error);
+      showToast('error', 'Failed to load opportunities');
     } finally {
       setLoading(false);
     }

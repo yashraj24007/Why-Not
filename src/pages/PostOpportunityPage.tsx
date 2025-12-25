@@ -109,7 +109,7 @@ const PostOpportunityPage: React.FC = () => {
         location: formData.location,
         duration: formData.duration,
         deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
-        status: 'ACTIVE'
+        status: 'active'
       };
 
       let error;
