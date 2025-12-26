@@ -16,20 +16,22 @@
 -- ============================================================================
 -- CLEANUP: Drop existing tables, functions, and extensions
 -- ============================================================================
+-- NOTE: If you get "must be owner" errors, comment out the DROP statements
+-- or run this script in Supabase SQL Editor as the project owner
 
--- Drop tables in reverse dependency order
-DROP TABLE IF EXISTS public.resume_analyses CASCADE;
-DROP TABLE IF EXISTS public.event_reminders CASCADE;
-DROP TABLE IF EXISTS public.calendar_events CASCADE;
-DROP TABLE IF EXISTS public.rejection_analyses CASCADE;
-DROP TABLE IF EXISTS public.notifications CASCADE;
-DROP TABLE IF EXISTS public.applications CASCADE;
-DROP TABLE IF EXISTS public.opportunities CASCADE;
-DROP TABLE IF EXISTS public.student_profiles CASCADE;
-DROP TABLE IF EXISTS public.profiles CASCADE;
+-- Drop tables in reverse dependency order (comment out if permission issues)
+-- DROP TABLE IF EXISTS public.resume_analyses CASCADE;
+-- DROP TABLE IF EXISTS public.event_reminders CASCADE;
+-- DROP TABLE IF EXISTS public.calendar_events CASCADE;
+-- DROP TABLE IF EXISTS public.rejection_analyses CASCADE;
+-- DROP TABLE IF EXISTS public.notifications CASCADE;
+-- DROP TABLE IF EXISTS public.applications CASCADE;
+-- DROP TABLE IF EXISTS public.opportunities CASCADE;
+-- DROP TABLE IF EXISTS public.student_profiles CASCADE;
+-- DROP TABLE IF EXISTS public.profiles CASCADE;
 
--- Drop functions
-DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
+-- Drop functions (comment out if permission issues)
+-- DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 
 -- Ensure UUID extension is enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -55,7 +57,7 @@ $$ LANGUAGE plpgsql;
 -- User Profiles Table
 -- Stores basic user information for both students and placement officers
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
@@ -72,19 +74,23 @@ CREATE TABLE public.profiles (
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for profiles
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
 CREATE POLICY "Users can view their own profile"
   ON public.profiles FOR SELECT
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile"
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Allow profile creation during signup" ON public.profiles;
 CREATE POLICY "Allow profile creation during signup"
   ON public.profiles FOR INSERT
   WITH CHECK (true);
 
 -- Placement officers can view all profiles
+DROP POLICY IF EXISTS "Placement officers can view all profiles" ON public.profiles;
 CREATE POLICY "Placement officers can view all profiles"
   ON public.profiles FOR SELECT
   USING (
@@ -96,6 +102,7 @@ CREATE POLICY "Placement officers can view all profiles"
   );
 
 -- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW
@@ -105,7 +112,7 @@ CREATE TRIGGER update_profiles_updated_at
 -- Student Profiles Table
 -- Extended profile information specific to students
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.student_profiles (
+CREATE TABLE IF NOT EXISTS public.student_profiles (
   id UUID REFERENCES public.profiles(id) ON DELETE CASCADE PRIMARY KEY,
   major TEXT,
   year INTEGER CHECK (year >= 1 AND year <= 5),
@@ -122,21 +129,41 @@ CREATE TABLE public.student_profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add missing columns if they don't exist (for existing tables)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'student_profiles' AND column_name = 'placement_status') THEN
+    ALTER TABLE public.student_profiles ADD COLUMN placement_status TEXT DEFAULT 'unplaced' CHECK (placement_status IN ('unplaced', 'placed', 'in-process'));
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'student_profiles' AND column_name = 'completed_internships') THEN
+    ALTER TABLE public.student_profiles ADD COLUMN completed_internships INTEGER DEFAULT 0;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'student_profiles' AND column_name = 'mentor') THEN
+    ALTER TABLE public.student_profiles ADD COLUMN mentor TEXT;
+  END IF;
+END $$;
+
 ALTER TABLE public.student_profiles ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for student_profiles
+DROP POLICY IF EXISTS "Students can view their own profile" ON public.student_profiles;
 CREATE POLICY "Students can view their own profile"
   ON public.student_profiles FOR SELECT
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Students can insert their own profile" ON public.student_profiles;
 CREATE POLICY "Students can insert their own profile"
   ON public.student_profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Students can update their own profile" ON public.student_profiles;
 CREATE POLICY "Students can update their own profile"
   ON public.student_profiles FOR UPDATE
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Placement officers can view all student profiles" ON public.student_profiles;
 CREATE POLICY "Placement officers can view all student profiles"
   ON public.student_profiles FOR SELECT
   USING (
@@ -148,22 +175,23 @@ CREATE POLICY "Placement officers can view all student profiles"
   );
 
 -- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_student_profiles_updated_at ON public.student_profiles;
 CREATE TRIGGER update_student_profiles_updated_at
   BEFORE UPDATE ON public.student_profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Indexes for performance
-CREATE INDEX idx_student_profiles_cgpa ON public.student_profiles(cgpa);
-CREATE INDEX idx_student_profiles_year ON public.student_profiles(year);
-CREATE INDEX idx_student_profiles_major ON public.student_profiles(major);
-CREATE INDEX idx_student_profiles_placement_status ON public.student_profiles(placement_status);
+CREATE INDEX IF NOT EXISTS idx_student_profiles_cgpa ON public.student_profiles(cgpa);
+CREATE INDEX IF NOT EXISTS idx_student_profiles_year ON public.student_profiles(year);
+CREATE INDEX IF NOT EXISTS idx_student_profiles_major ON public.student_profiles(major);
+CREATE INDEX IF NOT EXISTS idx_student_profiles_placement_status ON public.student_profiles(placement_status);
 
 -- -----------------------------------------------------------------------------
 -- Opportunities Table
 -- Job postings (internships and placements)
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.opportunities (
+CREATE TABLE IF NOT EXISTS public.opportunities (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
@@ -191,9 +219,22 @@ CREATE TABLE public.opportunities (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add missing columns if they don't exist (for existing tables)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'opportunities' AND column_name = 'application_url') THEN
+    ALTER TABLE public.opportunities ADD COLUMN application_url TEXT;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'opportunities' AND column_name = 'posted_date') THEN
+    ALTER TABLE public.opportunities ADD COLUMN posted_date TIMESTAMPTZ DEFAULT NOW();
+  END IF;
+END $$;
+
 ALTER TABLE public.opportunities ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for opportunities
+DROP POLICY IF EXISTS "Everyone can view active opportunities" ON public.opportunities;
 CREATE POLICY "Everyone can view active opportunities"
   ON public.opportunities FOR SELECT
   USING (
@@ -206,6 +247,7 @@ CREATE POLICY "Everyone can view active opportunities"
     )
   );
 
+DROP POLICY IF EXISTS "Placement officers can create opportunities" ON public.opportunities;
 CREATE POLICY "Placement officers can create opportunities"
   ON public.opportunities FOR INSERT
   WITH CHECK (
@@ -216,32 +258,35 @@ CREATE POLICY "Placement officers can create opportunities"
     )
   );
 
+DROP POLICY IF EXISTS "Creators can update their opportunities" ON public.opportunities;
 CREATE POLICY "Creators can update their opportunities"
   ON public.opportunities FOR UPDATE
   USING (posted_by = auth.uid());
 
+DROP POLICY IF EXISTS "Creators can delete their opportunities" ON public.opportunities;
 CREATE POLICY "Creators can delete their opportunities"
   ON public.opportunities FOR DELETE
   USING (posted_by = auth.uid());
 
 -- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_opportunities_updated_at ON public.opportunities;
 CREATE TRIGGER update_opportunities_updated_at
   BEFORE UPDATE ON public.opportunities
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Indexes for performance
-CREATE INDEX idx_opportunities_status ON public.opportunities(status);
-CREATE INDEX idx_opportunities_type ON public.opportunities(type);
-CREATE INDEX idx_opportunities_deadline ON public.opportunities(deadline);
-CREATE INDEX idx_opportunities_posted_date ON public.opportunities(posted_date DESC);
-CREATE INDEX idx_opportunities_company ON public.opportunities(company_name);
+CREATE INDEX IF NOT EXISTS idx_opportunities_status ON public.opportunities(status);
+CREATE INDEX IF NOT EXISTS idx_opportunities_type ON public.opportunities(type);
+CREATE INDEX IF NOT EXISTS idx_opportunities_deadline ON public.opportunities(deadline);
+CREATE INDEX IF NOT EXISTS idx_opportunities_posted_date ON public.opportunities(posted_date DESC);
+CREATE INDEX IF NOT EXISTS idx_opportunities_company ON public.opportunities(company_name);
 
 -- -----------------------------------------------------------------------------
 -- Applications Table
 -- Student applications to opportunities
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.applications (
+CREATE TABLE IF NOT EXISTS public.applications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   opportunity_id UUID REFERENCES public.opportunities(id) ON DELETE CASCADE NOT NULL,
   student_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -262,21 +307,33 @@ CREATE TABLE public.applications (
   UNIQUE(opportunity_id, student_id)
 );
 
+-- Add missing columns if they don't exist (for existing tables)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'applications' AND column_name = 'applied_date') THEN
+    ALTER TABLE public.applications ADD COLUMN applied_date TIMESTAMPTZ DEFAULT NOW();
+  END IF;
+END $$;
+
 ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for applications
+DROP POLICY IF EXISTS "Students can view their own applications" ON public.applications;
 CREATE POLICY "Students can view their own applications"
   ON public.applications FOR SELECT
   USING (student_id = auth.uid());
 
+DROP POLICY IF EXISTS "Students can create applications" ON public.applications;
 CREATE POLICY "Students can create applications"
   ON public.applications FOR INSERT
   WITH CHECK (student_id = auth.uid());
 
+DROP POLICY IF EXISTS "Students can update their own applications" ON public.applications;
 CREATE POLICY "Students can update their own applications"
   ON public.applications FOR UPDATE
   USING (student_id = auth.uid());
 
+DROP POLICY IF EXISTS "Placement officers can view all applications" ON public.applications;
 CREATE POLICY "Placement officers can view all applications"
   ON public.applications FOR SELECT
   USING (
@@ -287,6 +344,7 @@ CREATE POLICY "Placement officers can view all applications"
     )
   );
 
+DROP POLICY IF EXISTS "Placement officers can update applications" ON public.applications;
 CREATE POLICY "Placement officers can update applications"
   ON public.applications FOR UPDATE
   USING (
@@ -298,22 +356,23 @@ CREATE POLICY "Placement officers can update applications"
   );
 
 -- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_applications_updated_at ON public.applications;
 CREATE TRIGGER update_applications_updated_at
   BEFORE UPDATE ON public.applications
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Indexes for performance
-CREATE INDEX idx_applications_student ON public.applications(student_id);
-CREATE INDEX idx_applications_opportunity ON public.applications(opportunity_id);
-CREATE INDEX idx_applications_status ON public.applications(status);
-CREATE INDEX idx_applications_date ON public.applications(applied_date DESC);
+CREATE INDEX IF NOT EXISTS idx_applications_student ON public.applications(student_id);
+CREATE INDEX IF NOT EXISTS idx_applications_opportunity ON public.applications(opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_applications_status ON public.applications(status);
+CREATE INDEX IF NOT EXISTS idx_applications_date ON public.applications(applied_date DESC);
 
 -- -----------------------------------------------------------------------------
 -- Notifications Table
 -- System notifications for users
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.notifications (
+CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   title TEXT NOT NULL,
@@ -328,26 +387,30 @@ CREATE TABLE public.notifications (
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for notifications
+DROP POLICY IF EXISTS "Users can view their own notifications" ON public.notifications;
 CREATE POLICY "Users can view their own notifications"
   ON public.notifications FOR SELECT
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update their own notifications" ON public.notifications;
 CREATE POLICY "Users can update their own notifications"
   ON public.notifications FOR UPDATE
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can delete their own notifications" ON public.notifications;
 CREATE POLICY "Users can delete their own notifications"
   ON public.notifications FOR DELETE
   USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "System can insert notifications" ON public.notifications;
 CREATE POLICY "System can insert notifications"
   ON public.notifications FOR INSERT
   WITH CHECK (true);
 
 -- Indexes for performance
-CREATE INDEX idx_notifications_user ON public.notifications(user_id);
-CREATE INDEX idx_notifications_read ON public.notifications(read);
-CREATE INDEX idx_notifications_created ON public.notifications(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_read ON public.notifications(read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created ON public.notifications(created_at DESC);
 
 -- ============================================================================
 -- FEATURE-SPECIFIC TABLES
@@ -357,7 +420,7 @@ CREATE INDEX idx_notifications_created ON public.notifications(created_at DESC);
 -- Rejection Analyses Table
 -- AI-powered rejection reason analysis
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.rejection_analyses (
+CREATE TABLE IF NOT EXISTS public.rejection_analyses (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   student_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   application_id UUID REFERENCES public.applications(id) ON DELETE CASCADE,
@@ -370,14 +433,17 @@ CREATE TABLE public.rejection_analyses (
 ALTER TABLE public.rejection_analyses ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Students can view their own analyses" ON public.rejection_analyses;
 CREATE POLICY "Students can view their own analyses"
   ON public.rejection_analyses FOR SELECT
   USING (student_id = auth.uid());
 
+DROP POLICY IF EXISTS "Students can insert their own analyses" ON public.rejection_analyses;
 CREATE POLICY "Students can insert their own analyses"
   ON public.rejection_analyses FOR INSERT
   WITH CHECK (student_id = auth.uid());
 
+DROP POLICY IF EXISTS "Placement officers can view all analyses" ON public.rejection_analyses;
 CREATE POLICY "Placement officers can view all analyses"
   ON public.rejection_analyses FOR SELECT
   USING (
@@ -389,15 +455,15 @@ CREATE POLICY "Placement officers can view all analyses"
   );
 
 -- Indexes for performance
-CREATE INDEX idx_rejection_analyses_student ON public.rejection_analyses(student_id);
-CREATE INDEX idx_rejection_analyses_application ON public.rejection_analyses(application_id);
-CREATE INDEX idx_rejection_analyses_created ON public.rejection_analyses(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_rejection_analyses_student ON public.rejection_analyses(student_id);
+CREATE INDEX IF NOT EXISTS idx_rejection_analyses_application ON public.rejection_analyses(application_id);
+CREATE INDEX IF NOT EXISTS idx_rejection_analyses_created ON public.rejection_analyses(created_at DESC);
 
 -- -----------------------------------------------------------------------------
 -- Calendar Events Table
 -- Events for deadlines, interviews, drives, and announcements
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.calendar_events (
+CREATE TABLE IF NOT EXISTS public.calendar_events (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
@@ -414,6 +480,7 @@ CREATE TABLE public.calendar_events (
 ALTER TABLE public.calendar_events ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Students can view all calendar events" ON public.calendar_events;
 CREATE POLICY "Students can view all calendar events"
   ON public.calendar_events FOR SELECT
   USING (
@@ -424,6 +491,7 @@ CREATE POLICY "Students can view all calendar events"
     )
   );
 
+DROP POLICY IF EXISTS "Placement officers can view all calendar events" ON public.calendar_events;
 CREATE POLICY "Placement officers can view all calendar events"
   ON public.calendar_events FOR SELECT
   USING (
@@ -434,6 +502,7 @@ CREATE POLICY "Placement officers can view all calendar events"
     )
   );
 
+DROP POLICY IF EXISTS "Placement officers can create events" ON public.calendar_events;
 CREATE POLICY "Placement officers can create events"
   ON public.calendar_events FOR INSERT
   WITH CHECK (
@@ -444,6 +513,7 @@ CREATE POLICY "Placement officers can create events"
     )
   );
 
+DROP POLICY IF EXISTS "Placement officers can update events" ON public.calendar_events;
 CREATE POLICY "Placement officers can update events"
   ON public.calendar_events FOR UPDATE
   USING (
@@ -454,6 +524,7 @@ CREATE POLICY "Placement officers can update events"
     )
   );
 
+DROP POLICY IF EXISTS "Placement officers can delete events" ON public.calendar_events;
 CREATE POLICY "Placement officers can delete events"
   ON public.calendar_events FOR DELETE
   USING (
@@ -465,23 +536,24 @@ CREATE POLICY "Placement officers can delete events"
   );
 
 -- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_calendar_events_updated_at ON public.calendar_events;
 CREATE TRIGGER update_calendar_events_updated_at
   BEFORE UPDATE ON public.calendar_events
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Indexes for performance
-CREATE INDEX idx_calendar_events_start_date ON public.calendar_events(start_date);
-CREATE INDEX idx_calendar_events_type ON public.calendar_events(event_type);
-CREATE INDEX idx_calendar_events_opportunity ON public.calendar_events(opportunity_id);
-CREATE INDEX idx_calendar_events_application ON public.calendar_events(application_id);
-CREATE INDEX idx_calendar_events_creator ON public.calendar_events(created_by);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_start_date ON public.calendar_events(start_date);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_type ON public.calendar_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_opportunity ON public.calendar_events(opportunity_id);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_application ON public.calendar_events(application_id);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_creator ON public.calendar_events(created_by);
 
 -- -----------------------------------------------------------------------------
 -- Event Reminders Table
 -- User-specific reminders for calendar events
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.event_reminders (
+CREATE TABLE IF NOT EXISTS public.event_reminders (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   event_id UUID NOT NULL REFERENCES public.calendar_events(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -493,32 +565,36 @@ CREATE TABLE public.event_reminders (
 ALTER TABLE public.event_reminders ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can view their own reminders" ON public.event_reminders;
 CREATE POLICY "Users can view their own reminders"
   ON public.event_reminders FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create their own reminders" ON public.event_reminders;
 CREATE POLICY "Users can create their own reminders"
   ON public.event_reminders FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own reminders" ON public.event_reminders;
 CREATE POLICY "Users can update their own reminders"
   ON public.event_reminders FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own reminders" ON public.event_reminders;
 CREATE POLICY "Users can delete their own reminders"
   ON public.event_reminders FOR DELETE
   USING (auth.uid() = user_id);
 
 -- Indexes for performance
-CREATE INDEX idx_event_reminders_user ON public.event_reminders(user_id);
-CREATE INDEX idx_event_reminders_event ON public.event_reminders(event_id);
-CREATE INDEX idx_event_reminders_time ON public.event_reminders(reminder_time) WHERE sent = FALSE;
+CREATE INDEX IF NOT EXISTS idx_event_reminders_user ON public.event_reminders(user_id);
+CREATE INDEX IF NOT EXISTS idx_event_reminders_event ON public.event_reminders(event_id);
+CREATE INDEX IF NOT EXISTS idx_event_reminders_time ON public.event_reminders(reminder_time) WHERE sent = FALSE;
 
 -- -----------------------------------------------------------------------------
 -- Resume Analyses Table
 -- AI-powered resume analysis with ATS scoring
 -- -----------------------------------------------------------------------------
-CREATE TABLE public.resume_analyses (
+CREATE TABLE IF NOT EXISTS public.resume_analyses (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   resume_url TEXT NOT NULL,
@@ -535,18 +611,22 @@ CREATE TABLE public.resume_analyses (
 ALTER TABLE public.resume_analyses ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can view their own resume analyses" ON public.resume_analyses;
 CREATE POLICY "Users can view their own resume analyses"
   ON public.resume_analyses FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create their own resume analyses" ON public.resume_analyses;
 CREATE POLICY "Users can create their own resume analyses"
   ON public.resume_analyses FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own resume analyses" ON public.resume_analyses;
 CREATE POLICY "Users can delete their own resume analyses"
   ON public.resume_analyses FOR DELETE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Placement officers can view all resume analyses" ON public.resume_analyses;
 CREATE POLICY "Placement officers can view all resume analyses"
   ON public.resume_analyses FOR SELECT
   USING (
@@ -558,9 +638,9 @@ CREATE POLICY "Placement officers can view all resume analyses"
   );
 
 -- Indexes for performance
-CREATE INDEX idx_resume_analyses_user ON public.resume_analyses(user_id);
-CREATE INDEX idx_resume_analyses_date ON public.resume_analyses(analyzed_at DESC);
-CREATE INDEX idx_resume_analyses_score ON public.resume_analyses(overall_score);
+CREATE INDEX IF NOT EXISTS idx_resume_analyses_user ON public.resume_analyses(user_id);
+CREATE INDEX IF NOT EXISTS idx_resume_analyses_date ON public.resume_analyses(analyzed_at DESC);
+CREATE INDEX IF NOT EXISTS idx_resume_analyses_score ON public.resume_analyses(overall_score);
 
 -- ============================================================================
 -- SAMPLE DATA (OPTIONAL - COMMENTED OUT)
@@ -741,3 +821,4 @@ BEGIN
   RAISE NOTICE '  1. Create users via Supabase Auth (signup page)';
   RAISE NOTICE '  2. Users will automatically get profile entries';
   RAISE NOTICE '  3. Students can complete their profile setup';
+END $$;
