@@ -45,6 +45,7 @@ export default [
       // React specific rules
       'react/react-in-jsx-scope': 'off', // Not needed in React 17+
       'react/prop-types': 'off', // Using TypeScript for prop validation
+      'react/no-unknown-property': ['error', { ignore: ['intensity', 'position', 'angle', 'penumbra', 'roughness', 'metalness', 'transmission', 'thickness'] }],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

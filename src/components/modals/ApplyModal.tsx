@@ -3,15 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, CheckCircle } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useResponsive } from '../../hooks/useResponsive';
+import { disableBodyScroll, enableBodyScroll } from '../../utils/mobileOptimization';
 
 interface ApplyModalProps {
   isOpen: boolean;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   opportunity: any;
 }
 
 const ApplyModal: React.FC<ApplyModalProps> = ({ isOpen, onClose, opportunity }) => {
   const { user } = useAuth();
+  const { isMobile } = useResponsive();
   const [coverLetter, setCoverLetter] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -25,11 +29,19 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ isOpen, onClose, opportunity })
       setTimeout(() => {
         firstInputRef.current?.focus();
       }, 100);
-      
-      // Prevent scrolling on body when modal is open
-      document.body.style.overflow = 'hidden';
+
+      // Use mobile optimization utilities for scroll control
+      if (isMobile) {
+        disableBodyScroll();
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
     } else {
-      document.body.style.overflow = 'unset';
+      if (isMobile) {
+        enableBodyScroll();
+      } else {
+        document.body.style.overflow = 'unset';
+      }
     }
 
     // Handle ESC key to close modal
@@ -45,9 +57,13 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ isOpen, onClose, opportunity })
 
     return () => {
       document.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = 'unset';
+      if (isMobile) {
+        enableBodyScroll();
+      } else {
+        document.body.style.overflow = 'unset';
+      }
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isMobile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,102 +91,131 @@ const ApplyModal: React.FC<ApplyModalProps> = ({ isOpen, onClose, opportunity })
   return (
     <AnimatePresence>
       {isOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm ${isMobile ? 'p-0' : 'p-4'}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="apply-modal-title"
-          onClick={(e) => {
+          onClick={e => {
             if (e.target === e.currentTarget) {
               onClose();
             }
           }}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? '100%' : 0 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? '100%' : 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className={`bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl ${
+              isMobile ? 'w-full h-full rounded-none' : 'rounded-xl w-full max-w-lg max-h-[90vh]'
+            }`}
             role="document"
           >
-            <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-              <h2 id="apply-modal-title" className="text-xl font-bold text-white">
+            <div
+              className={`border-b border-slate-800 flex justify-between items-center ${isMobile ? 'p-4 sticky top-0 bg-slate-900 z-10' : 'p-6'}`}
+            >
+              <h2
+                id="apply-modal-title"
+                className={`font-bold text-white ${isMobile ? 'text-lg' : 'text-xl'}`}
+              >
                 Apply for {opportunity?.title}
               </h2>
-              <button 
+              <button
                 ref={closeButtonRef}
-                onClick={onClose} 
-                className="text-slate-400 hover:text-white transition-colors"
+                onClick={onClose}
+                className="text-slate-400 hover:text-white transition-colors p-2 -mr-2"
                 aria-label="Close modal"
               >
-                <X className="w-6 h-6" />
+                <X className={isMobile ? 'w-5 h-5' : 'w-6 h-6'} />
               </button>
             </div>
 
-          {isSuccess ? (
-            <div className="p-12 flex flex-col items-center text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-4"
+            {isSuccess ? (
+              <div
+                className={`flex flex-col items-center text-center ${isMobile ? 'p-8' : 'p-12'}`}
               >
-                <CheckCircle className="w-8 h-8" />
-              </motion.div>
-              <h3 className="text-2xl font-bold text-white mb-2">Application Sent!</h3>
-              <p className="text-slate-400">Good luck! You can track your status in the dashboard.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              <div>
-                <label htmlFor="cover-letter" className="block text-sm font-medium text-slate-300 mb-2">
-                  Cover Letter (Optional)
-                </label>
-                <textarea
-                  id="cover-letter"
-                  ref={firstInputRef}
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  placeholder="Why are you a good fit for this role?"
-                  className="w-full h-32 bg-slate-800 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"
-                  aria-label="Cover letter"
-                />
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-4"
+                >
+                  <CheckCircle className="w-8 h-8" />
+                </motion.div>
+                <h3 className={`font-bold text-white mb-2 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
+                  Application Sent!
+                </h3>
+                <p className="text-slate-400">
+                  Good luck! You can track your status in the dashboard.
+                </p>
               </div>
-
-              <div className="bg-slate-800/50 p-4 rounded-lg">
-                <h4 className="text-sm font-medium text-slate-300 mb-2">Your Profile Snapshot</h4>
-                <div className="text-sm text-slate-400">
-                  <p>Name: {user?.name}</p>
-                  <p>CGPA: {user?.cgpa}</p>
-                  <p>Skills: {user?.skills?.map((s: any) => s.name).join(', ')}</p>
+            ) : (
+              <form
+                onSubmit={handleSubmit}
+                className={`space-y-6 ${isMobile ? 'p-4 overflow-y-auto flex-1' : 'p-6'}`}
+              >
+                <div>
+                  <label
+                    htmlFor="cover-letter"
+                    className="block text-sm font-medium text-slate-300 mb-2"
+                  >
+                    Cover Letter (Optional)
+                  </label>
+                  <textarea
+                    id="cover-letter"
+                    ref={firstInputRef}
+                    value={coverLetter}
+                    onChange={e => setCoverLetter(e.target.value)}
+                    placeholder="Why are you a good fit for this role?"
+                    className={`w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none ${
+                      isMobile ? 'h-40 text-base' : 'h-32'
+                    }`}
+                    aria-label="Cover letter"
+                  />
                 </div>
-              </div>
 
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 text-slate-300 hover:text-white transition-colors"
-                  aria-label="Cancel application"
+                <div className="bg-slate-800/50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-slate-300 mb-2">Your Profile Snapshot</h4>
+                  <div className="text-sm text-slate-400 space-y-1">
+                    <p>Name: {user?.name}</p>
+                    <p>CGPA: {user?.cgpa}</p>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <p>Skills: {user?.skills?.map((s: any) => s.name).join(', ')}</p>
+                  </div>
+                </div>
+
+                <div
+                  className={`flex gap-3 ${isMobile ? 'flex-col-reverse sticky bottom-0 bg-slate-900 -mx-4 -mb-4 p-4 border-t border-slate-800' : 'justify-end'}`}
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  aria-label={isSubmitting ? 'Submitting application' : 'Submit application'}
-                >
-                  {isSubmitting ? 'Sending...' : (
-                    <>
-                      Submit Application <Send className="w-4 h-4" aria-hidden="true" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          )}
-        </motion.div>
-      </div>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className={`text-slate-300 hover:text-white transition-colors ${isMobile ? 'px-4 py-3 border border-slate-700 rounded-lg font-medium' : 'px-4 py-2'}`}
+                    aria-label="Cancel application"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                      isMobile ? 'px-4 py-3 text-base' : 'px-6 py-2'
+                    }`}
+                    aria-label={isSubmitting ? 'Submitting application' : 'Submit application'}
+                  >
+                    {isSubmitting ? (
+                      'Sending...'
+                    ) : (
+                      <>
+                        Submit Application <Send className="w-4 h-4" aria-hidden="true" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

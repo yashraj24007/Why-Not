@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, FileText, Tag, Link as LinkIcon, Trash2, Save } from 'lucide-react';
+import { X, Calendar, Clock, FileText, Tag, Trash2, Save } from 'lucide-react';
 import { CalendarEvent, CreateEventRequest, EventType } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import { useResponsive } from '../../hooks/useResponsive';
+import { disableBodyScroll, enableBodyScroll } from '../../utils/mobileOptimization';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -20,10 +22,11 @@ const EventModal: React.FC<EventModalProps> = ({
   event,
   selectedDate,
   onSave,
-  onDelete
+  onDelete,
 }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { isMobile } = useResponsive();
   const isPlacementOfficer = user?.role === 'PLACEMENT_OFFICER';
   const isEditMode = !!event;
   const isReadOnly = !isPlacementOfficer;
@@ -43,19 +46,27 @@ const EventModal: React.FC<EventModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => titleInputRef.current?.focus(), 100);
-      document.body.style.overflow = 'hidden';
-      
+      if (isMobile) {
+        disableBodyScroll();
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
+
       const handleEsc = (e: KeyboardEvent) => {
         if (e.key === 'Escape') onClose();
       };
       document.addEventListener('keydown', handleEsc);
-      
+
       return () => {
         document.removeEventListener('keydown', handleEsc);
-        document.body.style.overflow = 'unset';
+        if (isMobile) {
+          enableBodyScroll();
+        } else {
+          document.body.style.overflow = 'unset';
+        }
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isMobile]);
 
   // Initialize form with event data or selected date
   useEffect(() => {
@@ -63,11 +74,11 @@ const EventModal: React.FC<EventModalProps> = ({
       setTitle(event.title);
       setDescription(event.description || '');
       setEventType(event.event_type);
-      
+
       const start = new Date(event.start_date);
       setStartDate(start.toISOString().split('T')[0]);
       setStartTime(start.toTimeString().substring(0, 5));
-      
+
       if (event.end_date) {
         const end = new Date(event.end_date);
         setEndDate(end.toISOString().split('T')[0]);
@@ -107,11 +118,14 @@ const EventModal: React.FC<EventModalProps> = ({
         description: description.trim() || undefined,
         event_type: eventType,
         start_date: startDateTime.toISOString(),
-        end_date: endDateTime?.toISOString()
+        end_date: endDateTime?.toISOString(),
       };
 
       await onSave(eventData);
-      showToast('success', isEditMode ? 'Event updated successfully' : 'Event created successfully');
+      showToast(
+        'success',
+        isEditMode ? 'Event updated successfully' : 'Event created successfully'
+      );
       onClose();
     } catch (error) {
       console.error('Error saving event:', error);
@@ -184,29 +198,38 @@ const EventModal: React.FC<EventModalProps> = ({
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? '100%' : 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            onClick={(e) => e.target === e.currentTarget && onClose()}
+            exit={{ opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? '100%' : 20 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className={`fixed z-50 flex items-center justify-center ${isMobile ? 'inset-0' : 'inset-0 p-4'}`}
+            onClick={e => e.target === e.currentTarget && onClose()}
           >
-            <div className="relative w-full max-w-2xl bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div
+              className={`relative w-full bg-gradient-to-br from-slate-900 to-slate-800 border border-white/10 shadow-2xl overflow-y-auto ${
+                isMobile ? 'h-full max-w-none rounded-none' : 'max-w-2xl rounded-2xl max-h-[90vh]'
+              }`}
+            >
               {/* Header */}
-              <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-white/10 p-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold flex items-center gap-3">
-                  <Calendar className="w-7 h-7 text-neon-purple" />
+              <div
+                className={`sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-white/10 flex items-center justify-between ${isMobile ? 'p-4' : 'p-6'}`}
+              >
+                <h2
+                  className={`font-bold flex items-center gap-3 ${isMobile ? 'text-lg' : 'text-2xl'}`}
+                >
+                  <Calendar className={`text-neon-purple ${isMobile ? 'w-5 h-5' : 'w-7 h-7'}`} />
                   {isReadOnly ? 'Event Details' : isEditMode ? 'Edit Event' : 'Create Event'}
                 </h2>
                 <button
                   onClick={onClose}
                   className="p-2 rounded-lg hover:bg-white/10 transition-colors"
                 >
-                  <X className="w-6 h-6" />
+                  <X className={isMobile ? 'w-5 h-5' : 'w-6 h-6'} />
                 </button>
               </div>
 
               {/* Content */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <form onSubmit={handleSubmit} className={`space-y-6 ${isMobile ? 'p-4' : 'p-6'}`}>
                 {/* Event Type */}
                 <div>
                   <label className="block text-sm font-semibold mb-3">
@@ -214,7 +237,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     Event Type
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {Object.values(EventType).map((type) => (
+                    {Object.values(EventType).map(type => (
                       <button
                         key={type}
                         type="button"
@@ -227,9 +250,7 @@ const EventModal: React.FC<EventModalProps> = ({
                         } ${isReadOnly ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
                       >
                         <div className="text-2xl mb-1">{getEventTypeIcon(type)}</div>
-                        <div className="text-xs font-medium capitalize">
-                          {type.toLowerCase()}
-                        </div>
+                        <div className="text-xs font-medium capitalize">{type.toLowerCase()}</div>
                       </button>
                     ))}
                   </div>
@@ -244,7 +265,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   <input
                     type="text"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={e => setTitle(e.target.value)}
                     disabled={isReadOnly}
                     placeholder="e.g., Application Deadline - Google"
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-neon-purple transition-colors disabled:opacity-60"
@@ -257,7 +278,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   <label className="block text-sm font-semibold mb-2">Description</label>
                   <textarea
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={e => setDescription(e.target.value)}
                     disabled={isReadOnly}
                     placeholder="Add event details, location, or instructions..."
                     rows={4}
@@ -275,7 +296,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     <input
                       type="date"
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={e => setStartDate(e.target.value)}
                       disabled={isReadOnly}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-neon-purple transition-colors disabled:opacity-60"
                       required
@@ -289,7 +310,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     <input
                       type="time"
                       value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
+                      onChange={e => setStartTime(e.target.value)}
                       disabled={isReadOnly}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-neon-purple transition-colors disabled:opacity-60"
                       required
@@ -306,7 +327,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     <input
                       type="date"
                       value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
+                      onChange={e => setEndDate(e.target.value)}
                       disabled={isReadOnly}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-neon-purple transition-colors disabled:opacity-60"
                     />
@@ -318,7 +339,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     <input
                       type="time"
                       value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
+                      onChange={e => setEndTime(e.target.value)}
                       disabled={isReadOnly}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-neon-purple transition-colors disabled:opacity-60"
                     />
