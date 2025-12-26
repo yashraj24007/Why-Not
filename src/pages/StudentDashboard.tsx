@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
   Briefcase, FileText, Calendar, Brain, TrendingUp, Sparkles,
-  Target, Award, Zap, BarChart2, Flame, Activity, CheckCircle,
+  Target, Award, Zap, BarChart2, Activity, CheckCircle,
   Clock, MapPin, Star, ArrowRight, Eye, ThumbsUp, Users, BookOpen
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,7 +19,6 @@ const StudentDashboard: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [opportunities, setOpportunities] = useState<JobOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loginStreak, setLoginStreak] = useState(1);
   const [profileCompletion, setProfileCompletion] = useState(0);
   const [showAnalysisHub, setShowAnalysisHub] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<Application | undefined>();
@@ -231,23 +230,6 @@ const StudentDashboard: React.FC = () => {
                         )}
                       </div>
                     </div>
-
-                    {/* Streak Badge */}
-                    <motion.div
-                      whileHover={{ scale: 1.05, rotate: 5 }}
-                      className="hidden md:block"
-                    >
-                      <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-rose-600 rounded-2xl blur-xl opacity-40" />
-                        <div className="relative glass-panel rounded-2xl p-6">
-                          <div className="text-center">
-                            <Flame className="w-12 h-12 text-orange-500 mx-auto mb-2" />
-                            <p className="text-3xl font-black text-white">{loginStreak}</p>
-                            <p className="text-xs text-orange-400 font-semibold">Day Streak</p>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
                   </div>
                 </div>
               </div>
