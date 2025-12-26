@@ -49,6 +49,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Helper function to get user role (bypasses RLS to prevent infinite recursion)
+CREATE OR REPLACE FUNCTION get_user_role(user_id UUID)
+RETURNS TEXT AS $$
+  SELECT role FROM public.profiles WHERE id = user_id;
+$$ LANGUAGE SQL SECURITY DEFINER STABLE;
+
 -- ============================================================================
 -- CORE TABLES
 -- ============================================================================
@@ -93,13 +99,7 @@ CREATE POLICY "Allow profile creation during signup"
 DROP POLICY IF EXISTS "Placement officers can view all profiles" ON public.profiles;
 CREATE POLICY "Placement officers can view all profiles"
   ON public.profiles FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()
-      AND p.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 -- Create trigger for updated_at
 DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
@@ -166,13 +166,7 @@ CREATE POLICY "Students can update their own profile"
 DROP POLICY IF EXISTS "Placement officers can view all student profiles" ON public.student_profiles;
 CREATE POLICY "Placement officers can view all student profiles"
   ON public.student_profiles FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 -- Create trigger for updated_at
 DROP TRIGGER IF EXISTS update_student_profiles_updated_at ON public.student_profiles;
@@ -250,13 +244,7 @@ CREATE POLICY "Everyone can view active opportunities"
 DROP POLICY IF EXISTS "Placement officers can create opportunities" ON public.opportunities;
 CREATE POLICY "Placement officers can create opportunities"
   ON public.opportunities FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  WITH CHECK (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 DROP POLICY IF EXISTS "Creators can update their opportunities" ON public.opportunities;
 CREATE POLICY "Creators can update their opportunities"
@@ -336,24 +324,12 @@ CREATE POLICY "Students can update their own applications"
 DROP POLICY IF EXISTS "Placement officers can view all applications" ON public.applications;
 CREATE POLICY "Placement officers can view all applications"
   ON public.applications FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 DROP POLICY IF EXISTS "Placement officers can update applications" ON public.applications;
 CREATE POLICY "Placement officers can update applications"
   ON public.applications FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 -- Create trigger for updated_at
 DROP TRIGGER IF EXISTS update_applications_updated_at ON public.applications;
@@ -446,13 +422,7 @@ CREATE POLICY "Students can insert their own analyses"
 DROP POLICY IF EXISTS "Placement officers can view all analyses" ON public.rejection_analyses;
 CREATE POLICY "Placement officers can view all analyses"
   ON public.rejection_analyses FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_rejection_analyses_student ON public.rejection_analyses(student_id);
@@ -483,57 +453,27 @@ ALTER TABLE public.calendar_events ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Students can view all calendar events" ON public.calendar_events;
 CREATE POLICY "Students can view all calendar events"
   ON public.calendar_events FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'STUDENT'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'STUDENT');
 
 DROP POLICY IF EXISTS "Placement officers can view all calendar events" ON public.calendar_events;
 CREATE POLICY "Placement officers can view all calendar events"
   ON public.calendar_events FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 DROP POLICY IF EXISTS "Placement officers can create events" ON public.calendar_events;
 CREATE POLICY "Placement officers can create events"
   ON public.calendar_events FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  WITH CHECK (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 DROP POLICY IF EXISTS "Placement officers can update events" ON public.calendar_events;
 CREATE POLICY "Placement officers can update events"
   ON public.calendar_events FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 DROP POLICY IF EXISTS "Placement officers can delete events" ON public.calendar_events;
 CREATE POLICY "Placement officers can delete events"
   ON public.calendar_events FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 -- Create trigger for updated_at
 DROP TRIGGER IF EXISTS update_calendar_events_updated_at ON public.calendar_events;
@@ -629,13 +569,7 @@ CREATE POLICY "Users can delete their own resume analyses"
 DROP POLICY IF EXISTS "Placement officers can view all resume analyses" ON public.resume_analyses;
 CREATE POLICY "Placement officers can view all resume analyses"
   ON public.resume_analyses FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'PLACEMENT_OFFICER'
-    )
-  );
+  USING (get_user_role(auth.uid()) = 'PLACEMENT_OFFICER');
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_resume_analyses_user ON public.resume_analyses(user_id);
