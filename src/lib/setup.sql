@@ -170,7 +170,7 @@ CREATE TABLE public.opportunities (
   type TEXT NOT NULL CHECK (type IN ('INTERNSHIP', 'PLACEMENT')),
   company_name TEXT NOT NULL,
   company_logo_url TEXT,
-  application_url TEXT NOT NULL,
+  application_url TEXT, -- Optional: External application URL
   posted_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   department TEXT,
   required_skills JSONB DEFAULT '[]'::jsonb,

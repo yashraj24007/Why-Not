@@ -51,19 +51,30 @@ const OpportunitiesPage: React.FC = () => {
   };
 
   const handleApplyClick = async (opp: any) => {
-    if (opp?.application_url) {
-      // Track application internally before redirecting
-      if (user?.id) {
-        try {
-          await api.applyToOpportunity(opp.id, user.id);
-        } catch (error) {
-          console.error('Failed to track application:', error);
-          // Continue to open URL even if tracking fails
+    if (!user?.id) {
+      showToast('error', 'Please login to apply');
+      return;
+    }
+
+    try {
+      // Apply internally through the system
+      await api.applyToOpportunity(opp.id, user.id);
+      showToast('success', 'Application submitted successfully!');
+      
+      // If external URL exists, optionally open it
+      if (opp?.application_url) {
+        const shouldOpenExternal = window.confirm('Application submitted! Would you also like to visit the external application page?');
+        if (shouldOpenExternal) {
+          window.open(opp.application_url, '_blank', 'noopener,noreferrer');
         }
       }
-      window.open(opp.application_url, '_blank', 'noopener,noreferrer');
-    } else {
-      alert('Application link not provided yet. Please check back or contact the placement office.');
+    } catch (error: any) {
+      console.error('Failed to submit application:', error);
+      if (error.message?.includes('duplicate')) {
+        showToast('error', 'You have already applied to this opportunity');
+      } else {
+        showToast('error', 'Failed to submit application. Please try again.');
+      }
     }
   };
 

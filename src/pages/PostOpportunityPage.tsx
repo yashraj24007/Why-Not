@@ -83,8 +83,8 @@ const PostOpportunityPage: React.FC = () => {
 
     try {
       // Validate required fields
-        if (!formData.title || !formData.company_name || !formData.description || !formData.application_url) {
-        throw new Error('Please fill in all required fields');
+      if (!formData.title || !formData.company_name || !formData.description) {
+        throw new Error('Please fill in all required fields (Title, Company, Description)');
       }
 
       // Parse skills
@@ -94,12 +94,11 @@ const PostOpportunityPage: React.FC = () => {
         .filter(s => s.length > 0)
         .map(name => ({ name, level: 'Intermediate' }));
 
-      const opportunityData = {
+      const opportunityData: any = {
         title: formData.title,
         description: formData.description,
         type: formData.type,
         company_name: formData.company_name,
-        application_url: formData.application_url,
         posted_by: user!.id,
         department: formData.department,
         required_skills: skills,
@@ -111,6 +110,11 @@ const PostOpportunityPage: React.FC = () => {
         deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
         status: 'active'
       };
+
+      // Only include application_url if the column exists and value is provided
+      if (formData.application_url) {
+        opportunityData.application_url = formData.application_url;
+      }
 
       let error;
       if (isEditMode) {

@@ -21,7 +21,7 @@ interface Opportunity {
   posted_by: string;
   created_at: string;
   deadline: string;
-  application_url: string;
+  application_url?: string; // Optional field
 }
 
 const ManageOpportunitiesPage: React.FC = () => {
