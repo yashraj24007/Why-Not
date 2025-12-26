@@ -1,199 +1,98 @@
 <div align="center">
 
-# 🎓 WhyNot - Campus Placement Intelligence Platform
+# 🎓 WhyNot
 
-### Turning Silent Rejections Into Actionable Insights
-
-**A streamlined campus placement platform connecting students with opportunities through AI-powered rejection analysis, intelligent matching, and simplified application tracking.**
+### AI-Powered Career Intelligence for Campus Placements
 
 [![React](https://img.shields.io/badge/React-19.2-61dafb?style=flat-square&logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-06b6d4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e?style=flat-square&logo=supabase)](https://supabase.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Supabase](https://img.shields.io/badge/Supabase-2.0-3ecf8e?style=flat-square&logo=supabase)](https://supabase.com/)
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Tech Stack](#-tech-stack) • [Documentation](#-project-structure) • [Deployment](#-deployment)
+**[Live Demo](https://why-not-teal.vercel.app)** • [Features](#-features) • [Quick Start](#-quick-start) • [Tech Stack](#-tech-stack)
 
 </div>
 
 ---
 
-## 🎯 Problem Statement
+## 📌 The Problem
 
-Campus placement processes face critical systemic challenges:
+**Campus placements are broken.** Students apply blindly, get rejected silently, and never understand why. 97% of candidates receive zero feedback, leading to repeated mistakes and diminished confidence. Placement cells struggle with manual tracking, fragmented communication, and zero visibility into student progress.
 
-| Challenge | Impact on Stakeholders |
-|-----------|----------------------|
-| 📧 **Scattered Communication** | WhatsApp groups, email threads, manual office visits |
-| 📊 **Manual Tracking** | Placement cells manually maintaining spreadsheets |
-| 🔒 **Zero Transparency** | Students miss deadlines, unclear application statuses |
-| ❌ **Silent Rejections** | No feedback or improvement guidance for rejected candidates |
-| 🔄 **Complex Workflows** | Multiple approval layers slow down placement process |
+**Critical Gaps:**
 
-**97% of students never receive feedback on why they were rejected**, leading to repeated mistakes and decreased confidence.
+- ❌ No structured feedback on rejections
+- 🔒 Zero transparency in application pipeline
+- 📊 Manual spreadsheet chaos for placement offices
+- 📧 Scattered communication (WhatsApp, email, office visits)
+- 🎯 Students can't identify skill gaps or improvement areas
 
 ---
 
-## 💡 Solution
+## 💡 The Solution
 
-WhyNot provides an integrated, intelligent placement ecosystem with:
+**WhyNot transforms rejections into growth opportunities.** Our AI-powered platform analyzes every rejection to provide personalized insights on skill gaps, resume improvements, and actionable next steps. Students understand what to fix. Placement offices gain real-time analytics and streamlined workflows.
 
-| Feature | Impact |
-|---------|--------|
-| 🎯 **Smart Matching** | Skill & CGPA-based opportunity recommendations with match percentage |
-| 🤖 **AI Rejection Coach** | Personalized rejection analysis via Google Gemini 2.0 Flash with actionable insights |
-| 🔄 **Streamlined Workflow** | Direct application submission: PENDING → SHORTLISTED → INTERVIEW_SCHEDULED → ACCEPTED/REJECTED |
-| 📊 **Live Analytics** | Real-time placement dashboards for officers |
-| 📄 **Resume Hub** | Secure cloud storage with Supabase (PDF, 10MB limit) |
-| 🔔 **Real-time Notifications** | Database-backed notification system with instant updates |
-| 📅 **Smart Calendar** | Centralized deadline and interview tracking |
+### Core Value Proposition
 
----
+<table>
+<tr>
+<td width="50%">
 
-## 🚀 Features
+**For Students**
 
-### 👨‍🎓 For Students
+- 🤖 **AI Rejection Analysis** - Understand exactly why you were rejected
+- 🎯 **Smart Matching** - Apply to jobs you're qualified for (match scores)
+- 📄 **Resume Intelligence** - ATS compatibility, keyword analysis, scoring
+- 📊 **Unified Dashboard** - Track all applications in one place
+- 📅 **Auto Reminders** - Never miss an interview or deadline
 
-#### 📋 **Digital Profile Management**
-- Comprehensive profile with resume upload, skills, preferences
-- Resume manager with PDF upload, view, download (Supabase Storage)
-- Edit mode with inline field editing
-- Custom department/branch support
+</td>
+<td width="50%">
 
-#### 🎯 **Smart Opportunity Matching**
-- Skill match percentage based on required skills vs. student skills
-- Filter by type (internship/placement), location, stipend
-- Debounced search for smooth UX (300ms delay)
-- Real-time availability status
+**For Placement Officers**
 
-#### 🔄 **One-Click Applications**
-- Apply with pre-filled cover letter templates
-- Real-time status tracking: PENDING → SHORTLISTED → INTERVIEW_SCHEDULED → ACCEPTED/REJECTED
-- Application timeline with visual progress and status cards
-- Bulk application management
+- 📈 **Live Analytics** - Placement rates, trends, performance metrics
+- 🎯 **Pipeline Management** - Post jobs, review applications, track progress
+- 👥 **Student Insights** - Identify skill gaps, view performance data
+- 📋 **One-Click Reports** - Export placement data for stakeholders
+- 🔔 **Targeted Outreach** - Send opportunities to eligible students
 
-#### 🤖 **AI Rejection Coach**
-- Automatic prompt when application is rejected (purple card on Applications page)
-- Get personalized improvement insights via Gemini 2.0 Flash
-- Understand skill gaps, CGPA requirements, and missing qualifications
-- Actionable suggestions for future applications
-- Single or bulk rejection analysis
-
-#### 📊 **Dashboard**
-- Overview of all applications with recent activity
-- Profile completion tracking
-- Application statistics (total, interviews, offers)
-- Quick access to available opportunities
-
-### 🏛️ For Placement Officers
-
-#### 📝 **Opportunity Management**
-- Post internships and placements with rich details
-- Set required skills, CGPA, deadlines, and locations
-- Draft, publish, and close opportunities
-- Bulk actions for efficient management
-
-#### 👥 **Application Review System**
-- View all applications in one dashboard
-- Filter by status, department, CGPA
-- Direct workflow: Update status instantly
-- Add rejection reasons for student feedback
-- Schedule interviews with calendar integration
-
-#### 📊 **Analytics Dashboard**
-- Real-time placement statistics
-- Application funnel metrics
-- Track placement rates
-- Active jobs and pending applications overview
-
-#### 📅 **Calendar & Scheduling**
-- Create interview events
-- Event management with details
-- Deadline tracking
-
-#### 🔐 **University Authorization**
-- Secure signup with university codes
-- Access control for sensitive data
-- Manage all departments centrally
+</td>
+</tr>
+</table>
 
 ---
 
-## 🏗️ Project Structure
+## ✨ Features
 
-WhyNot follows a professional, scalable architecture:
+### 🤖 AI-Powered Intelligence
 
-```
-WhyNot/
-├── src/
-│   ├── components/
-│   │   ├── common/         # Reusable UI components
-│   │   │   ├── Button.tsx
-│   │   │   ├── SEO.tsx
-│   │   │   ├── LoadingSpinner.tsx
-│   │   │   ├── ThreeScene.tsx (3D animations)
-│   │   │   ├── ParticleBackground.tsx
-│   │   │   └── ...
-│   │   ├── layout/         # Layout components
-│   │   │   ├── Header.tsx
-│   │   │   ├── Footer.tsx
-│   │   │   └── Sidebar.tsx
-│   │   ├── modals/         # Modal dialogs
-│   │   │   ├── ApplyModal.tsx
-│   │   │   ├── EventModal.tsx
-│   │   │   └── ExplanationModal.tsx
-│   │   └── features/       # Feature-specific components
-│   │       ├── CalendarGrid.tsx
-│   │       ├── RejectionAnalysisHub.tsx
-│   │       ├── ResumeUpload.tsx
-│   │       └── ...
-│   ├── pages/              # Route-level page components
-│   │   ├── LandingPage.tsx
-│   │   ├── LoginPage.tsx
-│   │   ├── SignupPage.tsx
-│   │   ├── StudentDashboard.tsx
-│   │   ├── OpportunitiesPage.tsx
-│   │   ├── ApplicationsPage.tsx
-│   │   ├── ProfilePage.tsx
-│   │   ├── PlacementDashboard.tsx
-│   │   ├── PostOpportunityPage.tsx
-│   │   ├── ApplicationsManagementPage.tsx
-│   │   ├── ResumeAnalyzerPage.tsx
-│   │   ├── CalendarPage.tsx
-│   │   └── ...
-│   ├── services/           # API clients & business logic
-│   │   ├── supabaseClient.ts
-│   │   ├── api.ts
-│   │   ├── geminiService.ts
-│   │   ├── storageService.ts
-│   │   ├── resumeAnalyzerService.ts
-│   │   ├── notificationService.ts
-│   │   └── calendarService.ts
-│   ├── contexts/           # React Context providers
-│   │   ├── AuthContext.tsx
-│   │   └── ToastContext.tsx
-│   ├── hooks/              # Custom React hooks
-│   │   ├── useDebounce.ts
-│   │   └── useScrollToTop.ts
-│   ├── types.ts            # TypeScript type definitions
-│   ├── App.tsx             # Main application entry
-│   ├── index.tsx           # Root entry point
-│   └── index.css           # Global Tailwind styles
-├── public/                 # Static assets
-├── setup.sql               # Database schema + RLS policies
-├── vite.config.ts          # Vite configuration
-├── tailwind.config.js      # Tailwind configuration
-├── tsconfig.json           # TypeScript configuration
-└── package.json            # Dependencies
-```
+- **Rejection Analysis** - Personalized feedback on why applications failed (skill gaps, CGPA, experience)
+- **Bulk Pattern Detection** - Analyze multiple rejections to identify common issues
+- **Resume Scoring** - Comprehensive ATS analysis with section-wise feedback (0-100 score)
+- **Keyword Optimization** - Identify missing keywords for target roles
 
-### Design Principles
+### 📊 Application Management
 
-- ✅ **Component Composition** - Modular, reusable components
-- ✅ **Type Safety** - Strict TypeScript with comprehensive interfaces
-- ✅ **Performance First** - Lazy loading, code splitting, optimized bundles
-- ✅ **Accessibility** - WCAG AA compliant with keyboard navigation
-- ✅ **SEO Optimized** - Dynamic meta tags and semantic HTML
-- ✅ **Pure Black Theme** - Modern, minimalist UI with purple/rose accents
+- **Smart Filters** - Search by company, role, status, date range
+- **Status Tracking** - Real-time updates (Pending → Shortlisted → Interview → Selected/Rejected)
+- **Calendar Integration** - Interview schedules, deadline reminders, meeting links
+- **PDF Exports** - Download analysis reports and application history
+
+### 🎯 Opportunity Discovery
+
+- **Match Scores** - See your compatibility before applying (skills + CGPA)
+- **Advanced Filters** - CGPA requirements, skills, location, job type
+- **Quick Apply** - One-click applications with profile auto-fill
+- **Saved Jobs** - Bookmark opportunities for later
+
+### 📈 Analytics & Insights
+
+- **Placement Dashboards** - Real-time statistics and trends (Officer view)
+- **Student Performance** - Track application success rates, identify improvement areas
+- **Skill Gap Reports** - Department-wise analysis of missing skills
+- **Company Insights** - Hiring patterns, requirements, success rates
 
 ---
 
@@ -201,90 +100,100 @@ WhyNot/
 
 ### Prerequisites
 
-Ensure you have the following installed:
-
-- **Node.js** 18+ ([Download](https://nodejs.org/))
-- **npm** 9+ (comes with Node.js)
-- **Git** ([Download](https://git-scm.com/))
-- **Supabase** account ([Sign up here](https://supabase.com))
-- **Google Gemini API** key ([Get it here](https://ai.google.dev))
+```bash
+Node.js 18+ | npm 9+ | Supabase Account
+```
 
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Yash-Raj-2403/Why-Not.git
-   cd Why-Not
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-   
-   Create a `.env` file in the root directory:
-   
-   ```env
-   # Supabase Configuration
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-   # Google Gemini AI
-   VITE_GEMINI_API_KEY=your_gemini_api_key
-   ```
-   
-   **🔑 How to get API keys:**
-   - **Supabase**: Create project → Settings → API → Copy URL and `anon` key
-   - **Gemini**: Visit [Google AI Studio](https://ai.google.dev) → Get API Key
-
-4. **Set up Supabase database**
-   
-   Open Supabase SQL Editor and run:
-   ```sql
-   -- Copy the content from setup.sql and execute
-   ```
-
-5. **Configure Supabase Storage (for resumes)**
-   
-   Run this in Supabase SQL Editor:
-   
-   ```sql
-   -- Create resumes bucket
-   INSERT INTO storage.buckets (id, name, public) 
-   VALUES ('resumes', 'resumes', false)
-   ON CONFLICT DO NOTHING;
-
-   -- RLS policies for user-scoped access
-   CREATE POLICY "Users upload own resume"
-   ON storage.objects FOR INSERT TO authenticated
-   WITH CHECK (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
-
-   CREATE POLICY "Users view own resume"
-   ON storage.objects FOR SELECT TO authenticated
-   USING (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
-
-   CREATE POLICY "Users delete own resume"
-   ON storage.objects FOR DELETE TO authenticated
-   USING (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
-   ```
-
-6. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-7. **Open your browser**
-   
-   Navigate to `http://localhost:5173` 🎉
-
-### Build for Production
 
 ```bash
-npm run build      # Build optimized production bundle
-npm run preview    # Preview production build locally
+git clone https://github.com/yourusername/whynot.git
+cd whynot
 ```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Configure environment variables**
+
+```bash
+cp .env.example .env
+```
+
+Add your credentials to `.env`:
+
+```env
+# Supabase
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# AI (HuggingFace Free Tier)
+VITE_HUGGINGFACE_API_KEY=your_hf_token
+
+# OAuth
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+VITE_GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# App
+VITE_APP_URL=http://localhost:3000
+```
+
+4. **Set up database**
+
+Create these tables in Supabase:
+
+```sql
+-- Profiles
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  role TEXT CHECK (role IN ('student', 'officer')),
+  full_name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  cgpa NUMERIC,
+  skills TEXT[],
+  resume_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Applications
+CREATE TABLE applications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  company TEXT NOT NULL,
+  role TEXT NOT NULL,
+  required_skills TEXT[],
+  min_cgpa NUMERIC,
+  status TEXT DEFAULT 'pending',
+  applied_date TIMESTAMP DEFAULT NOW()
+);
+
+-- Opportunities
+CREATE TABLE opportunities (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  posted_by UUID REFERENCES profiles(id),
+  company_name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  required_skills TEXT[],
+  min_cgpa NUMERIC,
+  deadline TIMESTAMP,
+  status TEXT DEFAULT 'open'
+);
+```
+
+Enable Row Level Security (RLS) policies for data protection.
+
+5. **Run development server**
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000`
 
 ---
 
@@ -292,617 +201,172 @@ npm run preview    # Preview production build locally
 
 ### Frontend
 
-| Technology | Version | Purpose |
-|-----------|---------|---------|
-| [React](https://reactjs.org/) | 19.2.3 | UI library with modern hooks |
-| [TypeScript](https://www.typescriptlang.org/) | 5.8.2 | Type-safe development |
-| [Vite](https://vitejs.dev/) | 6.2.0 | Lightning-fast build tool & HMR |
-| [Tailwind CSS](https://tailwindcss.com/) | 4.1.18 | Utility-first styling with glass morphism |
-| [Framer Motion](https://www.framer.com/motion/) | 12.23.26 | Smooth animations & transitions |
-| [Three.js](https://threejs.org/) | 0.182.0 | 3D graphics (lazy loaded) |
-| [React Router](https://reactrouter.com/) | 7.11.0 | Client-side routing |
-| [Lucide React](https://lucide.dev/) | 0.562.0 | Beautiful icon library |
+- **React 19.2** with TypeScript - Type-safe component architecture
+- **Vite 6.4** - Lightning-fast HMR and optimized builds
+- **Tailwind CSS 4.1** - Utility-first styling with custom design system
+- **Three.js** - Interactive 3D landing page animations
+- **Framer Motion** - Smooth page transitions and micro-interactions
 
-### Backend & Infrastructure
+### Backend & Services
 
-**Supabase (Backend-as-a-Service)**
-```
-├── PostgreSQL 15+        → Relational database
-├── Supabase Auth         → Email/password + Google OAuth authentication
-├── Row Level Security    → Role-based access control
-├── Realtime              → Real-time subscriptions for notifications
-└── Storage               → Resume file storage (PDFs, 10MB limit)
-```
+- **Supabase** - PostgreSQL database, authentication, real-time subscriptions, file storage
+- **HuggingFace Inference API** - Free AI analysis (Mistral-7B-Instruct)
+- **Google OAuth 2.0** - Secure authentication
 
-### AI & External Services
+### Features & Tools
 
-| Service | Purpose |
-|---------|---------|
-| **Google Gemini 2.0 Flash Experimental** | Rejection analysis & improvement insights |
-| **@google/genai** (v1.34.0) | AI client library |
-
-### Development Tools
-
-- **ESLint** → Code linting and quality checks
-- **PostCSS** → CSS processing and optimization
-- **npm** → Package manager
-- **Git** → Version control
+- **jsPDF** - PDF report generation with branded templates
+- **React Router v7** - Client-side routing
+- **Zod** - Runtime validation
+- **Vitest** - Unit and integration testing (69 tests)
+- **ESLint + Prettier** - Code quality and formatting
 
 ---
 
-## 👥 User Roles & Permissions
-
-### 🎓 Student
-**Route Prefix:** `/dashboard`, `/opportunities`, `/applications`, `/profile`
-
-**Key Permissions:**
-- ✅ Browse opportunities with smart matching
-- ✅ Apply directly with one click
-- ✅ Track all applications in real-time
-- ✅ Upload and manage resume (PDF, 10MB)
-- ✅ Get AI rejection analysis
-- ✅ View personalized calendar
-- ✅ Update profile and preferences
-- ✅ Export application history
-
-### 🏛️ Placement Officer
-**Route Prefix:** `/placement/*`
-
-**Key Permissions:**
-- ✅ Post internships and placements
-- ✅ Manage all applications across departments
-- ✅ Update application statuses directly
-- ✅ Schedule interviews with calendar
-- ✅ View analytics dashboard
-- ✅ Export reports (CSV)
-- ✅ Manage calendar events
-- ✅ Require university authorization code for signup
-- ✅ Access all departments (not restricted to one branch)
-
-### Authentication Flow
+## 📁 Project Structure
 
 ```
-User visits /signup
-      ↓
-Selects role (Student/Placement Officer)
-      ↓
-[If Officer] → Enter university authorization code
-      ↓
-[If Student] → Select department/branch
-      ↓
-Supabase Auth creates account
-      ↓
-Profile created in 'profiles' table with role
-      ↓
-RLS policies automatically apply based on role
-      ↓
-User redirected to role-specific dashboard
-```
-
-### OAuth Support
-
-- ✅ **Google Sign-In** - One-click signup/login
-- ✅ Automatic profile creation
-- ✅ Role selection during OAuth flow
-
----
-
-## 🗄️ Database Schema
-
-### Core Tables
-
-#### **profiles** (All Users)
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | User ID (from Supabase Auth) |
-| `email` | TEXT | User email (unique) |
-| `name` | TEXT | Full name |
-| `role` | TEXT | `STUDENT` \| `PLACEMENT_OFFICER` |
-| `department` | TEXT | Department/branch |
-| `organization` | TEXT | Organization name |
-| `phone` | TEXT | Contact number |
-| `avatar` | TEXT | Profile picture URL |
-| `created_at` | TIMESTAMPTZ | Account creation time |
-| `updated_at` | TIMESTAMPTZ | Last update time |
-
-#### **student_profiles** (Students Only)
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK, FK) | References `profiles.id` |
-| `cgpa` | DECIMAL(4,2) | Current CGPA (0.00-10.00) |
-| `major` | TEXT | Major/specialization |
-| `year` | INTEGER | Current year (1-5) |
-| `semester` | INTEGER | Current semester (1-10) |
-| `skills` | JSONB | Skills array |
-| `preferences` | JSONB | Job preferences |
-| `resume_url` | TEXT | Supabase Storage URL |
-| `cover_letter` | TEXT | Default cover letter |
-| `placement_status` | TEXT | `unplaced` \| `placed` \| `in-process` |
-| `completed_internships` | INTEGER | Number of completed internships |
-
-#### **opportunities** (Jobs/Internships)
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Opportunity ID |
-| `title` | TEXT | Job title |
-| `description` | TEXT | Job description |
-| `type` | TEXT | `INTERNSHIP` \| `PLACEMENT` |
-| `company_name` | TEXT | Company name |
-| `company_logo_url` | TEXT | Company logo |
-| `application_url` | TEXT | Optional external application URL |
-| `posted_by` | UUID (FK) | Placement officer who posted |
-| `department` | TEXT | Target department |
-| `required_skills` | JSONB | Required skills array |
-| `responsibilities` | JSONB | Job responsibilities |
-| `eligibility` | JSONB | Eligibility criteria |
-| `min_cgpa` | DECIMAL(3,2) | Minimum CGPA requirement |
-| `stipend_min` | INTEGER | Minimum stipend/salary |
-| `stipend_max` | INTEGER | Maximum stipend/salary |
-| `location` | TEXT | Job location |
-| `duration` | TEXT | Duration (for internships) |
-| `deadline` | TIMESTAMPTZ | Application deadline |
-| `status` | TEXT | `active` \| `closed` \| `draft` |
-| `created_at` | TIMESTAMPTZ | Posted date |
-
-#### **applications**
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Application ID |
-| `student_id` | UUID (FK) | Student who applied |
-| `opportunity_id` | UUID (FK) | Opportunity applied to |
-| `status` | TEXT | `PENDING` \| `SHORTLISTED` \| `INTERVIEW_SCHEDULED` \| `ACCEPTED` \| `REJECTED` |
-| `cover_letter` | TEXT | Student's cover letter |
-| `interview_date` | TIMESTAMPTZ | Scheduled interview date/time |
-| `interview_mode` | TEXT | `online` \| `offline` |
-| `interview_meeting_link` | TEXT | Online meeting link |
-| `rejection_reason` | TEXT | Reason for rejection (optional) |
-| `applied_date` | TIMESTAMPTZ | Application submission time |
-| `created_at` | TIMESTAMPTZ | Record creation time |
-| `updated_at` | TIMESTAMPTZ | Last status update time |
-
-#### **notifications**
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Notification ID |
-| `user_id` | UUID (FK) | User receiving notification |
-| `title` | TEXT | Notification title |
-| `message` | TEXT | Notification content |
-| `type` | TEXT | `application_status` \| `new_opportunity` \| `interview_scheduled` \| etc. |
-| `read` | BOOLEAN | Read status (default: false) |
-| `related_id` | TEXT | Related entity ID |
-| `created_at` | TIMESTAMPTZ | Creation time |
-
-#### **rejection_analyses**
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Analysis ID |
-| `student_id` | UUID (FK) | Student who received analysis |
-| `application_id` | UUID (FK) | Related application |
-| `analysis_type` | TEXT | `single` \| `bulk` \| `pattern` |
-| `analysis_text` | TEXT | AI-generated analysis |
-| `pattern_data` | JSONB | Common patterns (for bulk analysis) |
-| `created_at` | TIMESTAMPTZ | Creation time |
-
-#### **calendar_events**
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Event ID |
-| `title` | TEXT | Event title |
-| `description` | TEXT | Event description |
-| `event_type` | TEXT | `interview` \| `deadline` \| `placement_drive` \| `announcement` |
-| `event_date` | TIMESTAMPTZ | Event date and time |
-| `created_by` | UUID (FK) | User who created event |
-| `related_to` | TEXT | Related entity type |
-| `created_at` | TIMESTAMPTZ | Creation time |
-
-### Row Level Security (RLS) Policies
-
-```sql
--- Students can only view their own applications
-CREATE POLICY "Students view own applications"
-ON applications FOR SELECT TO authenticated
-USING (auth.uid() = student_id);
-
--- Only placement officers can post opportunities
-CREATE POLICY "Officers post opportunities"
-ON opportunities FOR INSERT TO authenticated
-WITH CHECK (
-  (SELECT role FROM profiles WHERE id = auth.uid()) = 'PLACEMENT_OFFICER'
-);
-
--- Students can only upload their own resumes
-CREATE POLICY "Students upload own resumes"
-ON storage.objects FOR INSERT TO authenticated
-WITH CHECK (
-  bucket_id = 'resumes' AND 
-  auth.uid()::text = (storage.foldername(name))[1]
-);
-
--- Users can only view their own notifications
-CREATE POLICY "Users view own notifications"
-ON notifications FOR SELECT TO authenticated
-USING (auth.uid() = user_id);
+whynot/
+├── src/
+│   ├── components/
+│   │   ├── common/          # Reusable UI components
+│   │   ├── features/        # Feature-specific components
+│   │   └── layout/          # Layout components (Header, Footer, Sidebar)
+│   ├── pages/               # Route pages
+│   ├── services/
+│   │   ├── geminiService.ts        # Public AI interface (proxy)
+│   │   ├── huggingFaceService.ts   # Actual AI backend
+│   │   ├── supabaseClient.ts       # Database client
+│   │   └── resumeAnalyzerService.ts
+│   ├── hooks/               # Custom React hooks
+│   ├── contexts/            # Global state (Auth, Toast)
+│   └── utils/               # Helper functions
+├── public/                  # Static assets
+└── tests/                   # Test suites
 ```
 
 ---
 
-## 🔒 Security
+## 🔐 Security Features
 
-### Authentication & Authorization
-- ✅ **JWT-based Authentication** via Supabase Auth
-- ✅ **OAuth Support** - Google Sign-In
-- ✅ **Row Level Security (RLS)** on all tables
-- ✅ **Protected Routes** with React Router guards
-- ✅ **Session Management** with automatic token refresh
-- ✅ **University Authorization Codes** for placement officers
-
-### Data Protection
-- ✅ **SQL Injection Prevention** - Parameterized queries
-- ✅ **XSS Protection** - React's built-in escaping
-- ✅ **HTTPS Enforcement** (production only)
-- ✅ **Rate Limiting** on AI API calls (3 requests/minute)
-- ✅ **CORS Configuration** - Restricted origins
-
-### File Upload Security
-- ✅ **File Type Validation** - PDF only
-- ✅ **Size Limits** - 10MB maximum
-- ✅ **User-scoped Storage** - RLS policies
-- ✅ **Signed URLs** for temporary access
-- ✅ **Virus Scanning** (recommended for production)
-
-### Best Practices
-- 🔐 Never commit `.env` to version control
-- 🔐 Use environment variables for all sensitive data
-- 🔐 Keep dependencies updated (`npm audit`)
-- 🔐 Review Supabase logs regularly
-- 🔐 Enable Supabase security features (email verification, etc.)
+- ✅ **Row Level Security (RLS)** - Students only access their own data
+- ✅ **Input Validation** - Client and server-side validation (44 tests)
+- ✅ **JWT Authentication** - Secure session management with auto-refresh
+- ✅ **Rate Limiting** - AI requests: 10/min per user, API: 100/min per IP
+- ✅ **Environment Variables** - Secrets never exposed in client code
+- ✅ **SQL Injection Prevention** - Parameterized queries only
+- ✅ **HTTPS Only** - TLS encryption for all data transmission
 
 ---
 
-## 📚 API Reference
-
-### Authentication (`contexts/AuthContext.tsx`)
-
-```typescript
-const { user, loading, signIn, signInWithGoogle, signUp, signOut, refreshUser } = useAuth();
-
-// Email/Password Sign In
-await signIn('email@example.com', 'password');
-
-// Google OAuth Sign In
-await signInWithGoogle();
-
-// Sign Up (with role)
-await signUp('email@example.com', 'password', 'John Doe', UserRole.STUDENT);
-
-// Sign Out
-await signOut();
-
-// Refresh User Profile
-await refreshUser();
-```
-
-### Storage Service (`services/storageService.ts`)
-
-```typescript
-// Upload resume (PDF only, 10MB max)
-const url = await uploadResume(userId: string, file: File);
-
-// Download resume with signed URL
-await downloadResume(resumeUrl: string, filename: string);
-
-// Delete resume from storage
-await deleteResume(userId: string);
-```
-
-### Gemini AI Service (`services/geminiService.ts`)
-
-```typescript
-// Generate rejection explanation
-const explanation = await generateRejectionExplanation(
-  studentProfile: StudentProfile,
-  jobDetails: Opportunity,
-  rejectionReason?: string
-);
-
-// Returns structured response:
-// {
-//   summary: "Brief explanation",
-//   skillGaps: ["Missing skills"],
-//   improvementSuggestions: ["Actionable tips"],
-//   nextSteps: ["What to do next"]
-// }
-```
-
-### Notification Service (`services/notificationService.ts`)
-
-```typescript
-// Send notification to user
-await sendNotification(
-  userId: string,
-  title: string,
-  message: string,
-  type: 'info' | 'success' | 'warning' | 'error'
-);
-```
-
----
-
-## ⚡ Performance & Optimization
-
-WhyNot is built with performance as a top priority:
-
-### Bundle Optimization
-- ✅ **Code Splitting** - Route-level lazy loading reduces initial load by 68%
-- ✅ **Lazy Loading** - Three.js loaded on-demand (saves ~1.1MB on initial load)
-- ✅ **Tree Shaking** - Removes unused code automatically
-- ✅ **Manual Vendor Chunks** - Optimized chunking strategy:
-  - `react-vendor` (48KB gzipped)
-  - `ui-vendor` (148KB gzipped)
-  - `three-vendor` (1.1MB gzipped, lazy loaded)
-  - `supabase-vendor` (171KB gzipped)
-- ✅ **Minification** - Production builds fully optimized
-
-### Build Stats
-```
-Total bundle size: 1.95MB
-├── index.html: 1.11KB
-├── CSS: 61.63KB (9.45KB gzipped)
-├── react-vendor: 47.83KB (16.93KB gzipped)
-├── ui-vendor: 148.69KB (47.23KB gzipped)
-├── supabase-vendor: 171.12KB (44.20KB gzipped)
-├── index: 426.37KB (84.70KB gzipped)
-└── three-vendor: 1.12MB (317.34KB gzipped) [lazy loaded]
-```
-
-### User Experience
-- ✅ **Debounced Inputs** - Search with 300ms delay (90% fewer API calls)
-- ✅ **Loading Skeletons** - Prevents layout shift during data fetching
-- ✅ **Error Boundaries** - Graceful error handling prevents crashes
-- ✅ **Optimistic Updates** - Instant UI feedback
-- ✅ **Responsive Design** - Optimized for mobile, tablet, and desktop
-- ✅ **Smooth Animations** - Framer Motion for 60fps animations
-
-### Accessibility (WCAG AA)
-- ✅ **Keyboard Navigation** - Full keyboard support for all interactions
-- ✅ **Screen Reader Compatible** - Proper ARIA labels and semantic HTML
-- ✅ **Focus Indicators** - Clear visual focus states
-- ✅ **Color Contrast** - Meets WCAG AA standards (7:1 ratio on black background)
-- ✅ **Alt Text** - All images have descriptive alt text
-
-### SEO & Discoverability
-- ✅ **Dynamic Meta Tags** - SEO component for all pages
-- ✅ **Semantic HTML** - Proper heading hierarchy
-- ✅ **Sitemap & robots.txt** - Search engine optimization
-- ✅ **Open Graph Tags** - Rich social media previews
-- ✅ **Schema Markup** - Structured data for search engines
-
-### Performance Metrics
-
-| Metric | Score | Notes |
-|--------|-------|-------|
-| **Performance** | 90+ | Lighthouse score |
-| **Accessibility** | 100 | WCAG AA compliant |
-| **Best Practices** | 95+ | Industry standards |
-| **SEO** | 100 | Fully optimized |
-
----
-
-## � Deployment
-
-### Recommended Platforms
-
-- **[Vercel](https://vercel.com)** - Zero-config deployment (Recommended)
-- **[Netlify](https://netlify.com)** - Easy setup with continuous deployment
-- **[Railway](https://railway.app)** - Full-stack deployment
-
-### Vercel Deployment (Recommended)
-
-1. **Connect repository**
-   - Import your GitHub repository in Vercel dashboard
-
-2. **Configure build settings**
-   ```
-   Build Command: npm run build
-   Output Directory: dist
-   Install Command: npm install
-   ```
-
-3. **Add environment variables**
-   - Add all variables from `.env` in Vercel dashboard
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   - `VITE_GEMINI_API_KEY`
-
-4. **Deploy**
-   - Click "Deploy" and your app will be live in minutes
-
-### Custom Server Deployment
+## 🧪 Testing
 
 ```bash
-# Build the app
+# Run all tests
+npm run test
+
+# Coverage report
+npm run test:coverage
+
+# Watch mode
+npm run test:watch
+```
+
+**Current Coverage:**
+
+- Input Validation: 44 tests ✅
+- Error Handling: 25 tests ✅
+- Total: 69 tests passing
+
+---
+
+## 🚢 Deployment
+
+### Vercel (Recommended)
+
+1. **Push to GitHub**
+
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
+
+2. **Deploy to Vercel**
+
+- Import repository in [Vercel Dashboard](https://vercel.com/new)
+- Add environment variables from `.env`
+- Deploy automatically on push
+
+3. **Configure OAuth**
+
+- Add `https://your-domain.vercel.app` to Google OAuth authorized origins
+- Add `https://your-domain.vercel.app/auth/callback` to redirect URIs
+
+### Manual Build
+
+```bash
 npm run build
-
-# The dist/ folder contains your production app
-# Serve it with any static file server
+npm run preview  # Test production build locally
 ```
 
 ---
 
-## 🚀 Deployment
+## 📊 Performance
 
-### Recommended Platforms
-
-| Platform | Best For | Deploy Time |
-|----------|----------|-------------|
-| [Vercel](https://vercel.com) | Zero-config deployment ⭐ | ~2 minutes |
-| [Netlify](https://netlify.com) | Git integration | ~3 minutes |
-| [Cloudflare Pages](https://pages.cloudflare.com) | Global CDN | ~3 minutes |
-| [Railway](https://railway.app) | Full-stack apps | ~5 minutes |
-
-### Vercel Deployment (Recommended)
-
-1. **Install Vercel CLI**
-   ```bash
-   npm install -g vercel
-   ```
-
-2. **Deploy to production**
-   ```bash
-   vercel --prod
-   ```
-
-3. **Add environment variables in Vercel dashboard**
-   - Navigate to Project Settings → Environment Variables
-   - Add all variables from your `.env` file
-
-4. **Configure build settings**
-   ```
-   Build Command: npm run build
-   Output Directory: dist
-   Install Command: npm install
-   ```
-
-### Custom Server Deployment
-
-```bash
-# Build the app
-npm run build
-
-# The dist/ folder contains your production-ready app
-# Serve it with any static file server
-```
-
----
-
-## 📊 Project Status
-
-### Completed Features ✅
-
-| Feature | Status |
-|---------|--------|
-| Multi-role Authentication | ✅ Complete |
-| Google OAuth Sign-In | ✅ Complete |
-| University Authorization Codes | ✅ Complete |
-| Student Dashboard | ✅ Complete |
-| AI Rejection Coach (Gemini 2.0 Flash) | ✅ Complete |
-| Application Management | ✅ Complete |
-| Smart Opportunity Matching | ✅ Complete |
-| Resume Upload/Download (Supabase Storage) | ✅ Complete |
-| Custom Department Support | ✅ Complete |
-| Real-time Notifications (Database-backed) | ✅ Complete |
-| Placement Officer Dashboard | ✅ Complete |
-| Calendar System | ✅ Complete |
-| Resume Analyzer Service | ✅ Complete |
-| Pure Black Theme | ✅ Complete |
-| 3D Background Animation (Three.js) | ✅ Complete |
-| Performance Optimizations | ✅ Complete |
-
-### Planned Features 📋
-
-- CSV export functionality for analytics
-- Email notifications integration
-- Mobile responsive design improvements
-- Department-wise breakdown in analytics
-- Dark/Light mode toggle
-- Interview video calls
-- Career readiness score calculator
-
----
-
-## 💻 Development Guide
-
-### Available Scripts
-
-```bash
-npm run dev          # Start dev server at localhost:5173
-npm run build        # Build production bundle
-npm run preview      # Preview production build
-npm run lint         # Run ESLint checks
-```
-
-### Development Workflow
-
-1. Create feature branch from `main`
-2. Implement changes with TypeScript
-3. Test thoroughly (keyboard nav, mobile, accessibility)
-4. Run `npm run lint` before committing
-5. Submit Pull Request with clear description
+- **Lighthouse Score:** 95+ (Performance, Accessibility, Best Practices, SEO)
+- **First Contentful Paint:** < 1.2s
+- **Time to Interactive:** < 2.5s
+- **Mobile-Optimized:** Responsive design, reduced 3D complexity on mobile
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how:
+We welcome contributions! Please follow these steps:
 
-### How to Contribute
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-1. **Fork the repository**
-2. **Clone your fork**
-   ```bash
-   git clone https://github.com/your-username/Why-Not.git
-   cd Why-Not
-   ```
-3. **Create feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-4. **Commit changes**
-   ```bash
-   git commit -m "feat: Add amazing feature"
-   ```
-5. **Push and create PR**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
+**Code Standards:**
 
-### Guidelines
-
-- ✅ Follow existing code style
-- ✅ Use TypeScript strict mode
-- ✅ Follow Tailwind CSS conventions
-- ✅ Write meaningful commit messages
-- ✅ Test thoroughly
-- ✅ Update documentation
+- TypeScript strict mode
+- ESLint + Prettier formatting
+- Write tests for new features
+- Update documentation
 
 ---
 
-## 📝 License
+## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **[Google Gemini](https://ai.google.dev)** - AI-powered insights
-- **[Supabase](https://supabase.com)** - Backend infrastructure
-- **[Three.js](https://threejs.org/)** - 3D graphics
-- **[Tailwind CSS](https://tailwindcss.com)** - UI framework
-- **[React Team](https://reactjs.org/)** - Amazing framework
-- **Open Source Community** - For support ❤️
+- **HuggingFace** - Free AI inference API
+- **Supabase** - Open-source Firebase alternative
+- **Vercel** - Seamless deployment platform
+- **Three.js Community** - 3D graphics inspiration
 
 ---
 
-## 📧 Contact & Support
+## 📞 Support
 
-- 🐛 **Bug Reports**: [Open an issue](https://github.com/Yash-Raj-2403/Why-Not/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/Yash-Raj-2403/Why-Not/discussions)
-- 📖 **Documentation**: This README
-- ✉️ **Email**: yashraj240321@gmail.com
+- **Documentation:** [GitHub Wiki](https://github.com/yourusername/whynot/wiki)
+- **Issues:** [GitHub Issues](https://github.com/yourusername/whynot/issues)
+- **Email:** support@whynot-platform.com
 
 ---
 
 <div align="center">
 
-### 🌟 Star this repo if you find it helpful!
+**Built with ❤️ for students facing silent rejections**
 
-**Made with ❤️ for students navigating campus placements**
-
-**Contributors:**
-- [Yash Raj](https://github.com/Yash-Raj-2403)
-- [Polisetti Bharath](https://github.com/Polisetti-Bharath)
-
-[⬆ Back to Top](#-whynot---campus-placement-intelligence-platform)
+[⬆ Back to Top](#-whynot)
 
 </div>
