@@ -1,5 +1,4 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { useEffect } from 'react';
 
 interface SEOProps {
   title?: string;
@@ -58,46 +57,70 @@ const SEO: React.FC<SEOProps> = ({
     ]
   };
 
-  return (
-    <Helmet>
-      {/* Primary Meta Tags */}
-      <title>{title}</title>
-      <meta name="title" content={title} />
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords.join(', ')} />
-      <link rel="canonical" href={fullUrl} />
+  useEffect(() => {
+    // Update title
+    document.title = title;
 
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content={ogType} />
-      <meta property="og:url" content={fullUrl} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={fullImageUrl} />
-      <meta property="og:site_name" content="WhyNot" />
+    // Helper function to set or update meta tag
+    const setMetaTag = (property: string, content: string, isProperty = false) => {
+      const attribute = isProperty ? 'property' : 'name';
+      let element = document.querySelector(`meta[${attribute}="${property}"]`);
+      
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute(attribute, property);
+        document.head.appendChild(element);
+      }
+      
+      element.setAttribute('content', content);
+    };
 
-      {/* Twitter */}
-      <meta property="twitter:card" content={twitterCard} />
-      <meta property="twitter:url" content={fullUrl} />
-      <meta property="twitter:title" content={title} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={fullImageUrl} />
+    // Primary Meta Tags
+    setMetaTag('title', title);
+    setMetaTag('description', description);
+    setMetaTag('keywords', keywords.join(', '));
+    setMetaTag('robots', 'index, follow');
+    setMetaTag('language', 'English');
+    setMetaTag('revisit-after', '7 days');
+    setMetaTag('author', 'WhyNot Team');
+    setMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=5.0');
+    setMetaTag('theme-color', '#bc13fe');
 
-      {/* Additional SEO */}
-      <meta name="robots" content="index, follow" />
-      <meta name="language" content="English" />
-      <meta name="revisit-after" content="7 days" />
-      <meta name="author" content="WhyNot Team" />
+    // Open Graph / Facebook
+    setMetaTag('og:type', ogType, true);
+    setMetaTag('og:url', fullUrl, true);
+    setMetaTag('og:title', title, true);
+    setMetaTag('og:description', description, true);
+    setMetaTag('og:image', fullImageUrl, true);
+    setMetaTag('og:site_name', 'WhyNot', true);
 
-      {/* Mobile Optimization */}
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-      <meta name="theme-color" content="#bc13fe" />
+    // Twitter
+    setMetaTag('twitter:card', twitterCard, true);
+    setMetaTag('twitter:url', fullUrl, true);
+    setMetaTag('twitter:title', title, true);
+    setMetaTag('twitter:description', description, true);
+    setMetaTag('twitter:image', fullImageUrl, true);
 
-      {/* Structured Data (JSON-LD) */}
-      <script type="application/ld+json">
-        {JSON.stringify(structuredData || defaultStructuredData)}
-      </script>
-    </Helmet>
-  );
+    // Canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = fullUrl;
+
+    // Structured Data (JSON-LD)
+    let script = document.querySelector('script[type="application/ld+json"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData || defaultStructuredData);
+  }, [title, description, keywords, ogImage, ogType, twitterCard, canonicalUrl, fullUrl, fullImageUrl, structuredData, defaultStructuredData]);
+
+  return null;
 };
 
 export default SEO;

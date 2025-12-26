@@ -8,7 +8,6 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 import { AnimatePresence } from 'framer-motion';
 import { UserRole } from './types';
 import { useAuth } from './contexts/AuthContext';
-import { HelmetProvider } from 'react-helmet-async';
 import { useScrollToTop } from './hooks/useScrollToTop';
 
 // Lazy load all route components for better performance
@@ -72,7 +71,6 @@ const App: React.FC = () => {
   }
 
   return (
-    <HelmetProvider>
       <ErrorBoundary>
         <div className="min-h-screen flex bg-black text-slate-100 font-sans selection:bg-neon-purple selection:text-white">
           {/* Dynamic Background for App pages (excluding Landing) */}
@@ -250,7 +248,6 @@ const App: React.FC = () => {
       </div>
     </div>
     </ErrorBoundary>
-    </HelmetProvider>
   );
 };
 
