@@ -2,9 +2,12 @@ import { supabase } from './supabaseClient';
 import { ResumeAnalysis, ResumeAnalysisData } from '../types';
 import { analyzeResume, generateResumeSuggestions } from './geminiService';
 import * as pdfjsLib from 'pdfjs-dist';
+import mammoth from 'mammoth';
 
 // Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// @ts-ignore - Vite handles this import with ?url
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 // ============================================================================
 // RESUME FILE HANDLING
@@ -37,16 +40,16 @@ export async function extractTextFromPDF(file: File): Promise<string> {
 }
 
 /**
- * Extract text from DOCX file (simplified - just reads as text)
- * For production, consider using mammoth.js or similar library
+ * Extract text from DOCX file using mammoth.js
  */
 export async function extractTextFromDOCX(file: File): Promise<string> {
   try {
-    const text = await file.text();
-    return text;
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+    return result.value.trim();
   } catch (error) {
     console.error('Error extracting DOCX text:', error);
-    throw new Error('Failed to extract text from DOCX. Please try converting to PDF.');
+    throw new Error('Failed to extract text from DOCX. Please ensure it is a valid Word document.');
   }
 }
 
