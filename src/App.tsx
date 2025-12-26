@@ -36,15 +36,15 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const App: React.FC = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
-  
+
   // Enable scroll to top on route changes with refresh position restoration
   useScrollToTop();
-  
+
   // Determine page types
   const isLanding = location.pathname === '/';
   const isAuthPage = ['/login', '/signup'].includes(location.pathname);
   const isAuthenticated = !!user;
-  
+
   // Show navigation based on auth state and page type
   const showHeader = !isLanding && !isAuthPage; // Show header on all pages except landing, login, and signup
 
@@ -56,7 +56,7 @@ const App: React.FC = () => {
   // Redirect to profile setup if student profile is incomplete - DISABLED
   // Allow users to access dashboard even with incomplete profile
   // const isProfileIncomplete = user && user.role === UserRole.STUDENT && !user.cgpa;
-  
+
   // if (isProfileIncomplete && location.pathname !== '/profile-setup' && location.pathname !== '/login' && location.pathname !== '/signup') {
   //   return <Navigate to="/profile-setup" replace />;
   // }
@@ -71,184 +71,199 @@ const App: React.FC = () => {
   }
 
   return (
-      <ErrorBoundary>
-        <div className="min-h-screen flex bg-black text-slate-100 font-sans selection:bg-neon-purple selection:text-white">
-          {/* Dynamic Background for App pages (excluding Landing) */}
-          {!isLanding && (
-              <div className="fixed inset-0 gradient-bg-purple -z-50" />
-          )}
-          
-          {/* Lazy-loaded ThreeScene for better performance */}
-          {isLanding && (
-            <Suspense fallback={null}>
-              <ThreeScene />
-            </Suspense>
-          )}
-          
-          {/* Main content wrapper */}
-          <div className="flex-1 flex flex-col">
-            {/* Header for all users (excluding landing if desired, but logic above handles it) */}
-            {showHeader && (
-              <Header 
-                userRole={user?.role}
-                userName={user?.name}
-                userAvatar={user?.avatar}
-                notifications={user?.notifications}
-              />
-            )}
+    <ErrorBoundary>
+      <div className="min-h-screen flex bg-white dark:bg-black text-slate-900 dark:text-slate-100 font-sans selection:bg-purple-600 dark:selection:bg-neon-purple selection:text-white">
+        {/* Dynamic Background for App pages (excluding Landing) */}
+        {!isLanding && (
+          <div className="fixed inset-0 bg-gradient-to-br from-purple-50 to-pink-50 dark:gradient-bg-purple -z-50" />
+        )}
 
-            <Suspense fallback={<LoadingSpinner fullScreen message="Loading page..." />}>
-              <main id="main-content" role="main">
-                <AnimatePresence mode="wait">
-                  <Routes location={location} key={location.pathname}>
-                    {/* Public Routes */}
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          
-          {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
-                <StudentDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/profile-setup" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
-                <ProfileSetupPage />
-              </ProtectedRoute>
-            } 
-          />
+        {/* Lazy-loaded ThreeScene for better performance */}
+        {isLanding && (
+          <Suspense fallback={null}>
+            <ThreeScene />
+          </Suspense>
+        )}
 
-          <Route 
-            path="/opportunities" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
-                <OpportunitiesPage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/applications" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
-                <ApplicationsPage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute userRole={user?.role}>
-                <ProfilePage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Placement Officer Routes */}
-          <Route 
-            path="/placement/dashboard" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
-                <PlacementDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/placement/post" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
-                <PostOpportunityPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/placement/edit/:id" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
-                <PostOpportunityPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/placement/opportunities" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
-                <ManageOpportunitiesPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/placement/applications" 
-            element={
-              <ProtectedRoute userRole={user?.role} requiredRole={UserRole.PLACEMENT_OFFICER}>
-                <ApplicationsManagementPage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Profile Route - accessible to all authenticated users */}
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute userRole={user?.role}>
-                <ProfilePage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Calendar Route - accessible to all authenticated users */}
-          <Route 
-            path="/calendar" 
-            element={
-              <ProtectedRoute userRole={user?.role}>
-                <CalendarPage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Resume Analyzer Route - accessible to all authenticated users */}
-          <Route 
-            path="/resume-analyzer" 
-            element={
-              <ProtectedRoute userRole={user?.role}>
-                <ResumeAnalyzerPage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Settings Route - accessible to all authenticated users */}
-          <Route 
-            path="/settings" 
-            element={
-              <ProtectedRoute userRole={user?.role}>
-                <SettingsPage />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Help Center, Privacy Policy, Terms of Service, and Contact Support - accessible to all users */}
-          <Route path="/help-center" element={<HelpCenterPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-          <Route path="/contact-support" element={<ContactSupportPage />} />
-          
-          {/* 404 Not Found */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </AnimatePresence>
-      </main>
-      </Suspense>
+        {/* Main content wrapper */}
+        <div className="flex-1 flex flex-col">
+          {/* Header for all users (excluding landing if desired, but logic above handles it) */}
+          {showHeader && (
+            <Header
+              userRole={user?.role}
+              userName={user?.name}
+              userAvatar={user?.avatar}
+              notifications={user?.notifications}
+            />
+          )}
+
+          <Suspense fallback={<LoadingSpinner fullScreen message="Loading page..." />}>
+            <main id="main-content" role="main">
+              <AnimatePresence mode="wait">
+                <Routes location={location} key={location.pathname}>
+                  {/* Public Routes */}
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+                  {/* Protected Routes */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
+                        <StudentDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/profile-setup"
+                    element={
+                      <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
+                        <ProfileSetupPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/opportunities"
+                    element={
+                      <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
+                        <OpportunitiesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/applications"
+                    element={
+                      <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
+                        <ApplicationsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute userRole={user?.role}>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Placement Officer Routes */}
+                  <Route
+                    path="/placement/dashboard"
+                    element={
+                      <ProtectedRoute
+                        userRole={user?.role}
+                        requiredRole={UserRole.PLACEMENT_OFFICER}
+                      >
+                        <PlacementDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/placement/post"
+                    element={
+                      <ProtectedRoute
+                        userRole={user?.role}
+                        requiredRole={UserRole.PLACEMENT_OFFICER}
+                      >
+                        <PostOpportunityPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/placement/edit/:id"
+                    element={
+                      <ProtectedRoute
+                        userRole={user?.role}
+                        requiredRole={UserRole.PLACEMENT_OFFICER}
+                      >
+                        <PostOpportunityPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/placement/opportunities"
+                    element={
+                      <ProtectedRoute
+                        userRole={user?.role}
+                        requiredRole={UserRole.PLACEMENT_OFFICER}
+                      >
+                        <ManageOpportunitiesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/placement/applications"
+                    element={
+                      <ProtectedRoute
+                        userRole={user?.role}
+                        requiredRole={UserRole.PLACEMENT_OFFICER}
+                      >
+                        <ApplicationsManagementPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Profile Route - accessible to all authenticated users */}
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute userRole={user?.role}>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Calendar Route - accessible to all authenticated users */}
+                  <Route
+                    path="/calendar"
+                    element={
+                      <ProtectedRoute userRole={user?.role}>
+                        <CalendarPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Resume Analyzer Route - accessible to all authenticated users */}
+                  <Route
+                    path="/resume-analyzer"
+                    element={
+                      <ProtectedRoute userRole={user?.role}>
+                        <ResumeAnalyzerPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Settings Route - accessible to all authenticated users */}
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute userRole={user?.role}>
+                        <SettingsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Help Center, Privacy Policy, Terms of Service, and Contact Support - accessible to all users */}
+                  <Route path="/help-center" element={<HelpCenterPage />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                  <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+                  <Route path="/contact-support" element={<ContactSupportPage />} />
+
+                  {/* 404 Not Found */}
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </AnimatePresence>
+            </main>
+          </Suspense>
+        </div>
       </div>
-    </div>
     </ErrorBoundary>
   );
 };
