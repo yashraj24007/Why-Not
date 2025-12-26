@@ -43,7 +43,8 @@ const OpportunitiesPage: React.FC = () => {
       setOpportunities(data || []);
     } catch (error) {
       console.error('Error fetching opportunities:', error);
-      showToast('error', 'Failed to load opportunities');
+      showToast('error', 'Failed to load opportunities. Please check your connection.');
+      setOpportunities([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

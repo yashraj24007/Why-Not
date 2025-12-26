@@ -28,7 +28,8 @@ const ApplicationsPage: React.FC = () => {
       setApplications(data || []);
     } catch (error) {
       console.error('Error fetching applications:', error);
-      showToast('error', 'Failed to load applications');
+      showToast('error', 'Failed to load applications. Please try again.');
+      setApplications([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -41,10 +42,12 @@ const ApplicationsPage: React.FC = () => {
       setApplications(apps => apps.map(app => 
         app.id === appId ? { ...app, status: newStatus } : app
       ));
-      showToast('success', 'Application status updated');
+      showToast('success', 'Application status updated successfully');
     } catch (error) {
       console.error('Error updating status:', error);
-      showToast('error', 'Failed to update status');
+      showToast('error', 'Failed to update status. Please try again.');
+      // Refresh to get correct state
+      fetchApplications();
     }
   };
 

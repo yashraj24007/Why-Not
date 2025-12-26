@@ -4,10 +4,8 @@ import { analyzeResume, generateResumeSuggestions } from './geminiService';
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 
-// Configure PDF.js worker
-// @ts-ignore - Vite handles this import with ?url
-import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+// Configure PDF.js worker - use CDN for reliability
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 // ============================================================================
 // RESUME FILE HANDLING
