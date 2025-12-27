@@ -347,8 +347,13 @@ const CareerPathSimulatorPage: React.FC = () => {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+        {/* Background gradient effects */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[120px] animate-pulse" />
+        </div>
+        <div className="text-center relative z-10">
           <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-slate-400">Loading your profile...</p>
         </div>
@@ -363,22 +368,58 @@ const CareerPathSimulatorPage: React.FC = () => {
         description="Simulate what-if scenarios before making career decisions"
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-black relative overflow-hidden pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        {/* Background Effects */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-purple-500/30 rounded-full blur-[120px]"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.1, 0.2, 0.1],
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute bottom-0 right-1/4 w-[700px] h-[700px] bg-indigo-500/30 rounded-full blur-[120px]"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.1, 0.15, 0.1],
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+            className="absolute top-1/3 right-1/3 w-[500px] h-[500px] bg-rose-500/20 rounded-full blur-[100px]"
+          />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 px-6 py-3 rounded-full border border-purple-500/30 mb-6">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 mb-6"
+            >
               <Sparkles className="w-6 h-6 text-purple-400" />
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                Career Path Simulator
-              </h1>
-            </div>
-            <p className="text-slate-400 text-lg">
-              Simulate "What if?" scenarios before making career decisions
+              <span className="text-sm font-semibold bg-gradient-to-r from-purple-400 via-indigo-400 to-pink-400 bg-clip-text text-transparent">
+                AI-Powered Career Planning
+              </span>
+            </motion.div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 leading-tight">
+              Career Path <span className="bg-gradient-to-r from-purple-400 via-indigo-400 to-pink-400 bg-clip-text text-transparent">Simulator</span>
+            </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+              Simulate "What if?" scenarios before making career decisions and see real-time impact on your opportunities
             </p>
           </motion.div>
 
@@ -391,26 +432,26 @@ const CareerPathSimulatorPage: React.FC = () => {
               className="space-y-6"
             >
               {/* Current Profile */}
-              <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
                 <div className="flex items-center gap-2 mb-4">
                   <Users className="w-5 h-5 text-indigo-400" />
                   <h2 className="text-xl font-bold text-white">Your Current Profile</h2>
                 </div>
                 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5">
                     <span className="text-slate-400">CGPA:</span>
                     <span className="text-white font-semibold">{currentProfile.cgpa.toFixed(2)}</span>
                   </div>
                   
-                  <div className="p-3 bg-slate-800/50 rounded-lg">
+                  <div className="p-3 bg-white/5 rounded-lg border border-white/5">
                     <span className="text-slate-400 block mb-2">Skills:</span>
                     <div className="flex flex-wrap gap-2">
                       {currentProfile.skills.length > 0 ? (
                         currentProfile.skills.map((skill, idx) => (
                           <span
                             key={idx}
-                            className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-sm"
+                            className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-sm border border-indigo-500/30"
                           >
                             {skill.name}
                           </span>
@@ -421,7 +462,7 @@ const CareerPathSimulatorPage: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5">
                     <span className="text-slate-400">Eligible for:</span>
                     <span className="text-green-400 font-semibold">
                       {currentProfile.eligibleOpportunities} opportunities
@@ -431,7 +472,7 @@ const CareerPathSimulatorPage: React.FC = () => {
               </div>
 
               {/* Simulate Changes */}
-              <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
                 <div className="flex items-center gap-2 mb-6">
                   <Zap className="w-5 h-5 text-purple-400" />
                   <h2 className="text-xl font-bold text-white">Simulate Changes</h2>
@@ -449,13 +490,13 @@ const CareerPathSimulatorPage: React.FC = () => {
                         value={newSkill}
                         onChange={(e) => setNewSkill(e.target.value)}
                         placeholder="e.g., SQL, React, AWS"
-                        className="flex-1 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         onKeyPress={(e) => e.key === 'Enter' && addSkillChange()}
                       />
                       <select
                         value={newSkillLevel}
                         onChange={(e) => setNewSkillLevel(e.target.value as any)}
-                        className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       >
                         <option value="Beginner">Beginner</option>
                         <option value="Intermediate">Intermediate</option>
@@ -485,7 +526,7 @@ const CareerPathSimulatorPage: React.FC = () => {
                       value={targetCgpa}
                       onChange={(e) => setTargetCgpa(e.target.value)}
                       placeholder="e.g., 7.5"
-                      className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       onKeyPress={(e) => e.key === 'Enter' && addCgpaChange()}
                     />
                     <Button
@@ -508,7 +549,7 @@ const CareerPathSimulatorPage: React.FC = () => {
                       value={certification}
                       onChange={(e) => setCertification(e.target.value)}
                       placeholder="e.g., AWS Certified Developer"
-                      className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       onKeyPress={(e) => e.key === 'Enter' && addCertificationChange()}
                     />
                     <Button
@@ -523,13 +564,13 @@ const CareerPathSimulatorPage: React.FC = () => {
 
                   {/* Selected Changes */}
                   {simulationChanges.length > 0 && (
-                    <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                    <div className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10">
                       <h3 className="text-sm font-semibold text-slate-300 mb-3">Selected Changes:</h3>
                       <div className="space-y-2">
                         {simulationChanges.map((change, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between p-2 bg-slate-900/50 rounded"
+                            className="flex items-center justify-between p-2 bg-white/5 rounded border border-white/5"
                           >
                             <span className="text-white text-sm">
                               {change.type === 'skill' && `Add skill: ${change.value} (${change.level})`}
@@ -581,10 +622,17 @@ const CareerPathSimulatorPage: React.FC = () => {
               className="space-y-6"
             >
               {!simulationResult ? (
-                <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-12 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center hover:border-white/20 transition-all">
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.05, 1],
+                      rotate: [0, 5, -5, 0],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                    className="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-500/20"
+                  >
                     <TrendingUp className="w-10 h-10 text-purple-400" />
-                  </div>
+                  </motion.div>
                   <h3 className="text-xl font-bold text-white mb-3">
                     No Simulation Yet
                   </h3>
@@ -595,21 +643,25 @@ const CareerPathSimulatorPage: React.FC = () => {
               ) : (
                 <>
                   {/* Simulation Results Header */}
-                  <div className="bg-gradient-to-br from-purple-900/50 to-indigo-900/50 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6">
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6"
+                  >
                     <div className="flex items-center gap-2 mb-4">
                       <Award className="w-6 h-6 text-purple-400" />
                       <h2 className="text-xl font-bold text-white">Simulation Results</h2>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-slate-900/50 rounded-xl">
+                      <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                         <p className="text-slate-400 text-sm mb-1">New Opportunities</p>
                         <p className="text-3xl font-bold text-green-400">
                           +{simulationResult.newOpportunities}
                         </p>
                         <p className="text-slate-500 text-xs mt-1">unlocked</p>
                       </div>
-                      <div className="p-4 bg-slate-900/50 rounded-xl">
+                      <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                         <p className="text-slate-400 text-sm mb-1">Total Eligible</p>
                         <p className="text-3xl font-bold text-indigo-400">
                           {simulationResult.currentOpportunities + simulationResult.newOpportunities}
@@ -617,18 +669,18 @@ const CareerPathSimulatorPage: React.FC = () => {
                         <p className="text-slate-500 text-xs mt-1">opportunities</p>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Match Score Improvements */}
                   {simulationResult.matchScoreImprovements.length > 0 && (
-                    <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
                       <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5 text-green-400" />
                         Match Score Improvements
                       </h3>
                       <div className="space-y-3">
                         {simulationResult.matchScoreImprovements.map((improvement, idx) => (
-                          <div key={idx} className="p-4 bg-slate-800/50 rounded-lg">
+                          <div key={idx} className="p-4 bg-white/5 rounded-lg border border-white/5">
                             <div className="flex items-center justify-between mb-2">
                               <span className="font-semibold text-white">{improvement.company}</span>
                               <span className="text-green-400 text-sm font-medium">
@@ -666,7 +718,7 @@ const CareerPathSimulatorPage: React.FC = () => {
 
                   {/* Unlocked Features */}
                   {simulationResult.unlockedFeatures.length > 0 && (
-                    <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
                       <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                         <Star className="w-5 h-5 text-yellow-400" />
                         Unlocked Features
@@ -675,7 +727,7 @@ const CareerPathSimulatorPage: React.FC = () => {
                         {simulationResult.unlockedFeatures.map((feature, idx) => (
                           <div
                             key={idx}
-                            className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg"
+                            className="flex items-start gap-3 p-3 bg-white/5 rounded-lg border border-white/5"
                           >
                             <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                             <span className="text-slate-300">{feature}</span>
@@ -686,7 +738,7 @@ const CareerPathSimulatorPage: React.FC = () => {
                   )}
 
                   {/* Recommended Path */}
-                  <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
                     <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                       <Target className="w-5 h-5 text-purple-400" />
                       Recommended Path
@@ -694,10 +746,10 @@ const CareerPathSimulatorPage: React.FC = () => {
                     <div className="space-y-4">
                       {simulationResult.recommendedPath.map((step, idx) => (
                         <div key={idx} className="relative pl-8">
-                          <div className="absolute left-0 top-1 w-6 h-6 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          <div className="absolute left-0 top-1 w-6 h-6 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-purple-500/50">
                             {step.priority}
                           </div>
-                          <div className="p-4 bg-slate-800/50 rounded-lg border-l-4 border-purple-500">
+                          <div className="p-4 bg-white/5 rounded-lg border-l-4 border-purple-500">
                             <h4 className="font-semibold text-white mb-2">{step.action}</h4>
                             <p className="text-sm text-slate-400 mb-2">
                               {step.effort} → {step.impact}
@@ -716,7 +768,7 @@ const CareerPathSimulatorPage: React.FC = () => {
                             )}
                           </div>
                           {idx < simulationResult.recommendedPath.length - 1 && (
-                            <div className="absolute left-3 top-8 w-0.5 h-8 bg-slate-700" />
+                            <div className="absolute left-3 top-8 w-0.5 h-8 bg-purple-500/30" />
                           )}
                         </div>
                       ))}
@@ -725,14 +777,14 @@ const CareerPathSimulatorPage: React.FC = () => {
 
                   {/* Estimated Timeline */}
                   {simulationResult.timeline.length > 0 && (
-                    <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6">
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all">
                       <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                         <Clock className="w-5 h-5 text-indigo-400" />
                         Estimated Timeline
                       </h3>
                       <div className="space-y-3">
                         {simulationResult.timeline.map((item, idx) => (
-                          <div key={idx} className="p-4 bg-slate-800/50 rounded-lg">
+                          <div key={idx} className="p-4 bg-white/5 rounded-lg border border-white/5">
                             <div className="flex items-center justify-between mb-1">
                               <span className="font-semibold text-indigo-400">{item.week}</span>
                             </div>
