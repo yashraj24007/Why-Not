@@ -263,8 +263,7 @@ const CalendarPage: React.FC = () => {
             <AlertCircle className="w-5 h-5 text-neon-purple mt-0.5" />
             <div className="flex-1">
               <p className="text-sm text-slate-300">
-                <span className="font-semibold text-white">Student View:</span> Click on any event to view
-                details. Only placement officers can create or edit events.
+                <span className="font-semibold text-white">Student View:</span> Click on any event to view details.
               </p>
             </div>
           </div>

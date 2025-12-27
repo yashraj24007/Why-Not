@@ -67,23 +67,33 @@ const RejectionAnalysisHub: React.FC<RejectionAnalysisHubProps> = ({
       const snapshotSkills = application.snapshot_skills || student.skills || [];
       const snapshotCgpa = application.snapshot_cgpa ?? student.cgpa;
 
-      // Prepare skill confidence data from snapshot
-      const skillConfidenceData = snapshotSkills.map((s: any) => ({
-        name: s.name,
-        confidence: s.confidence || s.level || 'Beginner',
-        evidence: s.evidence?.map((e: any) => e.type) || []
-      }));
+      // Prepare skill confidence data from snapshot with better null safety
+      const skillConfidenceData = Array.isArray(snapshotSkills) 
+        ? snapshotSkills.map((s: any) => ({
+            name: s?.name || 'Unknown',
+            confidence: s?.confidence || s?.level || 'Beginner',
+            evidence: Array.isArray(s?.evidence) ? s.evidence.map((e: any) => e?.type || 'Unknown') : []
+          })).filter(s => s.name !== 'Unknown')
+        : [];
+
+      // Extract required skills with better error handling
+      const jobRequiredSkills = job.requiredSkills || job.required_skills || [];
+      const requiredSkillNames = Array.isArray(jobRequiredSkills)
+        ? jobRequiredSkills.map((s: any) => typeof s === 'string' ? s : (s?.name || '')).filter(Boolean)
+        : [];
 
       const reqData = {
-        studentName: student.name,
-        studentSkills: snapshotSkills.map((s: any) => s.name),
-        studentCgpa: snapshotCgpa,
-        jobRole: job.role || job.title,
-        jobCompany: job.company || job.company_name,
-        jobRequiredSkills: (job.requiredSkills || job.required_skills || []).map((s: any) => typeof s === 'string' ? s : s.name),
-        jobMinCgpa: job.minCgpa || job.min_cgpa,
-        jobDescription: job.description,
-        resumeText: student.resume,
+        studentName: student.name || 'Student',
+        studentSkills: Array.isArray(snapshotSkills) 
+          ? snapshotSkills.map((s: any) => s?.name || '').filter(Boolean)
+          : [],
+        studentCgpa: typeof snapshotCgpa === 'number' ? snapshotCgpa : 0,
+        jobRole: job.role || job.title || 'Position',
+        jobCompany: job.company || job.company_name || 'Company',
+        jobRequiredSkills: requiredSkillNames,
+        jobMinCgpa: typeof (job.minCgpa || job.min_cgpa) === 'number' ? (job.minCgpa || job.min_cgpa) : 0,
+        jobDescription: job.description || '',
+        resumeText: student.resume || '',
         skillConfidenceData: skillConfidenceData,
         isSnapshot: useSnapshot // Flag to indicate snapshot data is being used
       };
@@ -95,7 +105,21 @@ const RejectionAnalysisHub: React.FC<RejectionAnalysisHubProps> = ({
       await saveAnalysis(JSON.stringify(result), application.id, 'single');
     } catch (error) {
       console.error('Analysis error:', error);
-      // setExplanation(null); // Keep null on error
+      
+      // Set a user-friendly error explanation
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setExplanation({
+        type: 'NON_RULE_BASED',
+        coreMismatch: 'Unable to generate AI analysis at this time. Please try again later.',
+        keyMissingSkills: [],
+        resumeFeedback: ['Analysis service is temporarily unavailable'],
+        actionPlan: [
+          'Try again in a few moments',
+          'Check your internet connection',
+          'Contact support if the issue persists'
+        ],
+        sentiment: `Error: ${errorMessage}. This analysis is based on declared profile data and listed eligibility criteria.`
+      });
     } finally {
       setLoading(false);
     }
@@ -106,20 +130,39 @@ const RejectionAnalysisHub: React.FC<RejectionAnalysisHubProps> = ({
     try {
       const rejectedApps = applications.filter(a => a.status === 'REJECTED');
       
+      if (rejectedApps.length === 0) {
+        setPatternAnalysis({
+          commonMissingSkills: [],
+          cgpaIssues: false,
+          improvementPriorities: ['No rejected applications to analyze'],
+          industryInsights: 'Keep applying to opportunities to build your application history.'
+        });
+        setActiveTab('patterns');
+        setLoading(false);
+        return;
+      }
+      
       const bulkData = {
-        studentName: student.name,
-        studentSkills: student.skills?.map(s => s.name) || [],
-        studentCgpa: student.cgpa,
+        studentName: student.name || 'Student',
+        studentSkills: Array.isArray(student.skills) 
+          ? student.skills.map(s => s?.name || '').filter(Boolean)
+          : [],
+        studentCgpa: typeof student.cgpa === 'number' ? student.cgpa : 0,
         rejections: rejectedApps.map(app => {
           const job = app.job || (app as any).opportunity;
+          const requiredSkills = job?.requiredSkills || job?.required_skills || [];
           return {
             jobRole: job?.role || job?.title || 'Unknown Role',
             jobCompany: job?.company || job?.company_name || 'Unknown Company',
-            jobRequiredSkills: (job?.requiredSkills || job?.required_skills || []).map((s: any) => typeof s === 'string' ? s : s.name),
-            jobMinCgpa: job?.minCgpa || job?.min_cgpa,
+            jobRequiredSkills: Array.isArray(requiredSkills)
+              ? requiredSkills.map((s: any) => typeof s === 'string' ? s : (s?.name || '')).filter(Boolean)
+              : [],
+            jobMinCgpa: typeof (job?.minCgpa || job?.min_cgpa) === 'number' 
+              ? (job.minCgpa || job.min_cgpa) 
+              : 0,
             rejectionDate: app.appliedDate || (app as any).created_at
           };
-        })
+        }).filter(r => r.jobRole !== 'Unknown Role')
       };
       
       const result = await generateBulkRejectionAnalysis(bulkData, student.id);
@@ -130,6 +173,15 @@ const RejectionAnalysisHub: React.FC<RejectionAnalysisHubProps> = ({
       await saveAnalysis(JSON.stringify(result), null, 'bulk', result);
     } catch (error) {
       console.error('Bulk analysis error:', error);
+      
+      // Set error state for pattern analysis
+      setPatternAnalysis({
+        commonMissingSkills: [],
+        cgpaIssues: false,
+        improvementPriorities: ['Analysis service is temporarily unavailable'],
+        industryInsights: 'Unable to generate pattern analysis. Please try again later.'
+      });
+      setActiveTab('patterns');
     } finally {
       setLoading(false);
     }

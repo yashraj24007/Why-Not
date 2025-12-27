@@ -36,19 +36,49 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ isOpen, onClose, ap
     if (isOpen && application && application.status === 'REJECTED') {
       const fetchExplanation = async () => {
         setLoading(true);
-        const reqData = {
-          studentName: student.name,
-          studentSkills: student.skills.map(s => s.name),
-          studentCgpa: student.cgpa,
-          jobRole: application.job.role,
-          jobCompany: application.job.company,
-          jobRequiredSkills: application.job.requiredSkills.map(s => s.name),
-          jobMinCgpa: application.job.minCgpa
-        };
-        
-        const result = await generateRejectionExplanation(reqData);
-        setExplanation(result);
-        setLoading(false);
+        try {
+          const job = application.job || (application as any).opportunity;
+          
+          if (!job) {
+            throw new Error('Job details not found');
+          }
+
+          // Safely extract skills
+          const studentSkills = Array.isArray(student.skills)
+            ? student.skills.map(s => s?.name || '').filter(Boolean)
+            : [];
+          
+          const jobRequiredSkills = job.requiredSkills || job.required_skills || [];
+          const requiredSkillNames = Array.isArray(jobRequiredSkills)
+            ? jobRequiredSkills.map((s: any) => typeof s === 'string' ? s : (s?.name || '')).filter(Boolean)
+            : [];
+
+          const reqData = {
+            studentName: student.name || 'Student',
+            studentSkills: studentSkills,
+            studentCgpa: typeof student.cgpa === 'number' ? student.cgpa : 0,
+            jobRole: job.role || job.title || 'Position',
+            jobCompany: job.company || job.company_name || 'Company',
+            jobRequiredSkills: requiredSkillNames,
+            jobMinCgpa: typeof (job.minCgpa || job.min_cgpa) === 'number' ? (job.minCgpa || job.min_cgpa) : 0
+          };
+          
+          const result = await generateRejectionExplanation(reqData, student.id);
+          setExplanation(result);
+        } catch (error) {
+          console.error('Explanation fetch error:', error);
+          // Set error state
+          setExplanation({
+            type: 'NON_RULE_BASED',
+            coreMismatch: 'Unable to generate analysis',
+            keyMissingSkills: [],
+            resumeFeedback: ['Analysis temporarily unavailable'],
+            actionPlan: ['Try again later'],
+            sentiment: 'Service error occurred'
+          });
+        } finally {
+          setLoading(false);
+        }
       };
 
       fetchExplanation();

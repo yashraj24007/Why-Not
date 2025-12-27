@@ -180,6 +180,11 @@ export const generateRejectionExplanation = async (
   data: ExplanationRequest,
   userId: string = 'anonymous'
 ): Promise<RejectionAnalysis> => {
+  // Validate input data
+  if (!data || !data.studentName || !data.jobRole || !data.jobCompany) {
+    throw new Error('Invalid input data: Missing required fields');
+  }
+
   // Check rate limit
   if (!checkRateLimit(userId)) {
     throw new Error(
@@ -187,10 +192,11 @@ export const generateRejectionExplanation = async (
     );
   }
 
-  // Build skill confidence context
-  const skillConfidenceContext = data.skillConfidenceData
+  // Build skill confidence context with null safety
+  const skillConfidenceContext = Array.isArray(data.skillConfidenceData) && data.skillConfidenceData.length > 0
     ? `\nStudent Skill Confidence Levels:\n${data.skillConfidenceData
-        .map(s => `- ${s.name}: ${s.confidence}${s.evidence ? ` (Evidence: ${s.evidence.join(', ')})` : ''}`)
+        .filter(s => s && s.name)
+        .map(s => `- ${s.name}: ${s.confidence || 'Unknown'}${Array.isArray(s.evidence) && s.evidence.length > 0 ? ` (Evidence: ${s.evidence.join(', ')})` : ''}`)
         .join('\n')}`
     : '';
 
@@ -262,13 +268,22 @@ Be constructive, specific, and honest. Consider skill confidence levels when ana
       throw error; // Let user know model is loading
     }
 
-    // Generate basic analysis as fallback - determine type
-    const missingSkills = data.jobRequiredSkills.filter(
+    // Generate intelligent fallback analysis - determine type with better validation
+    const validStudentSkills = Array.isArray(data.studentSkills) ? data.studentSkills.filter(Boolean) : [];
+    const validRequiredSkills = Array.isArray(data.jobRequiredSkills) ? data.jobRequiredSkills.filter(Boolean) : [];
+    
+    const missingSkills = validRequiredSkills.filter(
       required =>
-        !data.studentSkills.some(student => student.toLowerCase().includes(required.toLowerCase()))
+        !validStudentSkills.some(student => 
+          student && typeof student === 'string' && 
+          student.toLowerCase().includes(required.toLowerCase())
+        )
     );
 
-    const cgpaGap = data.studentCgpa < data.jobMinCgpa;
+    const cgpaGap = typeof data.studentCgpa === 'number' && 
+                     typeof data.jobMinCgpa === 'number' && 
+                     data.studentCgpa < data.jobMinCgpa;
+    
     const hasViolations = cgpaGap || missingSkills.length > 0;
 
     const violations: any[] = [];
@@ -280,34 +295,62 @@ Be constructive, specific, and honest. Consider skill confidence levels when ana
         actual: `${data.studentCgpa}`
       });
     }
+    
+    if (missingSkills.length > 0) {
+      missingSkills.slice(0, 3).forEach(skill => {
+        violations.push({
+          category: 'SKILLS',
+          description: `Missing required skill: ${skill}`,
+          expected: skill,
+          actual: 'Not found in profile'
+        });
+      });
+    }
 
     return {
       type: hasViolations ? 'RULE_BASED' : 'NON_RULE_BASED',
       coreMismatch: hasViolations
-        ? cgpaGap
-          ? `CGPA requirement not met (${data.jobMinCgpa} required vs ${data.studentCgpa})`
-          : `Skill gaps identified in key requirements`
-        : 'You met the listed eligibility criteria. The rejection may be due to limited openings or company-side screening preferences.',
+        ? cgpaGap && missingSkills.length > 0
+          ? `CGPA requirement not met (${data.jobMinCgpa} required vs ${data.studentCgpa}) and ${missingSkills.length} skill gap(s) identified`
+          : cgpaGap
+            ? `CGPA requirement not met (${data.jobMinCgpa} required vs ${data.studentCgpa})`
+            : `${missingSkills.length} skill gap(s) identified in key requirements`
+        : 'You met the listed eligibility criteria. The rejection may be due to limited openings, high competition, or company-side screening preferences.',
       keyMissingSkills: hasViolations ? missingSkills.slice(0, 5) : [],
-      resumeFeedback: [
+      resumeFeedback: hasViolations ? [
+        'Strengthen your profile with the missing skills',
         'Highlight relevant projects and coursework',
-        'Add quantifiable achievements',
-        'Include relevant certifications',
+        'Add quantifiable achievements to demonstrate impact',
+        'Include relevant certifications to validate skills'
+      ] : [
+        'Your profile meets the basic requirements',
+        'Consider enhancing your resume with more specific achievements',
+        'Highlight unique projects that set you apart',
+        'Add metrics and quantifiable results'
       ],
       actionPlan: hasViolations ? [
-        `Focus on learning: ${missingSkills.slice(0, 2).join(', ') || 'core skills'}`,
-        'Build a portfolio project demonstrating these skills',
-        'Obtain certifications in required technologies',
-      ] : [
-        'Continue applying to similar roles',
-        'Network with professionals in the industry',
-        'Consider reaching out for feedback if possible'
+        cgpaGap ? 'Focus on improving academic performance for future opportunities' : null,
+        missingSkills.length > 0 ? `Learn these skills: ${missingSkills.slice(0, 3).join(', ')}` : null,
+        'Build portfolio projects demonstrating these skills',
+        'Obtain online certifications in required technologies',
+        'Practice with real-world projects and contribute to open source'
+      ].filter(Boolean) : [
+        'Continue applying to similar roles to increase your chances',
+        'Network with professionals in the industry through LinkedIn',
+        'Consider reaching out to the recruiter for constructive feedback',
+        'Refine your application materials based on job descriptions',
+        'Stay positive and persistent in your job search'
       ],
       sentiment: hasViolations 
-        ? 'Keep improving your skills. Every rejection is a learning opportunity! This explanation is based on declared profile data and listed eligibility criteria. Final hiring decisions may include additional factors.'
-        : 'You\'re on the right track! Keep applying and stay positive. This explanation is based on declared profile data and listed eligibility criteria. Final hiring decisions may include additional factors.',
+        ? 'Keep improving your skills and academic performance. Every rejection is a learning opportunity! This explanation is based on declared profile data and listed eligibility criteria. Final hiring decisions may include additional factors.'
+        : 'You\'re on the right track! Your profile is competitive. Keep applying and stay positive. This explanation is based on declared profile data and listed eligibility criteria. Final hiring decisions may include additional factors.',
       violations: hasViolations ? violations : undefined,
-      skillGaps: undefined
+      skillGaps: missingSkills.length > 0 ? missingSkills.slice(0, 5).map(skill => ({
+        skill: skill,
+        required: 'Proficient',
+        studentLevel: undefined,
+        suggestion: `Develop ${skill} skills through online courses, projects, or certifications`
+      })) : undefined
     };
   }
 };
