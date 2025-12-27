@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS public.opportunities (
   placement_conversion BOOLEAN DEFAULT false,
   deadline TIMESTAMPTZ,
   posted_date TIMESTAMPTZ DEFAULT NOW(),
-  status TEXT DEFAULT 'ACTIVE' CHECK (status IN ('active', 'closed', 'draft')),
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'closed', 'draft')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
