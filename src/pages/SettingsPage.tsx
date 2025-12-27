@@ -23,6 +23,9 @@ const SettingsPage: React.FC = () => {
       showToast('success', 'Signed out successfully');
     } catch (error) {
       showToast('error', 'Failed to sign out');
+    } finally {
+      // Always navigate to home page after sign out attempt
+      window.location.href = '/';
     }
   };
 

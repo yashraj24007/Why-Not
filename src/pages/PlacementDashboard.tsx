@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Briefcase, Users, TrendingUp, Calendar, PlusCircle, 
-  CheckCircle, XCircle, Award, Search,
-  User, HelpCircle
+  Award, Building2, Target, ArrowRight, 
+  BarChart3, Activity, CheckCircle, Clock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabaseClient';
@@ -64,7 +64,7 @@ const PlacementDashboard: React.FC = () => {
 
       setStats({
         totalOpportunities: opportunities?.length || 0,
-        activeOpportunities: opportunities?.filter(o => o.status === 'active').length || 0,
+        activeOpportunities: opportunities?.filter(o => o.status === 'ACTIVE').length || 0,
         totalApplications: applications?.length || 0,
         pendingApplications: applications?.filter(a => a.status === 'PENDING').length || 0,
         totalStudents: studentCount || 0,
@@ -87,12 +87,12 @@ const PlacementDashboard: React.FC = () => {
       change: `${stats.totalOpportunities} Total`
     },
     { 
-      label: 'Applications', 
-      value: stats.totalApplications, 
-      icon: FileText, 
-      color: 'text-rose-400',
-      gradient: 'from-rose-500 to-pink-500',
-      change: `${stats.pendingApplications} Pending`
+      label: 'Total Students', 
+      value: stats.totalStudents, 
+      icon: Users, 
+      color: 'text-indigo-400',
+      gradient: 'from-indigo-500 to-purple-500',
+      change: 'Registered'
     },
     { 
       label: 'Students Placed', 
@@ -100,15 +100,15 @@ const PlacementDashboard: React.FC = () => {
       icon: Award, 
       color: 'text-emerald-400',
       gradient: 'from-emerald-500 to-teal-500',
-      change: 'Total Placed'
+      change: 'This Season'
     },
     { 
-      label: 'Total Students', 
-      value: stats.totalStudents, 
-      icon: Users, 
-      color: 'text-amber-400',
-      gradient: 'from-amber-500 to-orange-500',
-      change: 'Registered'
+      label: 'Placement Rate', 
+      value: `${stats.totalStudents > 0 ? Math.round((stats.placedStudents / stats.totalStudents) * 100) : 0}%`, 
+      icon: TrendingUp, 
+      color: 'text-rose-400',
+      gradient: 'from-rose-500 to-pink-500',
+      change: 'Success Rate'
     }
   ];
 
@@ -139,128 +139,270 @@ const PlacementDashboard: React.FC = () => {
           />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black text-white mb-2">Placement Dashboard</h1>
-              <p className="text-slate-400 text-lg">Manage opportunities and track student progress</p>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 space-y-8">
+          {/* Hero Section */}
+          <div className="grid grid-cols-12 gap-6">
+            {/* Welcome Card - spans 8 columns */}
+            <div className="col-span-12 md:col-span-8">
+              <div className="relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-indigo-500/20 to-transparent rounded-3xl blur-2xl" />
+                <div className="relative glass-panel rounded-3xl p-8 border border-white/10">
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full mb-3"
+                      >
+                        <Activity className="w-4 h-4 text-purple-400" />
+                        <span className="text-xs font-semibold text-purple-300">Placement Officer</span>
+                      </motion.div>
+                      
+                      <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
+                        Welcome back, {user?.name || 'Officer'}!
+                      </h1>
+                      <p className="text-slate-400 text-lg mb-6">
+                        Manage opportunities and drive successful placements
+                      </p>
+                      
+                      {/* Quick Stats Inline */}
+                      <div className="flex flex-wrap gap-4">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
+                          <Briefcase className="w-4 h-4 text-purple-400" />
+                          <span className="text-sm text-white font-semibold">{stats.activeOpportunities} Active Jobs</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
+                          <Award className="w-4 h-4 text-emerald-400" />
+                          <span className="text-sm text-white font-semibold">{stats.placedStudents} Placed</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
+                          <Users className="w-4 h-4 text-indigo-400" />
+                          <span className="text-sm text-white font-semibold">{stats.totalStudents} Students</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <Link to="/placement/post">
-              <button className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-xl font-bold hover:bg-slate-200 transition-colors shadow-lg shadow-white/10">
-                <PlusCircle size={20} />
-                Post Opportunity
-              </button>
-            </Link>
+
+            {/* Post Opportunity CTA - spans 4 columns */}
+            <div className="col-span-12 md:col-span-4">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="relative h-full group"
+              >
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-purple-500 to-indigo-500 rounded-3xl opacity-30 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+                <Link
+                  to="/placement/post"
+                  className="relative w-full h-full glass-panel rounded-3xl p-6 hover:border-transparent hover:bg-purple-500/5 transition-all overflow-hidden flex flex-col items-center justify-center text-center gap-4"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                  
+                  <motion.div
+                    animate={{
+                      rotate: [0, 5, -5, 0],
+                      scale: [1, 1.05, 1],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 p-[1px] rounded-2xl"
+                  >
+                    <div className="w-full h-full bg-black rounded-[15px] flex items-center justify-center">
+                      <PlusCircle className="w-8 h-8 text-purple-400" />
+                    </div>
+                  </motion.div>
+                  
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">Post Opportunity</h3>
+                    <p className="text-sm text-slate-400">Create new job listing</p>
+                  </div>
+                </Link>
+              </motion.div>
+            </div>
           </div>
 
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-12 gap-6">
-              {/* Stats Grid */}
-              {statCards.map((stat, index) => (
-                <div
-                  key={index}
-                  className="col-span-12 sm:col-span-6 lg:col-span-3"
-                >
+          {/* Stats Grid */}
+          <div className="grid grid-cols-12 gap-6">
+            {statCards.map((stat, index) => (
+              <div
+                key={index}
+                className="col-span-12 md:col-span-3"
+              >
+                <div className="relative group h-full">
+                  <div className={`absolute -inset-[1px] bg-gradient-to-br ${stat.gradient} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm`} />
+                  
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="relative group h-full"
+                    className="relative glass-panel rounded-2xl p-6 h-full hover:-translate-y-1 transition-transform duration-300"
                   >
-                    <div className={`absolute -inset-[1px] bg-gradient-to-br ${stat.gradient} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm`} />
-                    <div className="relative glass-panel rounded-2xl p-6 h-full hover:-translate-y-1 transition-transform duration-300 bg-slate-900/80">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} p-[1px]`}>
-                          <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
-                            <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                          </div>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${stat.gradient} p-[1px]`}>
+                        <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                          <stat.icon className={`w-7 h-7 ${stat.color}`} />
                         </div>
-                        {stat.change && (
-                          <span className={`px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-semibold text-slate-300`}>
-                            {stat.change}
-                          </span>
-                        )}
                       </div>
-                      <p className="text-slate-400 text-sm mb-1 font-medium uppercase tracking-wide">{stat.label}</p>
-                      <p className="text-3xl font-black text-white">{stat.value}</p>
+                      {stat.change && (
+                        <span className={`px-3 py-1 bg-black/40 border border-white/5 rounded-full text-xs font-semibold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                          {stat.change}
+                        </span>
+                      )}
                     </div>
+                    <p className="text-slate-400 text-sm mb-2 font-medium uppercase tracking-wide">{stat.label}</p>
+                    <p className="text-3xl font-black text-white">{typeof stat.value === 'number' ? stat.value : stat.value}</p>
                   </motion.div>
                 </div>
-              ))}
+              </div>
+            ))}
+          </div>
 
-              {/* Quick Actions - Full Width Panel */}
-              <div className="col-span-12">
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.5 }}
-                  className="space-y-4"
+          {/* Action Cards Grid */}
+          <div className="grid grid-cols-12 gap-6">
+            {/* Manage Opportunities */}
+            <div className="col-span-12 md:col-span-6 lg:col-span-4">
+              <Link to="/placement/opportunities">
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="relative group h-full"
                 >
-                  <div className="glass-panel rounded-2xl p-6 border border-white/10 bg-slate-900/60">
-                    <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-emerald-400" />
-                      Quick Actions
-                    </h2>
-                    <div className="space-y-3">
-                      <Link to="/placement/post" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-purple-500/20 transition-all border border-white/5 hover:border-purple-500/50 group cursor-pointer">
-                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400 group-hover:text-purple-300">
-                          <PlusCircle size={20} />
+                  <div className="absolute -inset-[1px] bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-300 blur" />
+                  <div className="relative glass-panel rounded-2xl p-6 h-full border border-white/10 hover:border-purple-500/30 transition-all">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 p-[1px] flex-shrink-0">
+                        <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                          <Briefcase className="w-6 h-6 text-purple-400" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-white">Post Opportunity</h3>
-                          <p className="text-xs text-slate-400">Create new job listing</p>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white mb-1">Manage Opportunities</h3>
+                        <p className="text-sm text-slate-400 mb-3">View, edit and track all job postings</p>
+                        <div className="flex items-center text-sm text-purple-400 font-semibold">
+                          View All <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                         </div>
-                      </Link>
-                      
-                      <Link to="/profile" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-indigo-500/20 transition-all border border-white/5 hover:border-indigo-500/50 group cursor-pointer">
-                        <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-400 group-hover:text-indigo-300">
-                          <User size={20} />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-white">My Profile</h3>
-                          <p className="text-xs text-slate-400">View and edit profile</p>
-                        </div>
-                      </Link>
-
-                      <Link to="/help-center" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-rose-500/20 transition-all border border-white/5 hover:border-rose-500/50 group cursor-pointer">
-                        <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400 group-hover:text-rose-300">
-                          <HelpCircle size={20} />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-white">Help & Support</h3>
-                          <p className="text-xs text-slate-400">Get assistance</p>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Mini Stats or Info */}
-                  <div className="glass-panel rounded-2xl p-6 border border-white/10 bg-gradient-to-br from-purple-900/20 to-slate-900/60">
-                    <h3 className="text-lg font-bold text-white mb-2">Placement Season</h3>
-                    <p className="text-slate-400 text-sm mb-4">
-                      Keep track of ongoing placement drives and student performance.
-                    </p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-400">Placement Rate</span>
-                      <span className="text-emerald-400 font-bold">
-                        {stats.totalStudents > 0 
-                          ? Math.round((stats.placedStudents / stats.totalStudents) * 100) 
-                          : 0}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-slate-800 h-2 rounded-full mt-2 overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full"
-                        style={{ width: `${stats.totalStudents > 0 ? (stats.placedStudents / stats.totalStudents) * 100 : 0}%` }}
-                      />
+                      </div>
                     </div>
                   </div>
                 </motion.div>
-              </div>
+              </Link>
+            </div>
+
+            {/* Calendar */}
+            <div className="col-span-12 md:col-span-6 lg:col-span-4">
+              <Link to="/calendar">
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="relative group h-full"
+                >
+                  <div className="absolute -inset-[1px] bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-300 blur" />
+                  <div className="relative glass-panel rounded-2xl p-6 h-full border border-white/10 hover:border-indigo-500/30 transition-all">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-500 p-[1px] flex-shrink-0">
+                        <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                          <Calendar className="w-6 h-6 text-indigo-400" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white mb-1">Calendar</h3>
+                        <p className="text-sm text-slate-400 mb-3">Schedule interviews and events</p>
+                        <div className="flex items-center text-sm text-indigo-400 font-semibold">
+                          Open Calendar <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            </div>
+
+            {/* Profile */}
+            <div className="col-span-12 md:col-span-6 lg:col-span-4">
+              <Link to="/profile">
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="relative group h-full"
+                >
+                  <div className="absolute -inset-[1px] bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-300 blur" />
+                  <div className="relative glass-panel rounded-2xl p-6 h-full border border-white/10 hover:border-emerald-500/30 transition-all">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 p-[1px] flex-shrink-0">
+                        <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                          <Users className="w-6 h-6 text-emerald-400" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white mb-1">My Profile</h3>
+                        <p className="text-sm text-slate-400 mb-3">View and update your information</p>
+                        <div className="flex items-center text-sm text-emerald-400 font-semibold">
+                          View Profile <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            </div>
+          </div>
+
+          {/* Placement Progress Section */}
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.6 }}
+                className="glass-panel rounded-2xl p-8 border border-white/10 bg-gradient-to-br from-slate-900/80 to-purple-900/10"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                      <Target className="w-6 h-6 text-emerald-400" />
+                      Placement Season Progress
+                    </h2>
+                    <p className="text-slate-400">Track overall placement success</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                      {stats.totalStudents > 0 ? Math.round((stats.placedStudents / stats.totalStudents) * 100) : 0}%
+                    </div>
+                    <p className="text-sm text-slate-400">Success Rate</p>
+                  </div>
+                </div>
+
+                <div className="relative h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 mb-6">
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${stats.totalStudents > 0 ? (stats.placedStudents / stats.totalStudents) * 100 : 0}%` }}
+                    transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent"
+                    animate={{ x: ['-100%', '200%'] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-white/5 rounded-xl border border-white/5">
+                    <p className="text-2xl font-bold text-white mb-1">{stats.totalStudents}</p>
+                    <p className="text-sm text-slate-400">Total Students</p>
+                  </div>
+                  <div className="text-center p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                    <p className="text-2xl font-bold text-emerald-400 mb-1">{stats.placedStudents}</p>
+                    <p className="text-sm text-slate-400">Placed</p>
+                  </div>
+                  <div className="text-center p-4 bg-white/5 rounded-xl border border-white/5">
+                    <p className="text-2xl font-bold text-slate-300 mb-1">{stats.totalStudents - stats.placedStudents}</p>
+                    <p className="text-sm text-slate-400">Remaining</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+          {loading && (
+            <div className="flex justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
             </div>
           )}
         </div>

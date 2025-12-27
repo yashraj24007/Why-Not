@@ -108,7 +108,7 @@ const PostOpportunityPage: React.FC = () => {
         location: formData.location,
         duration: formData.duration,
         deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
-        status: 'active'
+        status: 'ACTIVE'
       };
 
       // Only include application_url if the column exists and value is provided

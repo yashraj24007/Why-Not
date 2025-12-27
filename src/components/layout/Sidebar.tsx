@@ -27,9 +27,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/');
     } catch (error) {
       console.error('Failed to logout:', error);
+    } finally {
+      // Always navigate to home page, even if signOut fails
+      navigate('/');
     }
   };
 

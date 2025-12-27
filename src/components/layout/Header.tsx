@@ -13,14 +13,9 @@ import {
   BarChart3,
   UserCheck,
   BookOpen,
-  Search,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import { UserRole } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import NotificationBell from '../features/NotificationBell';
 
 interface HeaderProps {
   userRole?: UserRole;
@@ -38,16 +33,17 @@ const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const isLoggedIn = !!userRole;
 
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/');
     } catch (error) {
       console.error('Failed to logout:', error);
+    } finally {
+      // Always navigate to home page, even if signOut fails
+      navigate('/');
     }
   };
 
@@ -141,31 +137,6 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Right Side Navigation */}
           <div className="hidden md:flex items-center gap-4">
-            {isLoggedIn && (
-              <div className="hidden lg:flex items-center relative mr-2">
-                <Search className="absolute left-3 text-slate-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-purple-500/50 w-64 transition-all placeholder:text-slate-500"
-                />
-              </div>
-            )}
-
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-5 h-5 text-yellow-400 group-hover:rotate-90 transition-transform duration-300" />
-              ) : (
-                <Moon className="w-5 h-5 text-indigo-400 group-hover:-rotate-90 transition-transform duration-300" />
-              )}
-            </button>
-
             {!isLoggedIn ? (
               <>
                 {/* Removed Features, How It Works, About links as requested */}
@@ -184,9 +155,6 @@ const Header: React.FC<HeaderProps> = ({
               </>
             ) : (
               <>
-                {/* Notifications */}
-                <NotificationBell />
-
                 {/* User Profile Dropdown */}
                 <div className="relative group">
                   <button className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all">
