@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, Briefcase, Settings, LogOut, 
-  Calendar, BarChart3, Users, Sparkles, Zap, Menu, X
+  Calendar, BarChart3, Users, Sparkles, Zap, Menu, X, TrendingUp
 } from 'lucide-react';
 import { UserRole } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
@@ -41,6 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         return [
           { label: 'Dashboard', path: '/dashboard', icon: Home, gradient: 'from-cyan-400 to-blue-500' },
           { label: 'Opportunities', path: '/opportunities', icon: Briefcase, gradient: 'from-purple-400 to-pink-500' },
+          { label: 'Career Simulator', path: '/career-simulator', icon: TrendingUp, gradient: 'from-purple-400 to-indigo-500', badge: 'NEW' },
           { label: 'Calendar', path: '/calendar', icon: Calendar, gradient: 'from-green-400 to-emerald-500' },
           { label: 'Resume AI', path: '/resume-analyzer', icon: BarChart3, gradient: 'from-yellow-400 to-orange-500' },
           { label: 'Profile', path: '/profile', icon: Users, gradient: 'from-indigo-400 to-purple-500' },
@@ -210,6 +211,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <span className={`text-sm font-semibold ${isActive ? 'text-white' : ''}`}>
                         {item.label}
                       </span>
+
+                      {/* New Badge */}
+                      {(item as any).badge && (
+                        <span className="ml-auto px-2 py-0.5 bg-purple-500/20 text-purple-300 text-xs rounded-full font-semibold border border-purple-500/30">
+                          {(item as any).badge}
+                        </span>
+                      )}
 
                       {/* Hover Glow */}
                       {!isActive && (

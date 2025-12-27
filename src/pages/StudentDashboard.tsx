@@ -277,6 +277,63 @@ const StudentDashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Career Path Simulator Quick Access */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mb-8"
+        >
+          <Link to="/career-simulator" className="block group">
+            <div className="relative">
+              {/* Animated Gradient Border */}
+              <div className="absolute -inset-[2px] bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500 rounded-3xl opacity-50 group-hover:opacity-100 transition-opacity duration-500 blur-sm animate-pulse" />
+              
+              <div className="relative glass-panel rounded-3xl p-8 overflow-hidden">
+                {/* Background Effects */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+                
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <motion.div
+                      animate={{
+                        rotate: [0, 10, -10, 10, 0],
+                        scale: [1, 1.1, 1, 1.1, 1],
+                      }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-500 p-[2px] rounded-2xl"
+                    >
+                      <div className="w-full h-full bg-black rounded-[14px] flex items-center justify-center">
+                        <Sparkles className="w-10 h-10 text-purple-400" />
+                      </div>
+                    </motion.div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        Career Path Simulator
+                        <span className="px-3 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-full font-semibold border border-purple-500/30">
+                          NEW
+                        </span>
+                      </h3>
+                      <p className="text-slate-400 text-base">
+                        Simulate "What if?" scenarios before making career decisions
+                      </p>
+                      <p className="text-sm text-slate-500 mt-2 flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-purple-400" />
+                        See how skills, CGPA, and certifications impact your opportunities
+                      </p>
+                    </div>
+                  </div>
+                  <div className="hidden md:flex items-center gap-2 text-purple-400 group-hover:text-purple-300 transition-colors">
+                    <span className="font-semibold">Try Now</span>
+                    <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
+
         {/* Bento Grid Layout */}
         <div className="grid grid-cols-12 gap-6">
           {/* Stats Row - Dynamic sizes for visual interest */}

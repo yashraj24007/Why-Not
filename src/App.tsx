@@ -25,6 +25,7 @@ const PostOpportunityPage = lazy(() => import('./pages/PostOpportunityPage'));
 const ManageOpportunitiesPage = lazy(() => import('./pages/ManageOpportunitiesPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const ResumeAnalyzerPage = lazy(() => import('./pages/ResumeAnalyzerPage'));
+const CareerPathSimulatorPage = lazy(() => import('./pages/CareerPathSimulatorPage'));
 const HelpCenterPage = lazy(() => import('./pages/HelpCenterPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
@@ -213,6 +214,16 @@ const App: React.FC = () => {
                     element={
                       <ProtectedRoute userRole={user?.role}>
                         <ResumeAnalyzerPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Career Path Simulator Route - accessible to students */}
+                  <Route
+                    path="/career-simulator"
+                    element={
+                      <ProtectedRoute userRole={user?.role} requiredRole={UserRole.STUDENT}>
+                        <CareerPathSimulatorPage />
                       </ProtectedRoute>
                     }
                   />
